@@ -1,5 +1,4 @@
 #include<iostream>
-#include<string>
 using namespace std;
 
 const int MAX_LOPSV = 10000;
@@ -114,3 +113,82 @@ treeMH* NhapMonHoc(treeMH &t) {
     }
     return &t;
 }
+
+void XoaMH (treeMH &t, MonHoc mh) {
+    if (t == nullptr) {
+        cout <<  "Khong tim thay mon hoc de xoa" << endl;
+        return;
+    }
+    if (strcmp(mh.MAMH, t->mh.MAMH) < 0) {
+        XoaMH(t->left, mh);
+    } else if (strcmp (mh.MAMH, t->mh.MAMH) > 0) {
+        XoaMH(t->right, mh);
+    } else {
+        treeMH temp = t;
+        if (t->left == nullptr) {
+            t = t->right;
+        } else if (t->right == nullptr) {
+            t = t->left;
+        } 
+        delete temp;
+    }
+}
+
+void SuaMH (treeMH &t, MonHoc mh) {
+    if (t == nullptr) {
+        cout <<  "Khong tim thay mon hoc de sua" << endl;
+        return;
+    }
+    if (strcmp(mh.MAMH, t->mh.MAMH) < 0) {
+        SuaMH(t->left, mh);
+    } else if (strcmp (mh.MAMH, t->mh.MAMH) > 0) {
+        SuaMH(t->right, mh);
+    } else {
+        while (true) {
+            cout << "Ban muon sua thong tin gi:" << endl;
+            cout << "1. Ten mon hoc" << endl;
+            cout << "2. So tin chi ly thuyet" << endl;
+            cout << "3. So tin chi thuc hanh" << endl;
+            cout << "4. Thoat" << endl;
+            int choice;
+            cout << "Nhap lua chon cua ban: ";
+            cin >> choice;
+            if (choice < 1 || choice > 3) {
+                cout << "Lua chon khong hop le" << endl;
+                continue;
+            } else if (choice == 1) {
+                cout << "Nhap ten mon hoc moi: ";
+                cin.ignore();
+                cin.getline(t->mh.TENMH, 51);
+                cout << "Sua ten mon hoc thanh cong" << endl;
+                continue;
+            } else if (choice == 2) {
+                cout << "Nhap so tin chi ly thuyet moi: ";
+                cin >> t->mh.STCLT;
+                cout << "Sua so tin chi ly thuyet thanh cong" << endl;
+                continue;
+            } else if (choice == 3) {
+                cout << "Nhap so tin chi thuc hanh moi: ";
+                cin >> t->mh.STCTH;
+                cout << "Sua so tin chi thuc hanh thanh cong" << endl;
+                continue;
+            } else return;
+        }
+    }
+}
+
+//NLR
+/*void InDSMH (treeMH t) {
+    if (t == nullptr) {
+        cout << "Danh sach mon hoc rong" << endl;
+        return;
+    } else {
+        if (strcmp(t->mh.MAMH, t->left->mh.MAMH) > 0) {
+            InDSMH(t->left);
+        }
+        if (strcmp(t->mh.MAMH, t->right->mh.MAMH) > 0) {
+            InDSMH(t->right);
+        }
+    }
+}
+    */
