@@ -177,18 +177,14 @@ void SuaMH (treeMH &t, MonHoc mh) {
     }
 }
 
-//NLR
-/*void InDSMH (treeMH t) {
+//LNR
+void InDSMH (treeMH t) {
     if (t == nullptr) {
         cout << "Danh sach mon hoc rong" << endl;
         return;
     } else {
-        if (strcmp(t->mh.MAMH, t->left->mh.MAMH) > 0) {
-            InDSMH(t->left);
-        }
-        if (strcmp(t->mh.MAMH, t->right->mh.MAMH) > 0) {
-            InDSMH(t->right);
-        }
+        InDSMH(t->left);
+        cout << t->mh.MAMH << endl;
+        InDSMH(t->right);  
     }
 }
-    */
