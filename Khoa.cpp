@@ -1,4 +1,5 @@
 #include<iostream>
+#include<cstring>
 using namespace std;
 
 const int MAX_LOPSV = 10000;
@@ -60,7 +61,7 @@ struct LopTinChi
     int MALOPTC;
     char MAMH[11];
     char NienKhoa[10];
-    int Hocky,Nhom,sosvmin,sosvmax;
+    int Hocky, Nhom, sosvmin, sosvmax;
     bool huylop =false;
     PTRDK dssvdk=nullptr;
 };
@@ -71,47 +72,41 @@ struct nodeLTC
     LopTinChi *nodes[MAX_LTC];
 };
 
-int strcmp(char *s, char *t) {
-    while (*s && *t && (*s == *t)) {
-        s++;
-        t++;
-    }
-    return (*s - *t);
-}
-
-treeMH* NhapMonHoc(treeMH &t) {
-    MonHoc mh;
-    cout << "Nhap ma mon hoc: ";
-    cin >> mh.MAMH;
-    if (strcmp(mh.MAMH, "0") == 0) return nullptr;
-    cout << "Nhap ten mon hoc: ";
-    cin.ignore();
-    cin.getline(mh.TENMH, 51);
-    cout << "Nhap so tin chi ly thuyet: ";
-    cin >> mh.STCLT;
-    cout << "Nhap so tin chi thuc hanh: ";
-    cin >> mh.STCTH;
-    mh.height = 1;
-
+void Insert(treeMH &t, MonHoc mh) {
     if (t == nullptr) {
         t = new nodeMH;
         t->mh = mh;
         t->left = nullptr;
         t->right = nullptr;
-    }
-    
-    else {
+    } else {
         if (strcmp(mh.MAMH, t->mh.MAMH) < 0) {
-            NhapMonHoc(t->left);
-        }
-        else if (strcmp(mh.MAMH, t->mh.MAMH) > 0) {
-            NhapMonHoc(t->right);
-        }
-        else {
+            Insert(t->left, mh);
+        } else if (strcmp(mh.MAMH, t->mh.MAMH) > 0) {
+            Insert(t->right, mh);
+        } else {
             cout << "Ma mon hoc da ton tai. Vui long nhap lai." << endl;
         }
     }
-    return &t;
+}
+
+void NhapMonHoc(treeMH &t) {
+    MonHoc mh;
+    while (true) {
+        cout << "Nhap ma mon hoc (nhap 0 de thoat): ";
+        cin >> mh.MAMH;
+        if (strcmp(mh.MAMH, "0") == 0) {
+            break;
+        }
+        cout << "Nhap ten mon hoc: ";
+        cin.ignore();
+        cin.getline(mh.TENMH, 51);
+        cout << "Nhap so tin chi ly thuyet: ";
+        cin >> mh.STCLT;
+        cout << "Nhap so tin chi thuc hanh: ";
+        cin >> mh.STCTH;
+        mh.height = 1;
+        Insert(t, mh);
+    }
 }
 
 void XoaMH (treeMH &t, MonHoc mh) {
@@ -178,13 +173,43 @@ void SuaMH (treeMH &t, MonHoc mh) {
 }
 
 //LNR
-void InDSMH (treeMH t) {
-    if (t == nullptr) {
-        cout << "Danh sach mon hoc rong" << endl;
+void InDSMH(treeMH t) {
+    if (t != nullptr) {
+        InDSMH(t->left);
+        cout << "Ma MH: " << t->mh.MAMH << ", Ten MH: " << t->mh.TENMH << endl;
+        InDSMH(t->right);
+    }
+}
+
+/*void InLTC (nodeLTC *ltc, treeMH monhoc) {
+    if (ltc == nullptr) {
+        cout << "Danh sach lop tin chi rong" << endl;
         return;
     } else {
-        InDSMH(t->left);
-        cout << t->mh.MAMH << endl;
-        InDSMH(t->right);  
+        for (int i = 0; i < MAX_LTC && ltc->nodes[i] != nullptr; i++) { 
+            cout << "Ma mon hoc: " << ltc->nodes[i]->MAMH << endl; 
+            cout << "Ten mon hoc: " << monhoc->mh->TENMH << endl;
+        }
     }
+}
+
+void DangKyLTC (nodeLTC *ltc, LopTinChi lop) {
+    cout << "Nhap nien khoa: ";
+    cin.ignore();
+    cin.getline(lop.NienKhoa, 10); 
+    cout << "Nhap hoc ky: ";
+    cin >> lop.Hocky;
+    InLTC(ltc);
+}*/
+
+int main () {
+    treeMH t = NULL;
+    NhapMonHoc(t);
+    if (t == nullptr) {
+        cout << "Danh sach mon hoc rong." << endl;
+    } else {
+        InDSMH(t);
+    }
+    system("pause");
+    return 0;
 }
