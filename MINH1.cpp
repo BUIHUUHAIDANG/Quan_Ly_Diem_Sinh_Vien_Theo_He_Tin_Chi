@@ -1,78 +1,60 @@
 #include<iostream>
-#include<cstring>
 #include<iomanip>
+#include<cstring>
 using namespace std;
 
 const int MAX_LOPSV = 10000;
-const int MAX_LTC=10000;
-struct MonHoc
-{
-    char MAMH[11];
-    char TENMH[51];
-    int STCLT;
-    int STCTH;
-    int height;
+struct MonHoc {
+    char MAMH[11] ; char TENMH[51]; 
+    int STCLT ,STCTH; int height;
 };
-struct nodeMH //tree
-{
+struct nodeMH {
     MonHoc mh;
-    nodeMH *left;
-    nodeMH *right;
+    nodeMH *left, *right;
 };
 typedef nodeMH* treeMH;
-struct SinhVien //tree
-{
-    char MASV[16];
-    char HO[51];
-    char TEN[11];
-    char PHAI[4];
-    char SODT[16];
-    char Email[50];
+
+struct SinhVien {
+    char MASV [16]; char HO[51] ; char TEN[11];
+    char  PHAI[4]; char SODT[16]; char Email [50];
+
 };
-struct nodeSV
-{
-    SinhVien sv;
-    nodeSV *next;
+struct nodeSV {
+ SinhVien sv;
+ nodeSV *next;
 };
 typedef nodeSV* PTRSV;
-struct LopSV
-{
-    char MALOP[16];
-    char TENLOP[51];
-    PTRSV FirstSV=nullptr;
+
+ struct LopSV  {
+ char MALOP[16] ; char TENLOP[51];
+ PTRSV FirstSV=NULL; 
 };
-struct DS_LOPSV
-{
+struct DS_LOPSV {
     int n=0;
     LopSV* nodes[MAX_LOPSV];
 };
-struct DangKy
-{
-    char MASV[16];
-    float DIEM;
+struct DangKy {
+    char MASV[16] ; float DIEM; 
 };
-struct nodeDK
-{
+ 
+struct nodeDK {
     DangKy dk;
     nodeDK *next;
 };
 typedef nodeDK* PTRDK;
-struct LopTinChi
-{
-    int MALOPTC;
-    char MAMH[11];
-    char NienKhoa[10];
-    int Hocky,Nhom,sosvmin,sosvmax;
-    bool huylop =false;
-    PTRDK dssvdk=nullptr;
+struct LopTinChi {
+    int MALOPTC ;
+    char  MAMH[11];
+    char NienKhoa[10];  
+    int Hocky, Nhom,sosvmin, sosvmax;
+    bool huylop = false;
+    PTRDK dssvdk=NULL; 
 };
-
-struct DS_LTC 
-{
-    int n = 0;
-    LopTinChi *nodes[MAX_LTC];
+struct nodeLTC {
+    LopTinChi ltc;
+    nodeLTC *next;
 };
-
+typedef nodeLTC* PTRLTC;
 /*int strcmp(char *s, char *t) { // bang nhau tra ve 0
     while (*s && *t && (*s == *t)) {
         s++;
@@ -205,44 +187,46 @@ void InDSMH (treeMH t) {
 
 // =========================================================================
 
-void NhapDiem( DS_LTC dsltc, DS_LOPSV dslop) {
+void NhapDiem(nodeLTC* dsltc, DS_LOPSV dslop) {
     char nienkhoa[10], mamh[11];
     int hocky, nhom;
     cout << "Nhap nien khoa: ";
     cin.getline(nienkhoa,10);
     cout << "Nhap hoc ki: "; cin >> hocky;
     cout << "Nhap nhom: "; cin >> nhom;
-    cin.ignore(0);
+    cin.ignore();
     cout << "Nhap mon hoc: ";
     cin.getline(mamh,11);
-    LopTinChi *ltc = nullptr;
-    for(int i = 0; i< dsltc.n; i++) {
-        LopTinChi *cur = dsltc.nodes[i];
-        if (strcmp(cur->NienKhoa, nienkhoa) == 0 &&
-        cur->Hocky == hocky && cur->Nhom == nhom 
-        && strcmp(cur->MAMH, mamh) == 0) {
+    nodeLTC *ltc = nullptr;
+    nodeLTC *cur;
+    cur = dsltc;
+    while(cur) {
+        if (strcmp(cur->ltc.NienKhoa, nienkhoa) == 0 &&
+        cur->ltc.Hocky == hocky && cur->ltc.Nhom == nhom 
+        && strcmp(cur->ltc.MAMH, mamh) == 0) {
             ltc = cur;
             break; 
         }
+        cur = cur->next; 
     }
     if (ltc == nullptr) {
         cout << "Khong tim thay lop tin chi tuong ung!\n";
         return;
     }
-    if (ltc->huylop) {
+    if (ltc->ltc.huylop) {
         cout << "Lop tin chi nay da bi huy, khong the nhap diem!\n";
         return;
     }
-    if (ltc->dssvdk == nullptr) {
+    if (ltc->ltc.dssvdk == nullptr) {
         cout << "Khong co sinh vien dang ky lop tin chi nay!\n";
         return;
     }
-    cout << "\n              -==== DANH SACH SINH VIEN DANG KY ====-";
+    cout << "\n              -==== DANH SACH SINH VIEN DANG KY ====- \n";
     cout << left << setw(5) << "STT" << setw(15) << "MASV" << setw(25) << "HO"<<
     setw(15) << "TEN" << setw(10) << "DIEM" << endl;
     cout << "------------------------------------------------\n";
     int stt = 1;
-    PTRDK p = ltc->dssvdk;
+    PTRDK p = ltc->ltc.dssvdk;
     while(p != nullptr) {
         SinhVien *sv = nullptr;
         for(int i = 0; i<dslop.n && !sv; i++) {
@@ -270,5 +254,7 @@ void NhapDiem( DS_LTC dsltc, DS_LOPSV dslop) {
     cout << "\n==> Da nhap / cap nhat diem thanh cong! <==\n";
 }
 int main() {
-
+    treeMH dsmh=NULL;
+    PTRLTC dsltc=NULL; 
+    DS_LOPSV dslopsv;
 }
