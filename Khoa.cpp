@@ -1,25 +1,31 @@
 #include<iostream>
 #include<cstring>
+#include<fstream>
+#include<sstream>
 using namespace std;
 
 const int MAX_LOPSV = 10000;
 const int MAX_LTC=10000;
+
 struct MonHoc
 {
     char MAMH[11];
     char TENMH[51];
     int STCLT;
     int STCTH;
-    int height;
 };
+
 struct nodeMH //tree
 {
     MonHoc mh;
     nodeMH *left;
     nodeMH *right;
+    int height;
 };
+
 typedef nodeMH* treeMH;
-struct SinhVien //tree
+
+struct SinhVien //node
 {
     char MASV[16];
     char HO[51];
@@ -28,34 +34,43 @@ struct SinhVien //tree
     char SODT[16];
     char Email[50];
 };
+
 struct nodeSV
 {
     SinhVien sv;
     nodeSV *next;
 };
+
 typedef nodeSV* PTRSV;
+
 struct LopSV
 {
     char MALOP[16];
     char TENLOP[51];
     PTRSV FristSV=nullptr;
 };
+
 struct DS_LOPSV
 {
     int n=0;
     LopSV* nodes[MAX_LOPSV];
 };
+
 struct DangKy
 {
     char MASV[16];
     float DIEM;
+    bool huydangky = false;
 };
+
 struct nodeDK
 {
     DangKy dk;
     nodeDK *next;
 };
+
 typedef nodeDK* PTRDK;
+
 struct LopTinChi
 {
     int MALOPTC;
@@ -69,34 +84,164 @@ struct LopTinChi
 struct nodeLTC 
 {
     LopTinChi ltc;
-    LopTinChi *nodes[MAX_LTC];
+    nodeLTC* next;
 };
 
-void Insert(treeMH &t, MonHoc mh) {
+typedef nodeLTC* PTRLTC;
+
+struct DS_LTC {
+    int n = 0;
+    LopTinChi* nodes[MAX_LTC];
+};
+
+int height(treeMH t) { 
+    return t ? t->height : 0; 
+}
+
+int getBalance(treeMH t) { 
+    return t ? height(t->left) - height(t->right) : 0; 
+}
+
+treeMH rotateRight(treeMH y) {
+    treeMH x = y->left;
+    treeMH T2 = x->right;
+
+    x->right = y;
+    y->left = T2;
+
+    y->height = max(height(y->left), height(y->right)) + 1;
+    x->height = max(height(x->left), height(x->right)) + 1;
+
+    return x;
+}
+
+treeMH rotateLeft(treeMH x) {
+    treeMH y = x->right;
+    treeMH T2 = y->left;
+
+    y->left = x;
+    x->right = T2;
+
+    x->height = max(height(x->left), height(x->right)) + 1;
+    y->height = max(height(y->left), height(y->right)) + 1;
+
+    return y;
+}
+
+// -------------------- CHÈN NODE (INSERT AVL) --------------------
+
+treeMH Insert(treeMH t, MonHoc mh) {
     if (t == nullptr) {
         t = new nodeMH;
         t->mh = mh;
-        t->left = nullptr;
-        t->right = nullptr;
-    } else {
-        if (strcmp(mh.MAMH, t->mh.MAMH) < 0) {
-            Insert(t->left, mh);
-        } else if (strcmp(mh.MAMH, t->mh.MAMH) > 0) {
-            Insert(t->right, mh);
-        } else {
-            cout << "Ma mon hoc da ton tai. Vui long nhap lai." << endl;
-        }
+        t->left = t->right = nullptr;
+        t->height = 1;
+        return t;
     }
+
+    if (strcmp(mh.MAMH, t->mh.MAMH) < 0)
+        t->left = Insert(t->left, mh);
+    else if (strcmp(mh.MAMH, t->mh.MAMH) > 0)
+        t->right = Insert(t->right, mh);
+    else
+        return t; // Mã trùng thì bỏ qua
+
+    // Cập nhật height
+    t->height = 1 + max(height(t->left), height(t->right));
+
+    // Cân bằng AVL
+    int balance = getBalance(t);
+
+    // Left Left
+    if (balance > 1 && strcmp(mh.MAMH, t->left->mh.MAMH) < 0)
+        return rotateRight(t);
+
+    // Right Right
+    if (balance < -1 && strcmp(mh.MAMH, t->right->mh.MAMH) > 0)
+        return rotateLeft(t);
+
+    // Left Right
+    if (balance > 1 && strcmp(mh.MAMH, t->left->mh.MAMH) > 0) {
+        t->left = rotateLeft(t->left);
+        return rotateRight(t);
+    }
+
+    // Right Left
+    if (balance < -1 && strcmp(mh.MAMH, t->right->mh.MAMH) < 0) {
+        t->right = rotateRight(t->right);
+        return rotateLeft(t);
+    }
+
+    return t;
 }
 
+// -------------------- LƯU / ĐỌC FILE --------------------
+
+void LuuMonHoc(treeMH t, ofstream &f) {
+    if (t == nullptr) {
+        f << "#\n";
+        return;
+    }
+
+    f << t->mh.MAMH << "|"
+      << t->mh.TENMH << "|"
+      << t->mh.STCLT << "|"
+      << t->mh.STCTH << "|"
+      << t->height << "\n";
+
+    LuuMonHoc(t->left, f);
+    LuuMonHoc(t->right, f);
+}
+
+treeMH DocMonHoc(ifstream &f) {
+    string line;
+    if (!getline(f, line)) return nullptr;
+    if (line == "#" || line.empty()) return nullptr;
+
+    treeMH t = new nodeMH;
+    stringstream ss(line);
+    string temp;
+
+    getline(ss, temp, '|'); strcpy(t->mh.MAMH, temp.c_str());
+    getline(ss, temp, '|'); strcpy(t->mh.TENMH, temp.c_str());
+    getline(ss, temp, '|'); t->mh.STCLT = stoi(temp);
+    getline(ss, temp, '|'); t->mh.STCTH = stoi(temp);
+    getline(ss, temp, '|'); t->height = stoi(temp);
+
+    t->left = DocMonHoc(f);
+    t->right = DocMonHoc(f);
+    return t;
+}
+
+// -------------------- HÀM KIỂM TRA MÃ MÔN --------------------
+
+bool checkMH(treeMH t, MonHoc mh) {
+    if (t == nullptr) return false;
+    if (strcmp(mh.MAMH, t->mh.MAMH) == 0) return true;
+    if (strcmp(mh.MAMH, t->mh.MAMH) < 0) return checkMH(t->left, mh);
+    else return checkMH(t->right, mh);
+}
+
+// -------------------- NHẬP MÔN HỌC --------------------
+
 void NhapMonHoc(treeMH &t) {
-    MonHoc mh;
+    ifstream fin("D:\\MonHocdata.txt");
+    if (fin.is_open()) {
+        t = DocMonHoc(fin);
+        fin.close();
+    }
+
     while (true) {
+        MonHoc mh;
         cout << "Nhap ma mon hoc (nhap 0 de thoat): ";
         cin >> mh.MAMH;
-        if (strcmp(mh.MAMH, "0") == 0) {
-            break;
+        if (strcmp(mh.MAMH, "0") == 0) break;
+
+        if (checkMH(t, mh)) {
+            cout << "Ma mon hoc da ton tai. Vui long nhap lai.\n";
+            continue;
         }
+
         cout << "Nhap ten mon hoc: ";
         cin.ignore();
         cin.getline(mh.TENMH, 51);
@@ -104,10 +249,17 @@ void NhapMonHoc(treeMH &t) {
         cin >> mh.STCLT;
         cout << "Nhap so tin chi thuc hanh: ";
         cin >> mh.STCTH;
-        mh.height = 1;
-        Insert(t, mh);
+
+        t = Insert(t, mh);
+
+        ofstream fout("D:\\MonHocdata.txt");
+        LuuMonHoc(t, fout);
+        fout.close();
+
+        cout << "Luu thanh cong!\n\n";
     }
 }
+
 
 void XoaMH (treeMH &t, MonHoc mh) {
     if (t == nullptr) {
@@ -181,25 +333,58 @@ void InDSMH(treeMH t) {
     }
 }
 
-/*void InLTC (nodeLTC *ltc, treeMH monhoc) {
-    if (ltc == nullptr) {
+bool timMonHoc (treeMH t, char mamh[]) {
+    if (t != nullptr) {
+        InDSMH(t->left);
+        if (strcmp(t->mh.MAMH, mamh) == 0) {
+            return true;
+        }
+        InDSMH(t->right);
+    }
+    return false;
+}
+
+/*void InLTC (PTRLTC loptinchi, char nienkhoa[], int hocky) {
+    treeMH monhoc;
+    if (loptinchi == nullptr) {
         cout << "Danh sach lop tin chi rong" << endl;
         return;
     } else {
-        for (int i = 0; i < MAX_LTC && ltc->nodes[i] != nullptr; i++) { 
-            cout << "Ma mon hoc: " << ltc->nodes[i]->MAMH << endl; 
-            cout << "Ten mon hoc: " << monhoc->mh->TENMH << endl;
+        for (loptinchi = nullptr; loptinchi != nullptr; loptinchi = loptinchi->next) {
+            if (loptinchi->ltc.NienKhoa == nienkhoa && loptinchi->ltc.Hocky == hocky) {
+                if (timMonHoc(monhoc, loptinchi->ltc.MAMH)) {
+                    cout << "Ma mon hoc: " << loptinchi->ltc.MAMH << endl <<
+                    "Ten mon hoc: " << monhoc->mh.TENMH << endl <<
+                    "Nhom: " << loptinchi->ltc.Nhom << endl <<
+                    "So sinh vien da dang ky: " <<  endl;
+                }
+            }
         }
     }
 }
 
-void DangKyLTC (nodeLTC *ltc, LopTinChi lop) {
+void DangKyLTC (PTRLTC loptinchi, LopTinChi lop) {
+    char masv[16];
+    cout << "Nhap ma so sinh vien: ";
+    cin >> masv;
+
+    for (PTRSV p = nullptr; p != nullptr; p = p->next) {
+        if (strcmp(p->sv.MASV, masv) == 0) {
+            cout << "Ho:" << p->sv.HO << endl <<
+            "Ten: " << p->sv.TEN << endl << 
+            "Phai:" << p->sv.PHAI << endl <<
+            "So dien thoai: " << p->sv.SODT << endl <<
+            "Email: " << p->sv.Email << endl;
+            break;
+        }
+    }
+
     cout << "Nhap nien khoa: ";
     cin.ignore();
     cin.getline(lop.NienKhoa, 10); 
     cout << "Nhap hoc ky: ";
     cin >> lop.Hocky;
-    InLTC(ltc);
+    InLTC(loptinchi, lop.NienKhoa, lop.Hocky);
 }*/
 
 int main () {
