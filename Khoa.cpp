@@ -177,7 +177,8 @@ treeMH Insert(treeMH t, MonHoc mh) {
 
 // -------------------- LƯU / ĐỌC FILE --------------------
 
-void LuuMonHoc(treeMH t, ofstream &f) {
+void LuuMonHoc(treeMH t, string filename) {
+    ofstream f(filename);
     if (t == nullptr) {
         f << "#\n";
         return;
@@ -189,28 +190,37 @@ void LuuMonHoc(treeMH t, ofstream &f) {
       << t->mh.STCTH << "|"
       << t->height << "\n";
 
-    LuuMonHoc(t->left, f);
-    LuuMonHoc(t->right, f);
+    LuuMonHoc(t->left, filename);
+    LuuMonHoc(t->right, filename);
+    f.close();
 }
 
-treeMH DocMonHoc(ifstream &f) {
+treeMH DocMonHoc(string filename) {
+    ifstream f(filename);
+    if (!f.is_open()) {
+        cout << "Khong mo duoc file!\n";
+        return nullptr;
+    }
+
     string line;
-    if (!getline(f, line)) return nullptr;
-    if (line == "#" || line.empty()) return nullptr;
+    treeMH root = nullptr;
+    while (getline(f, line)) {
+        if (line == "#" || line.empty()) continue;
 
-    treeMH t = new nodeMH;
-    stringstream ss(line);
-    string temp;
+        stringstream ss(line);
+        MonHoc mh;
+        string temp;
 
-    getline(ss, temp, '|'); strcpy(t->mh.MAMH, temp.c_str());
-    getline(ss, temp, '|'); strcpy(t->mh.TENMH, temp.c_str());
-    getline(ss, temp, '|'); t->mh.STCLT = stoi(temp);
-    getline(ss, temp, '|'); t->mh.STCTH = stoi(temp);
-    getline(ss, temp, '|'); t->height = stoi(temp);
+        getline(ss, temp, '|'); strcpy(mh.MAMH, temp.c_str());
+        getline(ss, temp, '|'); strcpy(mh.TENMH, temp.c_str());
+        getline(ss, temp, '|'); mh.STCLT = stoi(temp);
+        getline(ss, temp, '|'); mh.STCTH = stoi(temp);
 
-    t->left = DocMonHoc(f);
-    t->right = DocMonHoc(f);
-    return t;
+        root = Insert(root, mh);
+    }
+
+    f.close();
+    return root;
 }
 
 // -------------------- HÀM KIỂM TRA MÃ MÔN --------------------
@@ -225,11 +235,7 @@ bool checkMH(treeMH t, MonHoc mh) {
 // -------------------- NHẬP MÔN HỌC --------------------
 
 void NhapMonHoc(treeMH &t) {
-    ifstream fin("D:\\MonHocdata.txt");
-    if (fin.is_open()) {
-        t = DocMonHoc(fin);
-        fin.close();
-    }
+    t = DocMonHoc("D:\\MonHocdata.txt");
 
     while (true) {
         MonHoc mh;
@@ -252,9 +258,7 @@ void NhapMonHoc(treeMH &t) {
 
         t = Insert(t, mh);
 
-        ofstream fout("D:\\MonHocdata.txt");
-        LuuMonHoc(t, fout);
-        fout.close();
+        LuuMonHoc(t, "D:\\MonHocdata.txt");
 
         cout << "Luu thanh cong!\n\n";
     }
@@ -343,49 +347,6 @@ bool timMonHoc (treeMH t, char mamh[]) {
     }
     return false;
 }
-
-/*void InLTC (PTRLTC loptinchi, char nienkhoa[], int hocky) {
-    treeMH monhoc;
-    if (loptinchi == nullptr) {
-        cout << "Danh sach lop tin chi rong" << endl;
-        return;
-    } else {
-        for (loptinchi = nullptr; loptinchi != nullptr; loptinchi = loptinchi->next) {
-            if (loptinchi->ltc.NienKhoa == nienkhoa && loptinchi->ltc.Hocky == hocky) {
-                if (timMonHoc(monhoc, loptinchi->ltc.MAMH)) {
-                    cout << "Ma mon hoc: " << loptinchi->ltc.MAMH << endl <<
-                    "Ten mon hoc: " << monhoc->mh.TENMH << endl <<
-                    "Nhom: " << loptinchi->ltc.Nhom << endl <<
-                    "So sinh vien da dang ky: " <<  endl;
-                }
-            }
-        }
-    }
-}
-
-void DangKyLTC (PTRLTC loptinchi, LopTinChi lop) {
-    char masv[16];
-    cout << "Nhap ma so sinh vien: ";
-    cin >> masv;
-
-    for (PTRSV p = nullptr; p != nullptr; p = p->next) {
-        if (strcmp(p->sv.MASV, masv) == 0) {
-            cout << "Ho:" << p->sv.HO << endl <<
-            "Ten: " << p->sv.TEN << endl << 
-            "Phai:" << p->sv.PHAI << endl <<
-            "So dien thoai: " << p->sv.SODT << endl <<
-            "Email: " << p->sv.Email << endl;
-            break;
-        }
-    }
-
-    cout << "Nhap nien khoa: ";
-    cin.ignore();
-    cin.getline(lop.NienKhoa, 10); 
-    cout << "Nhap hoc ky: ";
-    cin >> lop.Hocky;
-    InLTC(loptinchi, lop.NienKhoa, lop.Hocky);
-}*/
 
 int main () {
     treeMH t = NULL;
