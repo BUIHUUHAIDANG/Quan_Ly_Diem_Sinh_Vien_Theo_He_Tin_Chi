@@ -187,6 +187,106 @@ void InDSMH (treeMH t) {
 
 // =========================================================================
 
+// === save ltc ===
+
+int SaveFile_LTC(const char* tenfile, PTRLTC FirstLTC) {
+    FILE *f = fopen(tenfile, "wb");
+    if (f == NULL) return 0;
+
+    for (PTRLTC p = FirstLTC; p != NULL; p = p->next) {
+        // 
+        fwrite(&p->ltc.MALOPTC, sizeof(int), 1, f);
+        fwrite(&p->ltc.MAMH, sizeof(p->ltc.MAMH), 1, f);
+        fwrite(&p->ltc.NienKhoa, sizeof(p->ltc.NienKhoa), 1, f);
+        fwrite(&p->ltc.Hocky, sizeof(int), 1, f);
+        fwrite(&p->ltc.Nhom, sizeof(int), 1, f);
+        fwrite(&p->ltc.sosvmin, sizeof(int), 1, f);
+        fwrite(&p->ltc.sosvmax, sizeof(int), 1, f);
+        fwrite(&p->ltc.huylop, sizeof(bool), 1, f);
+
+        // dssv dang ki
+        int count = 0;
+        for (PTRDK q = p->ltc.dssvdk; q != NULL; q = q->next) count++;
+        fwrite(&count, sizeof(int), 1, f);
+
+        for (PTRDK q = p->ltc.dssvdk; q != NULL; q = q->next)
+            fwrite(&q->dk, sizeof(DangKy), 1, f);
+    }
+
+    fclose(f);
+    return 1;
+}
+// ===
+void DeleteDSLTC(PTRLTC FirstLTC) {
+    while (FirstLTC != NULL) {
+        PTRLTC temp = FirstLTC;
+        FirstLTC = FirstLTC->next;
+
+        // giai phong dsdk
+        while (temp->ltc.dssvdk != NULL) {
+            PTRDK q = temp->ltc.dssvdk;
+            temp->ltc.dssvdk = q->next;
+            delete q;
+        }
+
+        delete temp;
+    }
+}
+void InsertLast_LTC(PTRLTC FirstLTC,LopTinChi ltc) {
+    PTRLTC newNode = new nodeLTC;
+    newNode->ltc = ltc;
+    newNode->next = NULL;
+
+    if (FirstLTC == NULL)
+        FirstLTC = newNode;
+    else {
+        PTRLTC p = FirstLTC;
+        while (p->next != NULL) p = p->next;
+        p->next = newNode;
+    }
+}
+void InsertLast_DK(PTRDK dssvdk, DangKy dk) {
+    PTRDK newNode = new nodeDK;
+    newNode->dk = dk;
+    newNode->next = NULL;
+    if(dssvdk == NULL) dssvdk = newNode;
+    else {
+        newNode->next = dssvdk;
+        dssvdk = newNode; 
+    }
+}
+// === load dslk ltc ===
+int LoadFile_LTC(const char* tenfile, PTRLTC FirstLTC) {
+    FILE* f = fopen(tenfile, "rb");
+    if (f == NULL) return 0;
+    DeleteDSLTC(FirstLTC);
+    while (1) {
+        LopTinChi ltc;
+        if (fread(&ltc.MALOPTC, sizeof(int), 1, f) != 1) break;
+        fread(&ltc.MAMH, sizeof(ltc.MAMH), 1, f);
+        fread(&ltc.NienKhoa, sizeof(ltc.NienKhoa), 1, f);
+        fread(&ltc.Hocky, sizeof(int), 1, f);
+        fread(&ltc.Nhom, sizeof(int), 1, f);
+        fread(&ltc.sosvmin, sizeof(int), 1, f);
+        fread(&ltc.sosvmax, sizeof(int), 1, f);
+        fread(&ltc.huylop, sizeof(bool), 1, f);
+
+        int count;
+        fread(&count, sizeof(int), 1, f);
+
+        ltc.dssvdk = NULL;
+        for (int i = 0; i < count; i++) {
+            DangKy dk;
+            fread(&dk, sizeof(DangKy), 1, f);
+            InsertLast_DK(ltc.dssvdk, dk);
+        }
+
+        InsertLast_LTC(FirstLTC, ltc);
+    }
+    fclose(f);
+    return 1;
+}
+
 void NhapDiem(nodeLTC* dsltc, DS_LOPSV dslop) {
     char nienkhoa[10], mamh[11];
     int hocky, nhom;
@@ -257,4 +357,6 @@ int main() {
     treeMH dsmh=NULL;
     PTRLTC dsltc=NULL; 
     DS_LOPSV dslopsv;
+    SaveFile_LTC("ltc.txt", FirstLTC);
+    LoadFile_LTC("ltc.txt");
 }
