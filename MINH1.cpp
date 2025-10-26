@@ -353,10 +353,40 @@ void NhapDiem(nodeLTC* dsltc, DS_LOPSV dslop) {
     }
     cout << "\n==> Da nhap / cap nhat diem thanh cong! <==\n";
 }
+float Tinhdiemtb(SinhVien sv, PTRLTC dsltc, treeMH dsmh) {
+    float tongDiem = 0, tongTinChi = 0;
+
+    for (PTRLTC cur = dsltc; cur != nullptr; cur = cur->next) {
+        if (cur->ltc.huylop) continue;
+
+        for (PTRDK dk = cur->ltc.dssvdk; dk != nullptr; dk = dk->next) {
+            if (strcmp(dk->dk.MASV, sv.MASV) == 0 && dk->dk.DIEM >= 0) {
+                // tim tin chi mon
+                treeMH p = dsmh;
+                int tinchi = 0;
+                while (p != nullptr) {
+                    int cmp = strcmp(cur->ltc.MAMH, p->mh.MAMH);
+                    if (cmp == 0) {
+                        tinchi = p->mh.STCLT + p->mh.STCTH;
+                        break;
+                    }
+                    p = (cmp < 0) ? p->right : p->left;
+                }
+                tongDiem += dk->dk.DIEM * tinchi;
+                tongTinChi += tinchi;
+            }
+        }
+    }
+    return (tongTinChi > 0) ? (tongDiem / tongTinChi) : -1; 
+}
+
 int main() {
     treeMH dsmh=NULL;
     PTRLTC dsltc=NULL; 
     DS_LOPSV dslopsv;
     SaveFile_LTC("ltc.txt", FirstLTC);
-    LoadFile_LTC("ltc.txt");
+    LoadFile_LTC("ltc.txt", FirstLTC);
+    if (!LoadFile_LTC("ltc.txt", dsltc)) {
+        cout << "Khong the mo file ltc.txt (co the chua ton tai)"<< endl;
+    }
 }
