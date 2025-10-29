@@ -370,10 +370,11 @@ float Tinhdiemtb(SinhVien sv, PTRLTC dsltc, treeMH dsmh) {
                         tinchi = p->mh.STCLT + p->mh.STCTH;
                         break;
                     }
-                    p = (cmp < 0) ? p->right : p->left;
+                    p = (cmp < 0) ? p->left : p->right;
                 }
                 tongDiem += dk->dk.DIEM * tinchi;
                 tongTinChi += tinchi;
+                break;
             }
         }
     }
@@ -381,7 +382,7 @@ float Tinhdiemtb(SinhVien sv, PTRLTC dsltc, treeMH dsmh) {
 }
 void Indiemtb(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh) {
     char malop[16];
-    cout << "Nhap ma lop sinh vien: ";
+    cout << "Nhap ma lop: ";
     cin.getline(malop, 16);
 
     LopSV* lop = nullptr;
@@ -391,13 +392,12 @@ void Indiemtb(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh) {
             break;
         }
     }
-
     if (!lop) {
         cout << "Khong tim thay lop!\n";
         return;
     }
 
-    cout << "\n==== BANG DIEM TRUNG BINH KHOA HOC ====\n";
+    cout << "\n -==== BANG DIEM TRUNG BINH KHOA HOC ====- \n";
     cout << "Lop: " << lop->TENLOP << endl;
     cout << left << setw(5) << "STT" << setw(15) << "MASV"
          << setw(25) << "HO" << setw(15) << "TEN" << setw(10) << "DIEM TB" << endl;
@@ -406,12 +406,13 @@ void Indiemtb(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh) {
     int stt = 1;
     for (PTRSV sv = lop->FirstSV; sv != nullptr; sv = sv->next) {
         float diemTB = Tinhdiemtb(sv->sv, dsltc, dsmh);
-        if (diemTB >= 0)
+        if (diemTB >= 0) {
             cout << left << setw(5) << stt++ << setw(15) << sv->sv.MASV << setw(25) << sv->sv.HO 
             << setw(15) << sv->sv.TEN << setw(10) << fixed << setprecision(2) << diemTB << endl;
-        else
+        } else {
             cout << left << setw(5) << stt++ << setw(15) << sv->sv.MASV << setw(25) 
             << sv->sv.HO << setw(15) << sv->sv.TEN << setw(10) << "Chua co" << endl;
+        }
     }
 }
 
