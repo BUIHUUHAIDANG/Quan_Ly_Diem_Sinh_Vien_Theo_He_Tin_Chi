@@ -20,14 +20,14 @@ struct SinhVien {
 
 };
 struct nodeSV {
- SinhVien sv;
- nodeSV *next;
+    SinhVien sv;
+    nodeSV *next;
 };
 typedef nodeSV* PTRSV;
 
- struct LopSV  {
- char MALOP[16] ; char TENLOP[51];
- PTRSV FirstSV=NULL; 
+struct LopSV  {
+    char MALOP[16] ; char TENLOP[51];
+    PTRSV FirstSV=NULL; 
 };
 struct DS_LOPSV {
     int n=0;
@@ -415,7 +415,79 @@ void Indiemtb(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh) {
         }
     }
 }
+void duyettreeMH(treeMH t, char dsMAMH[][11], int &soMH) {
+    if (t == nullptr) return;
+    duyettreeMH(t->left, dsMAMH, soMH);
+    strcpy(dsMAMH[soMH++], t->mh.MAMH);
+    duyettreeMH(t->right, dsMAMH, soMH);
 
+}
+void Inbangdiemtongket(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh) {
+    char dsMAMH[200][11];
+    char malop[16];
+    int soMH = 0;
+    duyettreeMH(dsmh, dsMAMH, soMH);
+    if (soMH == 0) {
+        cout << "Danh sach mon hoc rong!\n";
+        return;
+    }
+
+    cout << "Nhap ma lop: ";
+    cin.getline(malop,16);
+    LopSV* lop = nullptr;
+    for (int i = 0; i < dslop.n; i++) {
+        if (strcmp(dslop.nodes[i]->MALOP, malop) == 0) {
+            lop = dslop.nodes[i];
+            break;
+        }
+    }
+    if (!lop) {
+        cout << "Khong tim thay lop!\n";
+        return;
+    }
+
+    cout << " -==== BANG DIEM TONG KET ====- ";
+    cout << "Lop: " << lop->TENLOP << endl;
+    cout << left << setw(5) << "STT" << setw(15) << "MASV" << setw(25) << "HO TEN";
+    for (int i = 0; i < soMH; i++) cout << setw(8) << dsMAMH[i];
+    cout << endl;
+
+    int stt = 1;
+    for (PTRSV sv = lop->FirstSV; sv != nullptr; sv = sv->next) {
+        float diemMax[200];
+        for (int i = 0; i < soMH; i++) diemMax[i] = -1;
+
+        for (PTRLTC cur = dsltc; cur != nullptr; cur = cur->next) {
+            if (cur->ltc.huylop) continue;
+
+            for (PTRDK dk = cur->ltc.dssvdk; dk != nullptr; dk = dk->next) {
+                if (strcmp(dk->dk.MASV, sv->sv.MASV) == 0) {
+                    for (int i = 0; i < soMH; i++) {
+                        if (strcmp(dsMAMH[i], cur->ltc.MAMH) == 0) {
+                            if (dk->dk.DIEM > diemMax[i]) diemMax[i] = dk->dk.DIEM;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        char hoten[51];
+        strcpy(hoten, sv->sv.HO);
+        strcat(hoten, " ");
+        strcat(hoten, sv->sv.TEN);
+        cout << left << setw(5) << stt++ << setw(15) << sv->sv.MASV << setw(25) << hoten;
+        for(int i=0; i< soMH; i++) {
+            if(diemMax[i] >= 0) {
+                cout << setw(8) << fixed << setprecision(2) << diemMax[i];
+            } else {
+                cout << setw(8) << "-";
+            }
+            
+        }
+        cout << endl;
+    }
+
+}
 int main() {
     treeMH dsmh=NULL;
     PTRLTC dsltc=NULL; 
