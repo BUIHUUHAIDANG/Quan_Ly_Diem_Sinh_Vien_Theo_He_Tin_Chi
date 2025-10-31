@@ -264,7 +264,6 @@ void NhapMonHoc(treeMH &t) {
     }
 }
 
-
 void XoaMH (treeMH &t, MonHoc mh) {
     if (t == nullptr) {
         cout <<  "Khong tim thay mon hoc de xoa" << endl;
@@ -272,7 +271,7 @@ void XoaMH (treeMH &t, MonHoc mh) {
     }
     if (strcmp(mh.MAMH, t->mh.MAMH) < 0) {
         XoaMH(t->left, mh);
-    } else if (strcmp (mh.MAMH, t->mh.MAMH) > 0) {
+    } else if (strcmp(mh.MAMH, t->mh.MAMH) > 0) {
         XoaMH(t->right, mh);
     } else {
         treeMH temp = t;
@@ -280,7 +279,20 @@ void XoaMH (treeMH &t, MonHoc mh) {
             t = t->right;
         } else if (t->right == nullptr) {
             t = t->left;
-        } 
+        } else {
+            bool check = true;
+            t = t->left;
+            while (t->right != nullptr) {
+                t = t->right;
+                check = false;
+            }
+            if (check) {
+                t->right = temp->right;
+            } else {
+                t->right = temp->right;
+                t->left = temp->left;
+            }
+        }
         delete temp;
     }
 }
@@ -359,3 +371,4 @@ int main () {
     system("pause");
     return 0;
 }
+
