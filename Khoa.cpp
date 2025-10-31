@@ -94,42 +94,73 @@ struct DS_LTC {
     LopTinChi* nodes[MAX_LTC];
 };
 
-int height(treeMH t) { 
+int GetHeight(treeMH t) { 
     return t ? t->height : 0; 
 }
 
-int getBalance(treeMH t) { 
-    return t ? height(t->left) - height(t->right) : 0; 
+int GetBalance(treeMH t) { 
+    return t ? (GetHeight(t->left) - GetHeight(t->right)) : 0; 
 }
 
-treeMH rotateRight(treeMH y) {
+treeMH RotateRight(treeMH y) {
     treeMH x = y->left;
     treeMH T2 = x->right;
 
     x->right = y;
     y->left = T2;
 
-    y->height = max(height(y->left), height(y->right)) + 1;
-    x->height = max(height(x->left), height(x->right)) + 1;
+    y->height = max(GetHeight(y->left), GetHeight(y->right)) + 1;
+    x->height = max(GetHeight(x->left), GetHeight(x->right)) + 1;
 
     return x;
 }
 
-treeMH rotateLeft(treeMH x) {
+treeMH RotateLeft(treeMH x) {
     treeMH y = x->right;
     treeMH T2 = y->left;
 
     y->left = x;
     x->right = T2;
 
-    x->height = max(height(x->left), height(x->right)) + 1;
-    y->height = max(height(y->left), height(y->right)) + 1;
+    x->height = max(GetHeight(x->left), GetHeight(x->right)) + 1;
+    y->height = max(GetHeight(y->left), GetHeight(y->right)) + 1;
 
     return y;
 }
 
-// -------------------- CHÈN NODE (INSERT AVL) --------------------
+treeMH CheckandRotation(treeMH t) {
+    if (t == nullptr) return nullptr;
 
+    // Cập nhật lại chiều cao
+    t->height = 1 + max(GetHeight(t->left), GetHeight(t->right));
+
+    int balance = GetBalance(t);
+
+    // Left Left
+    if (balance > 1 && GetBalance(t->left) >= 0)
+        return RotateRight(t);
+
+    // Right Right
+    if (balance < -1 && GetBalance(t->right) <= 0)
+        return RotateLeft(t);
+
+    // Left Right
+    if (balance > 1 && GetBalance(t->left) < 0) {
+        t->left = RotateLeft(t->left);
+        return RotateRight(t);
+    }
+
+    // Right Left
+    if (balance < -1 && GetBalance(t->right) > 0) {
+        t->right = RotateRight(t->right);
+        return RotateLeft(t);
+    }
+
+    return t;
+}
+
+
+// -------------------- CHÈN NODE (INSERT AVL) --------------------
 treeMH Insert(treeMH t, MonHoc mh) {
     if (t == nullptr) {
         t = new nodeMH;
@@ -143,38 +174,10 @@ treeMH Insert(treeMH t, MonHoc mh) {
         t->left = Insert(t->left, mh);
     else if (strcmp(mh.MAMH, t->mh.MAMH) > 0)
         t->right = Insert(t->right, mh);
-    else
-        return t; // Mã trùng thì bỏ qua
+    else return t; // Mã trùng thì bỏ qua
 
-    // Cập nhật height
-    t->height = 1 + max(height(t->left), height(t->right));
-
-    // Cân bằng AVL
-    int balance = getBalance(t);
-
-    // Left Left
-    if (balance > 1 && strcmp(mh.MAMH, t->left->mh.MAMH) < 0)
-        return rotateRight(t);
-
-    // Right Right
-    if (balance < -1 && strcmp(mh.MAMH, t->right->mh.MAMH) > 0)
-        return rotateLeft(t);
-
-    // Left Right
-    if (balance > 1 && strcmp(mh.MAMH, t->left->mh.MAMH) > 0) {
-        t->left = rotateLeft(t->left);
-        return rotateRight(t);
-    }
-
-    // Right Left
-    if (balance < -1 && strcmp(mh.MAMH, t->right->mh.MAMH) < 0) {
-        t->right = rotateRight(t->right);
-        return rotateLeft(t);
-    }
-
-    return t;
+    return CheckandRotation(t);
 }
-
 // -------------------- LƯU / ĐỌC FILE --------------------
 
 void LuuMonHoc(treeMH t, string filename) {
@@ -264,39 +267,40 @@ void NhapMonHoc(treeMH &t) {
     }
 }
 
-void XoaMH (treeMH &t, MonHoc mh) {
+treeMH XoaMH (treeMH &t, char MAMH[]) {
     if (t == nullptr) {
         cout <<  "Khong tim thay mon hoc de xoa" << endl;
-        return;
+        return nullptr;
     }
-    if (strcmp(mh.MAMH, t->mh.MAMH) < 0) {
-        XoaMH(t->left, mh);
-    } else if (strcmp(mh.MAMH, t->mh.MAMH) > 0) {
-        XoaMH(t->right, mh);
+    if (strcmp(MAMH, t->mh.MAMH) < 0) {
+        t->left = XoaMH(t->left, MAMH);
+    } else if (strcmp(MAMH, t->mh.MAMH) > 0) {
+        t->right = XoaMH(t->right, MAMH);
     } else {
-        treeMH temp = t;
-        if (t->left == nullptr) {
-            t = t->right;
+        if (t->left == nullptr && t->right == nullptr) {
+            delete t;
+            return nullptr;
+        } else if (t->left == nullptr) {
+            treeMH temp = t->right;
+            delete t;
+            return temp;
         } else if (t->right == nullptr) {
-            t = t->left;
-        } else {
-            bool check = true;
-            t = t->left;
-            while (t->right != nullptr) {
-                t = t->right;
-                check = false;
+            treeMH temp = t->left;
+            delete t;
+            return temp;
+        } else if (t->left != nullptr && t->right != nullptr) {
+            //Node có 2 cây con -> tìm node nhỏ nhất bên phải để xóa
+            treeMH minRight = t->right;
+            while (minRight->left != nullptr) {
+                minRight = minRight->left;
             }
-            if (check) {
-                t->right = temp->right;
-            } else {
-                t->right = temp->right;
-                t->left = temp->left;
-            }
+            t->mh = minRight->mh;
+            t->right = XoaMH(t->right, minRight->mh.MAMH);
         }
-        delete temp;
     }
+    if (t == nullptr) return nullptr; //Nếu cây rồng thì không cần quay
+    return CheckandRotation(t);
 }
-
 void SuaMH (treeMH &t, MonHoc mh) {
     if (t == nullptr) {
         cout <<  "Khong tim thay mon hoc de sua" << endl;
@@ -371,4 +375,5 @@ int main () {
     system("pause");
     return 0;
 }
+
 
