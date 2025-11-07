@@ -1,108 +1,121 @@
-#include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/component/component.hpp>
+#include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/dom/elements.hpp>
-#include <iostream>
 #include <cstring>
+#include <iostream>
 
 using namespace std;
 using namespace ftxui;
 
+enum MenuState { MAIN_MENU, ADMIN_MENU, STUDENT_MENU, TEACHER_MENU };
+
 int main() {
     auto screen = ScreenInteractive::TerminalOutput();
+    MenuState menu_state = MAIN_MENU;
     char selected_role[20] = "";
 
-    // ==== MENU CHON ROLE ====
-    auto admin_btn = Button(" Admin ", [&] { strcpy(selected_role, "Admin"); screen.Exit(); });
-    auto teacher_btn = Button(" Teacher ", [&] { strcpy(selected_role, "Teacher"); screen.Exit(); });
-    auto student_btn = Button(" Student ", [&] { strcpy(selected_role, "Student"); screen.Exit(); });
+    // ===== MAIN MENU BUTTONS =====
+    auto admin_btn = Button(" Admin ", [&] { strcpy(selected_role, "Admin"); menu_state = ADMIN_MENU; });
+    auto student_btn = Button(" Student ", [&] { strcpy(selected_role, "Student"); menu_state = STUDENT_MENU; });
+    auto teacher_btn = Button(" Teacher ", [&] { strcpy(selected_role, "Teacher"); menu_state = TEACHER_MENU; });
     auto exit_btn = Button(" Exit ", [&] { strcpy(selected_role, "Exit"); screen.Exit(); });
 
-    auto role_container = Container::Vertical({
+    auto main_container = Container::Vertical({
         admin_btn,
-        teacher_btn,
         student_btn,
+        teacher_btn,
         exit_btn,
     });
 
-    auto role_layout = Renderer(role_container, [&] {
-        return vbox({
-            text("CHON VAI TRO DANG NHAP") | bold | center | color(Color::Red3),
-            separatorDouble(),
-            vbox({
-                admin_btn->Render(),
-                teacher_btn->Render(),
-                student_btn->Render(),
-                exit_btn->Render(),
-            }) | vcenter | center,
-            separator(),
-            text("Dung phim mui ten ↑ ↓ va Enter de chon") | dim | center,
-        }) | borderDouble | center;
+    // ===== BACK BUTTON (shared across menus) =====
+    auto back_btn_admin = Button(" ← Back ", [&] { menu_state = MAIN_MENU; strcpy(selected_role, ""); });
+    auto back_btn_student = Button(" ← Back ", [&] { menu_state = MAIN_MENU; strcpy(selected_role, ""); });
+    auto back_btn_teacher = Button(" ← Back ", [&] { menu_state = MAIN_MENU; strcpy(selected_role, ""); });
+
+    // ===== ADMIN MENU =====
+    auto admin_container = Container::Vertical({
+        Button(" Manage Subjects ", [] { cout << "Admin: Manage Subjects\n"; }),
+        Button(" Manage Classes ", [] { cout << "Admin: Manage Classes\n"; }),
+        Button(" Manage Students ", [] { cout << "Admin: Manage Students\n"; }),
+        Button(" Approve Auto Delete ", [] { cout << "Admin: Auto Delete\n"; }),
+        back_btn_admin,
     });
 
-    screen.Loop(role_layout);
-    if (strcmp(selected_role, "Exit") == 0)
-        return 0;
-
-    // ==== MENU CHINH THEO ROLE ====
-    char role_title[100];
-    sprintf(role_title, "MENU (%s)", selected_role);
-
-    // Cac nut chuc nang
-    auto btn_xemMH = Button("Xem danh sach mon hoc", [] { cout << "Xem danh sach mon hoc\n"; });
-    auto btn_dangky = Button("Dang ky / Huy dang ky lop", [] { cout << "Dang ky lop tin chi\n"; });
-    auto btn_nhapdiem = Button("Nhap diem", [] { cout << "Nhap diem\n"; });
-    auto btn_qlmon = Button("Them / Sua / Xoa mon hoc", [] { cout << "Quan ly mon hoc\n"; });
-    auto btn_qlsv = Button("Quan ly sinh vien", [] { cout << "Quan ly sinh vien\n"; });
-    auto btn_qlltc = Button("Tao / Huy lop tin chi", [] { cout << "Quan ly lop tin chi\n"; });
-    auto btn_autodel = Button("Duyet auto delete lop tin chi", [] { cout << "Auto delete\n"; });
-    auto btn_xembangdiem = Button("Xem bang diem tong ket", [] { cout << "Xem bang diem tong ket\n"; });
-    auto btn_exit = Button("Exit", [&] { screen.Exit(); });
-
-    // Container cho cac nut
-    auto menu_container = Container::Vertical({
-        btn_xemMH,
-        btn_dangky,
-        btn_nhapdiem,
-        btn_qlmon,
-        btn_qlsv,
-        btn_qlltc,
-        btn_autodel,
-        btn_xembangdiem,
-        btn_exit,
+    // ===== STUDENT MENU =====
+    auto student_container = Container::Vertical({
+        Button(" Register / Cancel Course ", [] { cout << "Student: Register\n"; }),
+        Button(" View Personal Transcript ", [] { cout << "Student: View Transcript\n"; }),
+        back_btn_student,
     });
 
-    // Renderer giao dien
-    auto menu_layout = Renderer(menu_container, [&] {
-        return vbox({
-            text(role_title) | bold | center | color(Color::Yellow3),
-            separatorDouble(),
-            vbox({
-                // Quyền hạn theo vai trò
-                (strcmp(selected_role, "Student") == 0 || strcmp(selected_role, "Teacher") == 0 || strcmp(selected_role, "Admin") == 0)
-                    ? btn_xemMH->Render() : filler(),
-                (strcmp(selected_role, "Student") == 0 || strcmp(selected_role, "Admin") == 0)
-                    ? btn_dangky->Render() : filler(),
-                (strcmp(selected_role, "Teacher") == 0 || strcmp(selected_role, "Admin") == 0)
-                    ? btn_nhapdiem->Render() : filler(),
-                (strcmp(selected_role, "Admin") == 0)
-                    ? btn_qlmon->Render() : filler(),
-                (strcmp(selected_role, "Admin") == 0)
-                    ? btn_qlsv->Render() : filler(),
-                (strcmp(selected_role, "Admin") == 0)
-                    ? btn_qlltc->Render() : filler(),
-                (strcmp(selected_role, "Admin") == 0)
-                    ? btn_autodel->Render() : filler(),
-                (strcmp(selected_role, "Student") == 0 || strcmp(selected_role, "Teacher") == 0 || strcmp(selected_role, "Admin") == 0)
-                    ? btn_xembangdiem->Render() : filler(),
-                btn_exit->Render(),
-            }) | vcenter | center,
-            separator(),
-            text("↑↓ de chon, Enter de thuc hien") | dim | center,
-        }) | borderDouble | center;
+    // ===== TEACHER MENU =====
+    auto teacher_container = Container::Vertical({
+        Button(" Input Grades ", [] { cout << "Teacher: Input Grades\n"; }),
+        Button(" View Class Students ", [] { cout << "Teacher: View Students\n"; }),
+        back_btn_teacher,
     });
 
-    screen.Loop(menu_layout);
+    // ===== RENDERER (UI for each screen) =====
+    auto layout = Renderer([&] {
+        if (menu_state == MAIN_MENU) {
+            return vbox({
+                       text("QUAN LY THEO HE TIN CHI") | bold | center | color(Color::Red3),
+                       separator(),
+                       main_container->Render(),
+                       separator(),
+                       text("Use Arrow Keys or Mouse to Select") | dim | center
+                   }) |
+                   borderDouble | center;
+        }
 
-    cout << "\nBan da dang nhap voi vai tro: " << selected_role << endl;
+        if (menu_state == ADMIN_MENU) {
+            return vbox({
+                       text("ADMIN MENU") | bold | center | color(Color::BlueLight),
+                       separator(),
+                       admin_container->Render(),
+                       separator(),
+                       text("Press ← Back to return") | dim | center
+                   }) |
+                   border | center;
+        }
+
+        if (menu_state == STUDENT_MENU) {
+            return vbox({
+                       text("STUDENT MENU") | bold | center | color(Color::Green),
+                       separator(),
+                       student_container->Render(),
+                       separator(),
+                       text("Press ← Back to return") | dim | center
+                   }) |
+                   border | center;
+        }
+
+        if (menu_state == TEACHER_MENU) {
+            return vbox({
+                       text("TEACHER MENU") | bold | center | color(Color::Cyan),
+                       separator(),
+                       teacher_container->Render(),
+                       separator(),
+                       text("Press ← Back to return") | dim | center
+                   }) |
+                   border | center;
+        }
+
+        return text("Invalid menu") | color(Color::Red);
+    });
+
+    // ===== ROUTE INPUT EVENTS TO CORRECT CONTAINER =====
+    auto main = CatchEvent(layout, [&](Event event) {
+        if (menu_state == MAIN_MENU) return main_container->OnEvent(event);
+        if (menu_state == ADMIN_MENU) return admin_container->OnEvent(event);
+        if (menu_state == STUDENT_MENU) return student_container->OnEvent(event);
+        if (menu_state == TEACHER_MENU) return teacher_container->OnEvent(event);
+        return false;
+    });
+
+    // ===== LOOP =====
+    screen.Loop(main);
+
+    cout << "\nYou selected: " << selected_role << endl;
     return 0;
 }
