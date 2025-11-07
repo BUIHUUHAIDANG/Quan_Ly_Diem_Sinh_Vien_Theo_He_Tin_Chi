@@ -6,116 +6,143 @@
 
 using namespace std;
 using namespace ftxui;
+// Trang thai menu
+enum MenuState { ROLE_SELECT, MAIN_MENU };
+enum Role { ROLE_NONE, ROLE_SINHVIEN, ROLE_GIANGVIEN, ROLE_ADMIN };
 
-enum MenuState { MAIN_MENU, ADMIN_MENU, STUDENT_MENU, TEACHER_MENU };
+
+struct Permission {
+    const char *action;
+    bool sinhvien;
+    bool giangvien;
+    bool admin;
+};
+
+// Quyen
+Permission permissionTable[] = {
+    {"Xem danh sach mon hoc",             true,   true,  true },
+    {"Them / cap nhat / xoa mon hoc",     false,  false, true },
+    {"Tao / cap nhat / huy lop sinh vien",false,  false, true },
+    {"In danh sach sinh vien",            true,   true,  true },
+    {"In bang diem trung binh",           true,   true,  true },
+    {"In bang diem tong ket",             true,   true,  true },
+    {"Tao / cap nhat / huy lop tin chi",  false,  false, true },
+    {"In danh sach sinh vien da dang ki", true,   true,  true },
+    {"In bang diem cua lop tin chi",      true,   true,  true },
+};
+int permissionCount = sizeof(permissionTable)/sizeof(permissionTable[0]);
+
+bool checkPermission(Role role, const char *action) {
+    for (int i = 0; i < permissionCount; i++) {
+        if (strcmp(permissionTable[i].action, action) == 0) {
+            if (role == ROLE_SINHVIEN) return permissionTable[i].sinhvien;
+            if (role == ROLE_GIANGVIEN) return permissionTable[i].giangvien;
+            if (role == ROLE_ADMIN)     return permissionTable[i].admin;
+        }
+    }
+    return false;
+}
 
 int main() {
     auto screen = ScreenInteractive::TerminalOutput();
-    MenuState menu_state = MAIN_MENU;
+
+    MenuState menu_state = ROLE_SELECT;
+    Role currentRole = ROLE_NONE;
     char selected_role[20] = "";
+    
+    auto btn_sv = Button("  Sinh vien ", [&] {
+        currentRole = ROLE_SINHVIEN;
+        strcpy(selected_role, "Sinh vien");
+        menu_state = MAIN_MENU;
+    });
+    auto btn_gv = Button("  Giang vien ", [&] {
+        currentRole = ROLE_GIANGVIEN;
+        strcpy(selected_role, "Giang vien");
+        menu_state = MAIN_MENU;
+    });
+    auto btn_ad = Button("  Admin ", [&] {
+        currentRole = ROLE_ADMIN;
+        strcpy(selected_role, "Admin");
+        menu_state = MAIN_MENU;
+    });
+    auto btn_exit = Button(" Thoat ", [&] { screen.Exit(); });
 
-    // ===== MAIN MENU BUTTONS =====
-    auto admin_btn = Button(" Admin ", [&] { strcpy(selected_role, "Admin"); menu_state = ADMIN_MENU; });
-    auto student_btn = Button(" Student ", [&] { strcpy(selected_role, "Student"); menu_state = STUDENT_MENU; });
-    auto teacher_btn = Button(" Teacher ", [&] { strcpy(selected_role, "Teacher"); menu_state = TEACHER_MENU; });
-    auto exit_btn = Button(" Exit ", [&] { strcpy(selected_role, "Exit"); screen.Exit(); });
-
-    auto main_container = Container::Vertical({
-        admin_btn,
-        student_btn,
-        teacher_btn,
-        exit_btn,
+    auto role_container = Container::Vertical({
+        btn_sv, btn_gv, btn_ad, btn_exit
     });
 
-    // ===== BACK BUTTON (shared across menus) =====
-    auto back_btn_admin = Button(" ← Back ", [&] { menu_state = MAIN_MENU; strcpy(selected_role, ""); });
-    auto back_btn_student = Button(" ← Back ", [&] { menu_state = MAIN_MENU; strcpy(selected_role, ""); });
-    auto back_btn_teacher = Button(" ← Back ", [&] { menu_state = MAIN_MENU; strcpy(selected_role, ""); });
-
-    // ===== ADMIN MENU =====
-    auto admin_container = Container::Vertical({
-        Button(" Manage Subjects ", [] { cout << "Admin: Manage Subjects\n"; }),
-        Button(" Manage Classes ", [] { cout << "Admin: Manage Classes\n"; }),
-        Button(" Manage Students ", [] { cout << "Admin: Manage Students\n"; }),
-        Button(" Approve Auto Delete ", [] { cout << "Admin: Auto Delete\n"; }),
-        back_btn_admin,
+    
+    // MENU CHINH (TUY THEO ROLE)
+    
+    auto menu_container = Container::Vertical({});
+    auto back_btn = Button(" ← Quay lai ", [&] {
+        menu_state = ROLE_SELECT;
+        currentRole = ROLE_NONE;
+        strcpy(selected_role, "");
+        menu_container->DetachAllChildren();
     });
 
-    // ===== STUDENT MENU =====
-    auto student_container = Container::Vertical({
-        Button(" Register / Cancel Course ", [] { cout << "Student: Register\n"; }),
-        Button(" View Personal Transcript ", [] { cout << "Student: View Transcript\n"; }),
-        back_btn_student,
-    });
+    // Render menu dua theo role
+    auto updateMenuByRole = [&]() {
+        menu_container->DetachAllChildren();
+        for (int i = 0; i < permissionCount; i++) {
+            if (checkPermission(currentRole, permissionTable[i].action)) {
+                menu_container->Add(Button(permissionTable[i].action, [=] {
+                    cout << "[Thuc hien]: " << permissionTable[i].action << endl;
+                }));
+            }
+        }
+        menu_container->Add(back_btn);
+    };
 
-    // ===== TEACHER MENU =====
-    auto teacher_container = Container::Vertical({
-        Button(" Input Grades ", [] { cout << "Teacher: Input Grades\n"; }),
-        Button(" View Class Students ", [] { cout << "Teacher: View Students\n"; }),
-        back_btn_teacher,
-    });
-
-    // ===== RENDERER (UI for each screen) =====
+    
+    // RENDERER
+    
     auto layout = Renderer([&] {
+        if (menu_state == ROLE_SELECT) {
+            return vbox({
+                       text("CHON VAI TRO DANG NHAP") | bold | center | color(Color::Yellow),
+                       separator(),
+                       role_container->Render(),
+                       separator(),
+                       text("Dung phim mui ten ↑ ↓ va Enter de chon") | dim | center
+                   }) | borderDouble | center;
+        }
+
         if (menu_state == MAIN_MENU) {
+            updateMenuByRole();
             return vbox({
-                       text("QUAN LY THEO HE TIN CHI") | bold | center | color(Color::Red3),
-                       separator(),
-                       main_container->Render(),
-                       separator(),
-                       text("Use Arrow Keys or Mouse to Select") | dim | center
-                   }) |
-                   borderDouble | center;
-        }
+                text("🏫 QUAN LY THEO HE TIN CHI 🏫") | bold | center | color(Color::Red3),
+                hbox({
+                   text("Vai tro: ") | bold,
+                   text(selected_role) | color(Color::Green)
+               }) | center,
+               separator(),
+               menu_container->Render(),
+               separator(),
+               text("← Chon Quay lai de doi vai tro hoac thoat") | dim | center
+           }) | border | center;
+}
 
-        if (menu_state == ADMIN_MENU) {
-            return vbox({
-                       text("ADMIN MENU") | bold | center | color(Color::BlueLight),
-                       separator(),
-                       admin_container->Render(),
-                       separator(),
-                       text("Press ← Back to return") | dim | center
-                   }) |
-                   border | center;
-        }
-
-        if (menu_state == STUDENT_MENU) {
-            return vbox({
-                       text("STUDENT MENU") | bold | center | color(Color::Green),
-                       separator(),
-                       student_container->Render(),
-                       separator(),
-                       text("Press ← Back to return") | dim | center
-                   }) |
-                   border | center;
-        }
-
-        if (menu_state == TEACHER_MENU) {
-            return vbox({
-                       text("TEACHER MENU") | bold | center | color(Color::Cyan),
-                       separator(),
-                       teacher_container->Render(),
-                       separator(),
-                       text("Press ← Back to return") | dim | center
-                   }) |
-                   border | center;
-        }
-
-        return text("Invalid menu") | color(Color::Red);
+        return text("Trang thai khong hop le") | color(Color::Red);
     });
 
-    // ===== ROUTE INPUT EVENTS TO CORRECT CONTAINER =====
+    
+    // Route su kien
+    
     auto main = CatchEvent(layout, [&](Event event) {
-        if (menu_state == MAIN_MENU) return main_container->OnEvent(event);
-        if (menu_state == ADMIN_MENU) return admin_container->OnEvent(event);
-        if (menu_state == STUDENT_MENU) return student_container->OnEvent(event);
-        if (menu_state == TEACHER_MENU) return teacher_container->OnEvent(event);
+        if (menu_state == ROLE_SELECT)
+            return role_container->OnEvent(event);
+        else if (menu_state == MAIN_MENU)
+            return menu_container->OnEvent(event);
         return false;
     });
 
-    // ===== LOOP =====
+    
+    // LOOP
+    
     screen.Loop(main);
 
-    cout << "\nYou selected: " << selected_role << endl;
+    cout << "\nBan da chon vai tro: " << selected_role << endl;
     return 0;
 }
