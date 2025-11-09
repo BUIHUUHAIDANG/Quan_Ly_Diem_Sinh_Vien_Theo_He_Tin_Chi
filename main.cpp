@@ -16,10 +16,7 @@ struct LopTinChi {
     int Nhom;
     int sosvmin, sosvmax;
     bool huylop;
-    LopTinChi() {
-        MALOPTC = 0; MAMH[0]=0; NienKhoa[0]=0;
-        Hocky=0; Nhom=0; sosvmin=0; sosvmax=0; huylop=false;
-    }
+    LopTinChi() { MALOPTC = 0; MAMH[0]=0; NienKhoa[0]=0; Hocky=0; Nhom=0; sosvmin=0; sosvmax=0; huylop=false; }
 };
 
 struct nodeLTC {
@@ -34,35 +31,21 @@ PTRLTC createNodeLopTinChi(LopTinChi data){ return new nodeLTC(data); }
 void insertLopTinChi(PTRLTC &First, LopTinChi data){
     PTRLTC p=createNodeLopTinChi(data);
     if(!First) First=p;
-    else {
-        PTRLTC tmp=First;
-        while(tmp->next) tmp=tmp->next;
-        tmp->next=p;
-    }
+    else { PTRLTC tmp=First; while(tmp->next) tmp=tmp->next; tmp->next=p; }
 }
 bool isEmpty(PTRLTC &First){ return First==nullptr; }
-int deleteFirst(PTRLTC &First){
-    if(isEmpty(First)) return 0;
-    PTRLTC p=First; First=p->next; delete p; return 1;
-}
-int deleteAfter(PTRLTC p){
-    if(!p || !p->next) return 0;
-    PTRLTC q=p->next; p->next=q->next; delete q; return 1;
-}
+int deleteFirst(PTRLTC &First){ if(isEmpty(First)) return 0; PTRLTC p=First; First=p->next; delete p; return 1; }
+int deleteAfter(PTRLTC p){ if(!p || !p->next) return 0; PTRLTC q=p->next; p->next=q->next; delete q; return 1; }
 int deleteLopTinChi(PTRLTC &First, int MALTC){
     if(isEmpty(First)) return 0;
     if(First->ltc.MALOPTC==MALTC) return deleteFirst(First);
-    PTRLTC p;
-    for(p=First; p->next && p->next->ltc.MALOPTC!=MALTC; p=p->next);
+    PTRLTC p; for(p=First; p->next && p->next->ltc.MALOPTC!=MALTC; p=p->next);
     if(p->next) return deleteAfter(p);
     return 0;
 }
 PTRLTC searchLopTinChi(PTRLTC &First,int MALTC){
     PTRLTC p=First;
-    while(p){
-        if(p->ltc.MALOPTC==MALTC) return p;
-        p=p->next;
-    }
+    while(p){ if(p->ltc.MALOPTC==MALTC) return p; p=p->next; }
     return nullptr;
 }
 void editLopTinChi(PTRLTC &First,int MALTC){
@@ -89,15 +72,24 @@ void showLopTinChi(PTRLTC &First){
         p=p->next;
     }
 }
+LopTinChi nhapLopTinChi() {
+    LopTinChi ltc;
+    cout << "\n=== THEM LOP TIN CHI ===\n";
+    cout << "Nhap Ma Lop TC: "; cin >> ltc.MALOPTC; cin.ignore();
+    cout << "Nhap Ma MH: "; cin.getline(ltc.MAMH, 11);
+    cout << "Nhap Nien Khoa: "; cin.getline(ltc.NienKhoa, 10);
+    cout << "Nhap Hoc Ky: "; cin >> ltc.Hocky; cin.ignore();
+    cout << "Nhap Nhom: "; cin >> ltc.Nhom; cin.ignore();
+    cout << "Nhap svmin svmax: "; cin >> ltc.sosvmin >> ltc.sosvmax; cin.ignore();
+    ltc.huylop = false;
+    return ltc;
+}
 
 // ----------------- Menu FTXUI -----------------
 enum MenuState { ROLE_SELECT, MAIN_MENU, LTC_MENU };
 enum Role { ROLE_NONE, ROLE_SINHVIEN, ROLE_GIANGVIEN, ROLE_ADMIN };
 
-struct Permission {
-    const char* action;
-    bool sinhvien, giangvien, admin;
-};
+struct Permission { const char* action; bool sinhvien, giangvien, admin; };
 Permission permissionTable[] = {
     {"Xem danh sach mon hoc", true,true,true},
     {"Them / cap nhat / xoa mon hoc", false,false,true},
@@ -121,11 +113,11 @@ bool checkPermission(Role role, const char* action){
     return false;
 }
 
-int main(){
-    auto screen=ScreenInteractive::TerminalOutput();
-    MenuState menu_state=ROLE_SELECT;
-    Role currentRole=ROLE_NONE;
-    char selected_role[20]="";
+int main() {
+    auto screen = ScreenInteractive::TerminalOutput();
+    MenuState menu_state = ROLE_SELECT;
+    Role currentRole = ROLE_NONE;
+    char selected_role[20] = "";
 
     PTRLTC dslopTC; initializeLTC(dslopTC);
 
@@ -134,7 +126,6 @@ int main(){
     auto btn_gv=Button("Giang vien",[&]{ currentRole=ROLE_GIANGVIEN; strcpy(selected_role,"Giang vien"); menu_state=MAIN_MENU;});
     auto btn_ad=Button("Admin",[&]{ currentRole=ROLE_ADMIN; strcpy(selected_role,"Admin"); menu_state=MAIN_MENU;});
     auto btn_exit=Button("Thoat",[&]{ screen.Exit(); });
-
     auto role_container=Container::Vertical({btn_sv,btn_gv,btn_ad,btn_exit});
 
     // --- Menu chính ---
@@ -142,59 +133,37 @@ int main(){
     auto back_btn=Button("← Quay lai",[&]{ menu_state=ROLE_SELECT; currentRole=ROLE_NONE; strcpy(selected_role,""); menu_container->DetachAllChildren(); });
 
     // --- Menu lớp tín chỉ ---
-   auto btn_themLTC = Button("➕ Them Lop Tin Chi",[&]{
-    screen.Suspend();  // Tạm dừng giao diện FTXUI
-    LopTinChi ltc;
-    cout << "\n=== THEM LOP TIN CHI ===\n";
-    cout << "Nhap Ma Lop TC: "; cin >> ltc.MALOPTC; cin.ignore();
-    cout << "Nhap Ma MH: "; cin.getline(ltc.MAMH, 11);
-    cout << "Nhap Nien Khoa: "; cin.getline(ltc.NienKhoa, 10);
-    cout << "Nhap Hoc Ky: "; cin >> ltc.Hocky; cin.ignore();
-    cout << "Nhap Nhom: "; cin >> ltc.Nhom; cin.ignore();
-    cout << "Nhap svmin svmax: "; cin >> ltc.sosvmin >> ltc.sosvmax; cin.ignore();
-    ltc.huylop = false;
-    insertLopTinChi(dslopTC, ltc);
-    cout << "✅ Them thanh cong!\n";
-    cout << "Nhan Enter de quay lai giao dien...";
-    cin.get();
-    screen.Resume();   // Quay lại FTXUI
-});
+    auto btn_themLTC = Button("➕ Them Lop Tin Chi",[&]{
+        screen.Clear();
+        LopTinChi ltc = nhapLopTinChi();
+        insertLopTinChi(dslopTC, ltc);
+        cout << "✅ Them thanh cong! Nhan Enter de tiep tuc...";
+        cin.get();
+    });
 
-auto btn_xoaLTC = Button("🗑 Xoa Lop Tin Chi",[&]{
-    screen.Suspend();
-    cout << "\n=== XOA LOP TIN CHI ===\n";
-    int malop; cout << "Nhap MALOPTC can xoa: "; cin >> malop; cin.ignore();
-    if (deleteLopTinChi(dslopTC, malop)) cout << "🗑 Xoa thanh cong!\n";
-    else cout << "❌ Khong tim thay lop tin chi co ma " << malop << endl;
-    cout << "Nhan Enter de quay lai giao dien...";
-    cin.get();
-    screen.Resume();
-});
+    auto btn_xoaLTC = Button("🗑 Xoa Lop Tin Chi",[&]{
+        screen.Clear();
+        int malop; cout << "Nhap MALOPTC can xoa: "; cin >> malop; cin.ignore();
+        if(deleteLopTinChi(dslopTC, malop)) cout << "🗑 Xoa thanh cong!\n";
+        else cout << "❌ Khong tim thay lop tin chi co ma " << malop << endl;
+        cout << "Nhan Enter de tiep tuc..."; cin.get();
+    });
 
-auto btn_suaLTC = Button("✏ Hieu Chinh Lop Tin Chi",[&]{
-    screen.Suspend();
-    cout << "\n=== HIEU CHINH LOP TIN CHI ===\n";
-    int malop; cout << "Nhap MALOPTC can hieu chinh: "; cin >> malop; cin.ignore();
-    editLopTinChi(dslopTC, malop);
-    cout << "Nhan Enter de quay lai giao dien...";
-    cin.get();
-    screen.Resume();
-});
+    auto btn_suaLTC = Button("✏ Hieu Chinh Lop Tin Chi",[&]{
+        screen.Clear();
+        int malop; cout << "Nhap MALOPTC can hieu chinh: "; cin >> malop; cin.ignore();
+        editLopTinChi(dslopTC, malop);
+        cout << "Nhan Enter de tiep tuc..."; cin.get();
+    });
 
-auto btn_inLTC = Button("📜 Hien Thi Danh Sach",[&]{
-    screen.Suspend();
-    cout << "\n=== DANH SACH LOP TIN CHI ===\n";
-    showLopTinChi(dslopTC);
-    cout << "Nhan Enter de quay lai giao dien...";
-    cin.get();
-    screen.Resume();
-});
+    auto btn_inLTC = Button("📜 Hien Thi Danh Sach",[&]{
+        screen.Clear();
+        showLopTinChi(dslopTC);
+        cout << "Nhan Enter de tiep tuc..."; cin.get();
+    });
 
-auto btn_backLTC = Button("← Quay lai",[&]{ menu_state = MAIN_MENU; });
-// Gom 5 nút này lại trong container:
-auto ltc_menu = Container::Vertical({
-    btn_themLTC, btn_xoaLTC, btn_suaLTC, btn_inLTC, btn_backLTC
-});
+    auto btn_backLTC = Button("← Quay lai",[&]{ menu_state = MAIN_MENU; });
+    auto ltc_menu = Container::Vertical({btn_themLTC, btn_xoaLTC, btn_suaLTC, btn_inLTC, btn_backLTC});
 
     // --- Cập nhật menu theo role ---
     auto updateMenuByRole = [&](){
