@@ -3,37 +3,11 @@
 #include <unistd.h>
 #include <cstdio>
 #include <cstring>
+#include "console.h"
 using namespace std;
-
-// =================== MÔ PHỎNG CONIO.H ===================
-void gotoxy(int x, int y) {
-    printf("\033[%d;%dH", y, x);
-}
-
-void clrscr() {
-    printf("\033[2J\033[1;1H");
-}
-
-void textcolor(int color) {
-    printf("\033[1;%dm", 30 + color); // 0=đen, 1=đỏ, 2=lục, 3=vàng, 4=xanh dương...
-}
-
-int getch() {
-    struct termios oldt, newt;
-    int ch;
-    tcgetattr(STDIN_FILENO, &oldt);
-    newt = oldt;
-    newt.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-    ch = getchar();
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-    return ch;
-}
-// =======================================================
-
 void drawMenu(const char *title, const char *role, const char *options[], int n, int highlight) {
     clrscr();
-    textcolor(7); // trắng
+    textcolor(7); 
     gotoxy(20, 2);
     cout << title;
     gotoxy(5, 4);
@@ -43,9 +17,9 @@ void drawMenu(const char *title, const char *role, const char *options[], int n,
         gotoxy(8, 6 + i * 2);
         if (i == highlight) {
             textcolor(0);
-            printf("\033[47m"); // nền trắng
+            printf("\033[47m"); 
             cout << "> " << options[i] << " <";
-            printf("\033[0m"); // reset
+            printf("\033[0m"); 
             textcolor(7);
         } else {
             cout << "  " << options[i];
@@ -72,34 +46,146 @@ int menu(const char *title, const char *role, const char *options[], int n) {
 
 int main() {
     const char *roles[] = {"Sinh vien", "Giang vien", "Admin", "Thoat"};
-    const char *features[] = {
+    const char *features_sinhvien[] = {
         "Xem danh sach mon hoc",
         "In danh sach sinh vien",
         "In bang diem trung binh",
         "In bang diem tong ket",
+        "In danh sach sinh vien da dang ki",// cua Dang 
+        "In bang diem cua lop tin chi",
+        "← Quay lai"
+    };
+    const char *features_giangVien[] = {
+        "Xem danh sach mon hoc",
+        "In danh sach sinh vien",// cua Dang -> DSSV theo alphabet
+        "In bang diem trung binh",
+        "In bang diem tong ket",
+        "In danh sach sinh vien da dang ki", // cua Dang
+        "In bang diem cua lop tin chi",
+        "← Quay lai"
+    };
+    const char *features_admin[] = {
+        "Xem danh sach mon hoc",
+        "Them/cap nhat/xoa mon hoc",
+        "Tao/cap nhat/huy lop sinh vien",// cua Dang (nhap lop -> tu hien ra ma Lop-> nhap SV) (detail_feat_3)
+        "In danh sach sinh vien",
+        "In bang diem trung binh",
+        "In bang diem tong ket",
+        "Tao/cap nhat/huy lop tin chi",// cua Dang
         "In danh sach sinh vien da dang ki",
         "In bang diem cua lop tin chi",
         "← Quay lai"
     };
 
-    int n_roles = 4, n_features = 7;
+
+    int n_roles = 4, n_features_sinhvien = 7,n_features_giangvien=7,n_features_admin=10;
 
     while (1) {
         int r = menu("CHON VAI TRO DANG NHAP", "", roles, n_roles);
-        if (r == 3) break; // Thoát
+        if (r == 3) break; 
 
         const char *role = roles[r];
+        if(r==0){
         while (1) {
-            int f = menu("📚 QUAN LY HE TIN CHI 📚", role, features, n_features);
-            if (f == n_features - 1) break;
-
+            int f = menu(" QUAN LY HE TIN CHI ", role, features_sinhvien, n_features_sinhvien);
+            if (f == n_features_sinhvien - 1) break;
+            
             clrscr();
             gotoxy(10, 10);
-            cout << "Ban da chon: " << features[f];
+            cout << "Ban da chon: " << features_sinhvien[f];
             gotoxy(10, 12);
             cout << "(Nhan phim bat ky de quay lai...)";
             getch();
-        }
+        }}
+        if(r==1){
+        while (1) {
+            int f = menu(" QUAN LY HE TIN CHI ", role, features_giangVien, n_features_giangvien);
+            if (f == n_features_giangvien - 1) break;
+
+            clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_giangVien[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+        }}
+        if(r==2){
+        while (1) {
+            int f = menu(" QUAN LY HE TIN CHI ", role, features_admin, n_features_admin);
+            if (f == n_features_admin - 1) break;
+            if(f==0){
+                clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_admin[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+            }
+            if(f==1){
+                clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_admin[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+            }
+            if(f==2){
+                clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_admin[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+            }
+            if(f==3){
+                clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_admin[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+            }
+            if(f==4){
+                clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_admin[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+            }
+            if(f==5){
+                clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_admin[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+            }
+            if(f==6){
+                clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_admin[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+            }
+            if(f==7){
+                clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_admin[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+            }
+            if(f==8){
+                clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_admin[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+            }
+        }}
     }
 
     clrscr();
