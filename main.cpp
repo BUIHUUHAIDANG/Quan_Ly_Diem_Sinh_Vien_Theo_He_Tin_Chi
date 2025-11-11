@@ -1,75 +1,197 @@
-#include<iostream>
+#include <iostream>
+#include <termios.h>
+#include <unistd.h>
+#include <cstdio>
+#include <cstring>
+#include "console.h"
+#include "MonHoc.h"
+#include "LopSinhVien.h"
 using namespace std;
+void drawMenu(const char *title, const char *role, const char *options[], int n, int highlight) {
+    clrscr();
+    textcolor(7); 
+    gotoxy(20, 2);
+    cout << title;
+    gotoxy(5, 4);
+    cout << "Vai tro: " << role;
 
-const int MAX_LOPSV = 10000;
-struct MonHoc {
- char MAMH[11] ; char TENMH[51]; 
- int STCLT ,STCTH; int height;
-};
-struct nodeMH {
- MonHoc mh;
- nodeMH *left, *right;
-};
-typedef nodeMH* treeMH;
+    for (int i = 0; i < n; i++) {
+        gotoxy(8, 6 + i * 2);
+        if (i == highlight) {
+            textcolor(0);
+            printf("\033[47m"); 
+            cout << "> " << options[i] << " <";
+            printf("\033[0m"); 
+            textcolor(7);
+        } else {
+            cout << "  " << options[i];
+        }
+    }
+    gotoxy(5, 6 + n * 2);
+    cout << "(Dung phim W/S de di chuyen, Enter de chon)";
+}
 
-struct SinhVien {
- char MASV [16]; char HO[51], ; char TEN[11];
- char  PHAI[4]; char SODT[16]; char Email [50];
+int menu(const char *title, const char *role, const char *options[], int n) {
+    int highlight = 0;
+    while (true) {
+        drawMenu(title, role, options, n, highlight);
+        int ch = getch();
 
-};
-struct nodeSV {
- SinhVien sv;
- nodeSV *next;
-};
-typedef nodeSV* PTRSV;
+        if (ch == 'w' || ch == 'W')
+            highlight = (highlight - 1 + n) % n;
+        else if (ch == 's' || ch == 'S')
+            highlight = (highlight + 1) % n;
+        else if (ch == 10) // Enter
+            return highlight;
+    }
+}
 
- struct LopSV  {
- char MALOP[16] ; char TENLOP[51];
- PTRSV FirstSV=NULL; 
-};
-struct DS_LOPSV {
- int n=0;
- LopSV* nodes[MAX_LOPSV];
-};
- struct DangKy {
-  char MASV[16] ; float DIEM; 
- };
- 
- struct nodeDK {
- DangKy dk;
- nodeDK *next;
-};
-typedef nodeDK* PTRDK;
-
- struct LopTinChi {
-  int MALOPTC ;
-  char  MAMH[11];
-  char NienKhoa[10];  
-  int Hocky, Nhom,sosvmin, sosvmax;
-  bool huylop = false;
-  PTRDK dssvdk=NULL; 
- };
- 
- struct nodeLTC {
-  LopTinChi ltc;
-  nodeLTC *next;
- };
-
-typedef nodeLTC* PTRLTC;
-
- int main(){
-  treeMH dsmh=NULL;
-    PTRLTC dsltc=NULL; 
-  DS_LOPSV dslopsv;
- }
-
-
-
-
+int main() {
+    const char *roles[] = {"Sinh vien", "Giang vien", "Admin", "Thoat"};
+    const char *features_sinhvien[] = {
+        "Xem danh sach mon hoc",
+        "In danh sach sinh vien",
+        "In bang diem trung binh",
+        "In bang diem tong ket",
+        "In danh sach sinh vien da dang ki",// cua Dang 
+        "In bang diem cua lop tin chi",
+        "← Quay lai"
+    };
+    const char *features_giangVien[] = {
+        "Xem danh sach mon hoc",
+        "In danh sach sinh vien",// cua Dang -> DSSV theo alphabet
+        "In bang diem trung binh",
+        "In bang diem tong ket",
+        "In danh sach sinh vien da dang ki", // cua Dang
+        "In bang diem cua lop tin chi",
+        "← Quay lai"
+    };
+    const char *features_admin[] = {
+        "Xem danh sach mon hoc",
+        "Them/cap nhat/xoa mon hoc",
+        "Tao/cap nhat/huy lop sinh vien",// cua Dang (nhap lop -> tu hien ra ma Lop-> nhap SV) (detail_feat_3)
+        "In danh sach sinh vien",
+        "In bang diem trung binh",
+        "In bang diem tong ket",
+        "Tao/cap nhat/huy lop tin chi",// cua Dang
+        "In danh sach sinh vien da dang ki",
+        "In bang diem cua lop tin chi",
+        "← Quay lai"
+    };
 
 
+    int n_roles = 4, n_features_sinhvien = 7,n_features_giangvien=7,n_features_admin=10;
 
+    while (1) {
+        int r = menu("CHON VAI TRO DANG NHAP", "", roles, n_roles);
+        if (r == 3) break; 
 
+        const char *role = roles[r];
+        if(r==0){
+        while (1) {
+            int f = menu(" QUAN LY HE TIN CHI ", role, features_sinhvien, n_features_sinhvien);
+            if (f == n_features_sinhvien - 1) break;
+            
+            clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_sinhvien[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+        }}
+        if(r==1){
+        while (1) {
+            int f = menu(" QUAN LY HE TIN CHI ", role, features_giangVien, n_features_giangvien);
+            if (f == n_features_giangvien - 1) break;
 
+            clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_giangVien[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+        }}
+        if(r==2){
+        while (1) {
+            int f = menu(" QUAN LY HE TIN CHI ", role, features_admin, n_features_admin);
+            if (f == n_features_admin - 1) break;
+            if(f==0){
+                clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_admin[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+            }
+            if(f==1){
+                clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_admin[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+            }
+            if(f==2){
+                clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_admin[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+            }
+            if(f==3){
+                clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_admin[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+            }
+            if(f==4){
+                clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_admin[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+            }
+            if(f==5){
+                clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_admin[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+            }
+            if(f==6){
+                clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_admin[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+            }
+            if(f==7){
+                clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_admin[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+            }
+            if(f==8){
+                clrscr();
+            gotoxy(10, 10);
+            cout << "Ban da chon: " << features_admin[f];
+            gotoxy(10, 12);
+            cout << "(Nhan phim bat ky de quay lai...)";
+            getch();
+            }
+        }}
+    }
 
-
+    clrscr();
+    gotoxy(10, 10);
+    cout << "Tam biet!\n";
+    return 0;
+}
