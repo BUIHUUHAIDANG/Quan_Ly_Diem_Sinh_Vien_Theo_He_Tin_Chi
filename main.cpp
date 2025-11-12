@@ -11,7 +11,8 @@ using namespace std;
 // === Draw Menu ===
 void drawMenu(const char *title, const char *role, const char *options[], int n, int highlight) {
     clrscr();
-    SetColor(7); 
+    SetBGColor(0);  // black background
+    SetColor(7);    // white text
     gotoxy(20, 2);
     SetBold(true);
     SetColor(4);
