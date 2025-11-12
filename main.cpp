@@ -1,9 +1,9 @@
 #include <iostream>
-#include <conio.h>      // for _getch()
-#include <windows.h>    // for gotoxy, textcolor, etc.
+#include <conio.h>      
+#include <windows.h>    
 #include <cstdio>
 #include <cstring>
-#include "mylib.h"    // your own console helper
+#include "mylib.h"    
 #include "MonHoc.h"
 #include "LopSinhVien.h"
 
