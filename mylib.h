@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <string.h>
 using namespace std;
 
 // ========== Constants ==========
@@ -13,20 +14,24 @@ using namespace std;
 #define ESC   27
 #define PASSWORD "abcdef"
 
-// ========== Utility ==========
-inline bool isVSCodeTerminal() {
-    // VS Code sets the TERM_PROGRAM environment variable
-    char* term = getenv("TERM_PROGRAM");
-    return term && strstr(term, "vscode");
+// ========== Environment Detection ==========
+// Detect if ANSI escape codes are supported (Linux, WSL, Git Bash, VS Code ConPTY)
+inline bool useANSI() {
+    char* term = getenv("TERM");
+    char* vscode = getenv("TERM_PROGRAM");
+    char* conemu = getenv("ConEmuPID");
+    char* wt = getenv("WT_SESSION");
+    return (term && strstr(term, "xterm")) ||
+           (vscode && strstr(vscode, "vscode")) ||
+           conemu || wt;
 }
 
 // ========== Cursor Control ==========
 inline void gotoxy(short x, short y) {
-    if (isVSCodeTerminal()) {
-        // ANSI cursor move (works in VS Code)
+    if (useANSI()) {
         printf("\x1b[%d;%dH", y + 1, x + 1);
+        fflush(stdout);
     } else {
-        // Windows API (for Dev-C++)
         HANDLE hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
         COORD pos = { x, y };
         SetConsoleCursorPosition(hConsoleOutput, pos);
@@ -34,79 +39,78 @@ inline void gotoxy(short x, short y) {
 }
 
 // ========== Clear Screen ==========
+// Always uses Windows API clear (more reliable in all Windows terminals)
 inline void clrscr() {
-    if (isVSCodeTerminal()) {
-        // ANSI clear screen
+    // If ANSI environment (Linux/WSL/Git Bash) → use ANSI clear
+    if (useANSI()) {
         printf("\x1b[2J\x1b[H");
         fflush(stdout);
-    } else {
-        // Windows API full buffer clear
-        HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-        CONSOLE_SCREEN_BUFFER_INFO info;
-        DWORD cells, written;
-        COORD home = {0, 0};
-        if (!GetConsoleScreenBufferInfo(hConsole, &info)) return;
-        cells = info.dwSize.X * info.dwSize.Y;
-        FillConsoleOutputCharacter(hConsole, ' ', cells, home, &written);
-        FillConsoleOutputAttribute(hConsole, info.wAttributes, cells, home, &written);
-        SetConsoleCursorPosition(hConsole, home);
+        return;
     }
+
+    // Otherwise use Windows native clear
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO info;
+    DWORD cells, written;
+    COORD home = {0, 0};
+    if (!GetConsoleScreenBufferInfo(hConsole, &info)) return;
+    cells = info.dwSize.X * info.dwSize.Y;
+    FillConsoleOutputCharacter(hConsole, ' ', cells, home, &written);
+    FillConsoleOutputAttribute(hConsole, info.wAttributes, cells, home, &written);
+    SetConsoleCursorPosition(hConsole, home);
 }
 
 // ========== Color Control ==========
 inline void SetColor(WORD color) {
-    if (isVSCodeTerminal()) {
-        // ANSI foreground color (0–7 base colors)
-        printf("\x1b[3%dm", color % 8);
+    if (useANSI()) {
+        printf("\x1b[%dm", 30 + (color % 8));
+        fflush(stdout);
     } else {
-        // Windows API
         HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
         CONSOLE_SCREEN_BUFFER_INFO info;
         GetConsoleScreenBufferInfo(hConsole, &info);
         WORD attrs = info.wAttributes;
-        color &= 0x000F;
         attrs &= 0xFFF0;
-        attrs |= color;
+        attrs |= (color & 0x000F);
         SetConsoleTextAttribute(hConsole, attrs);
     }
 }
 
 inline void SetBGColor(WORD color) {
-    if (isVSCodeTerminal()) {
-        // ANSI background color (0–7)
-        printf("\x1b[4%dm", color % 8);
+    if (useANSI()) {
+        printf("\x1b[%dm", 40 + (color % 8));
+        fflush(stdout);
     } else {
-        // Windows API
         HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
         CONSOLE_SCREEN_BUFFER_INFO info;
         GetConsoleScreenBufferInfo(hConsole, &info);
         WORD attrs = info.wAttributes;
-        color &= 0x000F;
-        color <<= 4;
         attrs &= 0xFF0F;
-        attrs |= color;
+        attrs |= ((color & 0x000F) << 4);
         SetConsoleTextAttribute(hConsole, attrs);
     }
 }
 
 inline void ResetColor() {
-    if (isVSCodeTerminal())
+    if (useANSI()) {
         printf("\x1b[0m");
-    else
-        SetColor(7);
-}
-
-void drawLine(int x, int y, int len) {
-    gotoxy(x, y);
-    for (int i = 0; i < len; i++) cout << "-";
-}
-inline void SetBold(bool enable = true) {
-    if (isVSCodeTerminal()) {
-        printf(enable ? "\x1b[1m" : "\x1b[22m");
+        fflush(stdout);
     } else {
-        // old cmd.exe fallback (no real bold)
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
     }
 }
 
+inline void SetBold(bool enable = true) {
+    if (useANSI()) {
+        printf(enable ? "\x1b[1m" : "\x1b[22m");
+        fflush(stdout);
+    }
+}
+
+// ========== Line Drawing ==========
+inline void drawLine(int x, int y, int len) {
+    gotoxy(x, y);
+    for (int i = 0; i < len; i++) cout << "-";
+}
 
 #endif
