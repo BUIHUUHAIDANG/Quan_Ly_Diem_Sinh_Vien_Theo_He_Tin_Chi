@@ -77,7 +77,7 @@ int main() {
     const char *features_giangVien[] = {
         "Xem danh sach mon hoc",
         "Xem danh sach sinh vien",
-        "Xem danh sach lop tin chi",
+        "Xem danh sach lop tin chi phu trach",
         "Nhap diem/ Sua diem cua sinh vien",
         "Xem bang diem trung binh",
         "Xem bang diem tong ket",
@@ -85,6 +85,7 @@ int main() {
     };
     const char *features_admin[] = {
         "Xem danh sach mon hoc",
+        "Xem danh sach lop tin chi",
         "Them/cap nhat/xoa mon hoc",
         "Them/cap nhat/huy lop tin chi",
         "Xem danh sach sinh vien da dang ki lop tin chi",
