@@ -68,32 +68,32 @@ int main() {
     const char *roles[] = {"Sinh vien", "Giang vien", "Admin", "Thoat"};
     const char *features_sinhvien[] = {
         "Xem danh sach mon hoc",
-        "In danh sach sinh vien",
-        "In bang diem trung binh",
-        "In bang diem tong ket",
-        "In danh sach sinh vien da dang ki",
-        "In bang diem cua lop tin chi",
+        "Dang ki/Huy dang ki lop tin chi",
+        "Xem danh sach lop tin chi da dang ky",
+        "Xem diem trung binh",
+        "Xem diem tong ket",
         "← Quay lai"
     };
     const char *features_giangVien[] = {
         "Xem danh sach mon hoc",
-        "In danh sach sinh vien",
-        "In bang diem trung binh",
-        "In bang diem tong ket",
-        "In danh sach sinh vien da dang ki",
-        "In bang diem cua lop tin chi",
+        "Xem danh sach sinh vien",
+        "Xem danh sach lop tin chi",
+        "Nhap diem/ Sua diem cua sinh vien",
+        "Xem bang diem trung binh",
+        "Xem bang diem tong ket",
         "← Quay lai"
     };
     const char *features_admin[] = {
         "Xem danh sach mon hoc",
         "Them/cap nhat/xoa mon hoc",
-        "Tao/cap nhat/huy lop sinh vien",
-        "In danh sach sinh vien",
-        "In bang diem trung binh",
-        "In bang diem tong ket",
-        "Tao/cap nhat/huy lop tin chi",
-        "In danh sach sinh vien da dang ki",
-        "In bang diem cua lop tin chi",
+        "Them/cap nhat/huy lop tin chi",
+        "Xem danh sach sinh vien da dang ki lop tin chi",
+        "Xem bang diem cua lop tin chi",
+        "Them/cap nhat/huy lop sinh vien",
+        "Them/cap nhat/xoa sinh vien",
+        "Xem danh sach sinh vien",
+        "Xem bang diem trung binh",
+        "Xem bang diem tong ket",
         "← Quay lai"
     };
 
