@@ -78,7 +78,9 @@ int main() {
         "Xem danh sach mon hoc",
         "Xem danh sach sinh vien",
         "Xem danh sach lop tin chi phu trach",
+        "Xem danh sach sinh vien da dang ki lop tin chi phu trach",
         "Nhap diem/ Sua diem cua sinh vien",
+        "Xem bang diem cua mot lop tin chi",
         "Xem bang diem trung binh",
         "Xem bang diem tong ket",
         "← Quay lai"
