@@ -94,5 +94,7 @@ bool nhapSinhVienVao1Lop(LopSV *lop);
 void InDSSV_TheoTen(PTRSV first);
 
 LopSV* searchLopSV(DS_LOPSV dsLop,char MALOP[16]);
-
+LopTinChi NhapLTC();
+void saveLopTinChiToFileText(PTRLTC First, const string &filename);
+void loadLopTinChiFromFileText(PTRLTC &First, const string &filename)
 #endif

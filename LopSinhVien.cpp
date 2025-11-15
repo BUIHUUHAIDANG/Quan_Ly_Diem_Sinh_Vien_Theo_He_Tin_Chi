@@ -2,7 +2,9 @@
 #include <cstring>
 #include <iostream>
 #include <algorithm>
-
+#include <fstream>      
+#include <sstream>      
+#include <string>      
 using namespace std;
 
 
@@ -172,3 +174,71 @@ LopSV* searchLopSV(DS_LOPSV dsLop,char MALOP[16]){
     }
     return nullptr;
 }
+LopTinChi NhapLTC(){
+     LopTinChi ltc;
+        cout << "\n=== THEM LOP TIN CHI ===\n";
+        cout << "Nhap Ma Lop TC: "; cin >> ltc.MALOPTC; cin.ignore();
+        cout << "Nhap Ma Mon Hoc: "; cin.getline(ltc.MAMH, 11);
+        cout << "Nhap Nien Khoa: "; cin.getline(ltc.NienKhoa, 10);
+        cout << "Nhap Hoc Ky: "; cin >> ltc.Hocky;
+        cout << "Nhap Nhom: "; cin >> ltc.Nhom;
+        cout << "Nhap SV Min va Max: "; cin >> ltc.sosvmin >> ltc.sosvmax;
+        return ltc;
+}
+void saveLopTinChiToFileText(PTRLTC First, const string &filename) {
+    ofstream f(filename);
+    if (!f) {
+        cout << "Khong mo duoc file de ghi!\n";
+        return;
+    }
+
+    PTRLTC p = First;
+    while (p) {
+        f << p->ltc.MALOPTC << "|"
+          << p->ltc.MAMH << "|"
+          << p->ltc.NienKhoa << "|"
+          << p->ltc.Hocky << "|"
+          << p->ltc.Nhom << "|"
+          << p->ltc.sosvmin << "|"
+          << p->ltc.sosvmax << "|"
+          << p->ltc.huylop << "\n";
+        p = p->next;
+    }
+
+    f.close();
+}
+void loadLopTinChiFromFileText(PTRLTC &First, const string &filename) {
+    ifstream f(filename);
+    if (!f) {
+        cout << "Khong tim thay file du lieu!\n";
+        First = nullptr;
+        return;
+    }
+
+    Clearlist(First);
+
+    string line;
+    while (getline(f, line)) {
+    if (line.empty() || line == "#") continue;
+
+    stringstream ss(line);
+    LopTinChi ltc;
+    string temp;
+
+    
+    getline(ss, temp, '|'); ltc.MALOPTC = stoi(temp);
+    getline(ss, temp, '|'); strcpy(ltc.MAMH, temp.c_str());
+    getline(ss, temp, '|'); strcpy(ltc.NienKhoa, temp.c_str());
+    getline(ss, temp, '|'); ltc.Hocky = stoi(temp);
+    getline(ss, temp, '|'); ltc.Nhom = stoi(temp);
+    getline(ss, temp, '|'); ltc.sosvmin = stoi(temp);
+    getline(ss, temp, '|'); ltc.sosvmax = stoi(temp);
+    getline(ss, temp, '|'); ltc.huylop = (temp == "1");
+
+    insertLopTinChi(First, ltc);
+}
+
+
+    f.close();
+}
+

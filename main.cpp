@@ -45,6 +45,8 @@ int menu(const char *title, const char *role, const char *options[], int n) {
             return highlight;
     }
 }
+// Menu cua  LTC 
+
 
 int main() {
     const char *roles[] = {"Sinh vien", "Giang vien", "Admin", "Thoat"};
@@ -78,6 +80,14 @@ int main() {
         "In bang diem cua lop tin chi",
         "← Quay lai"
     };
+    //function them/xoa/sua LTC
+    const char *features_admin_6[] = {
+        "Them moi Lop Tin Chi",
+        "Cap nhat xoa sua Lop Tin Chi",
+        "Huy Lop Tin Chi",
+        "← Quay lai"
+    };
+    int n_features_admin_6=4;// num of func 6
 
 
     int n_roles = 4, n_features_sinhvien = 7,n_features_giangvien=7,n_features_admin=10;
@@ -164,12 +174,34 @@ int main() {
             getch();
             }
             if(f==6){
-                clrscr();
-            gotoxy(10, 10);
-            cout << "Ban da chon: " << features_admin[f];
-            gotoxy(10, 12);
-            cout << "(Nhan phim bat ky de quay lai...)";
-            getch();
+            while(1){
+                int n = menu("=======THEM/XOA/SUA LOP TIN CHI=======","",features_admin_6,n_features_admin_6);
+                if(n==n_features_admin_6-1)break;
+                if(n==0){
+                    clrscr();
+                    gotoxy(10, 10);
+                    cout << "Ban da chon: " << features_admin_6[n];
+                    gotoxy(10, 12);
+                    cout << "(Nhan phim bat ky de quay lai...)";
+                    getch();
+                }
+                if(n==1){
+                    clrscr();
+                    gotoxy(10, 10);
+                    cout << "Ban da chon: " << features_admin_6[n];
+                    gotoxy(10, 12);
+                    cout << "(Nhan phim bat ky de quay lai...)";
+                    getch();
+                }
+                if(n==2){
+                    clrscr();
+                    gotoxy(10, 10);
+                    cout << "Ban da chon: " << features_admin_6[f];
+                    gotoxy(10, 12);
+                    cout << "(Nhan phim bat ky de quay lai...)";
+                    getch();
+                }
+            }
             }
             if(f==7){
                 clrscr();
