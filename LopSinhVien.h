@@ -96,5 +96,11 @@ void InDSSV_TheoTen(PTRSV first);
 LopSV* searchLopSV(DS_LOPSV dsLop,char MALOP[16]);
 LopTinChi NhapLTC();
 void saveLopTinChiToFileText(PTRLTC First, const string &filename);
-void loadLopTinChiFromFileText(PTRLTC &First, const string &filename)
+void loadLopTinChiFromFileText(PTRLTC &First, const string &filename);
+int getNextMaLopTinChi(PTRLTC First);
+string inputOrKeep(const string &oldValue, const string &label);
+int inputIntOrKeep(int oldValue, const string &label);
+PTRLTC findLTCByParams(PTRLTC FirstLTC);
+void saveSinhVienToFile(PTRSV First, const string &filename);
+void loadSinhVienFromFile(PTRSV &First, const string &filename);
 #endif
