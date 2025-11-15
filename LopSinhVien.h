@@ -5,6 +5,15 @@
 using namespace std;
 
 const int MAX_LOPSV = 10000;
+struct MonHoc {
+    char MAMH[11] ; char TENMH[51]; 
+    int STCLT ,STCTH; int height;
+};
+struct nodeMH {
+    MonHoc mh;
+    nodeMH *left, *right;
+};
+typedef nodeMH* treeMH;
 struct SinhVien {
     char MASV[16];
     char HO[51];
@@ -37,8 +46,8 @@ struct DS_LOPSV {
 struct DangKy {
     char MASV[16];
     float DIEM;
-    bool HuyDK;
-    PTRSV sinhVien;
+    //bool HuyDK;
+    //PTRSV sinhVien;
 };
 
 struct nodeDK {
@@ -94,5 +103,26 @@ bool nhapSinhVienVao1Lop(LopSV *lop);
 void InDSSV_TheoTen(PTRSV first);
 
 LopSV* searchLopSV(DS_LOPSV dsLop,char MALOP[16]);
+
+// ------------------------------------------------------------------------------------------------------------------------
+void DeleteDSSV(PTRSV &FirstSV);
+void DeleteDSLopSV(DS_LOPSV &dslop);
+void DeleteDSLTC(PTRLTC FirstLTC);
+void InsertLast_LTC(PTRLTC FirstLTC,LopTinChi ltc);
+void InsertLast_DK(PTRDK dssvdk, DangKy dk);
+
+int SaveFile_LopSV(const char* tenfile, DS_LOPSV &dslop);
+int LoadFile_LopSV(const char* tenfile, DS_LOPSV &dslop);
+int SaveFile_LTC(const char* tenfile, PTRLTC FirstLTC);
+int LoadFile_LTC(const char* tenfile, PTRLTC FirstLTC);
+
+float Tinhdiemtb(SinhVien sv, PTRLTC dsltc, treeMH dsmh);
+void IndiemtbLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
+void IndiemtbSinhvien(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
+void duyettreeMH(treeMH t, char dsMAMH[][11], int &soMH);
+void InbangdiemtongketLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
+void InbangdiemtongketSinhvien(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
+void NhapDiem(nodeLTC* dsltc, DS_LOPSV dslop);
+void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV dslop);
 
 #endif
