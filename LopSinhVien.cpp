@@ -179,7 +179,7 @@ void InDSSV_TheoTen(PTRSV first){
     }
     delete[] arr;
 }
-LopSV* searchLopSV(DS_LOPSV dsLop,char MALOP[16]){
+LopSV* searchLopSV(DS_LOPSV &dsLop,const char* MALOP){
     for(int i=0;i<dsLop.n;i++){
         if(strcmp(dsLop.nodes[i]->MALOP,MALOP)==0) return dsLop.nodes[i];
     }
@@ -394,13 +394,6 @@ PTRLTC findLTCByParams(PTRLTC FirstLTC) {
 
 //     f.close();
 // }
-LopSV* searchLopSV(DS_LOPSV &ds, const char* MALOP) {
-    for (int i = 0; i < ds.n; i++) {
-        if (strcmp(ds.nodes[i]->MALOP, MALOP) == 0)
-            return ds.nodes[i];
-    }
-    return nullptr;
-}
 void saveLopSV(DS_LOPSV &ds, const string &fileLop, const string &fileSV) {
     ofstream fLop(fileLop);
     ofstream fSV(fileSV);

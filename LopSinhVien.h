@@ -94,7 +94,7 @@ int deleteSinhVien(PTRSV &First,char MASV[16]);
 bool findSinhVien(PTRSV &First,char MASV[16]);
 bool editSinhVien(PTRSV &sv);
 
-LopSV* searchLopSV(DS_LOPSV dsLop,char MALOP[16]);
+LopSV* searchLopSV(DS_LOPSV &dsLop,const char* MALOP);
 int compareSV(const SinhVien& a, const SinhVien& b);
 int listToArray(PTRSV First, SinhVien arr[]);
 void sortSinhVien(SinhVien arr[], int n);
@@ -108,7 +108,7 @@ int inputIntOrKeep(int oldValue, const string &label);
 PTRLTC findLTCByParams(PTRLTC FirstLTC);
 // void saveSinhVienToFile(PTRSV First, const string &filename);
 // void loadSinhVienFromFile(PTRSV &First, const string &filename);
-LopSV* searchLopSV(DS_LOPSV &ds, const char* MALOP);
+// LopSV* searchLopSV(DS_LOPSV &ds, const char* MALOP);
 void saveLopSV(DS_LOPSV &ds, const string &fileLop, const string &fileSV);
 void loadLopSV(DS_LOPSV &ds, const string &fileLop, const string &fileSV);
 #endif

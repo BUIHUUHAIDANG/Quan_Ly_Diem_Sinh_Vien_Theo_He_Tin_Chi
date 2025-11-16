@@ -55,7 +55,10 @@ int main() {
    // PTRSV FirstSV;
     initializeLTC(FirstLTC);
     loadLopTinChiFromFileText(FirstLTC, "LopTinChi.txt");
-    loadLopSV(ds, "LopSV.txt", "SinhVien.txt");
+    loadLopSV(ds, "LopSinhVien.txt", "SinhVien.txt");
+     for(int i=0;i<ds.n;i++){
+        cout << ds.nodes[i]->MALOP << endl; 
+    }
    // initializeSV(FirstSV);
    // loadSinhVienFromFile(FirstSV,"SinhVien.txt"); 
     const char *roles[] = {"Sinh vien", "Giang vien", "Admin", "Thoat"};
@@ -104,8 +107,9 @@ int main() {
     const char *features_admin_8[] ={
         "Xem danh sach sinh vien(dua vao ma lop) theo thu tu alphabet theo ten",
         "xem danh sach ....",
+        "← Quay lai"
     };
-    int n_features_admin_8=2;
+    int n_features_admin_8=3;
 
 
     int n_roles = 4, n_features_sinhvien = 6,n_features_giangvien=9,n_features_admin=12;
@@ -299,15 +303,13 @@ int main() {
                 }
                  cout << "\nMa lop : " << lop->MALOP << endl;
                  cout << "Ten lop: " << lop->TENLOP << endl;
+
                 printDSSV_sorted(lop);
 
                  cout << "\nNhan phim bat ky de quay lai...";
                  getch();
                  }
                 if(n==1){
-                   
-                }
-                if(n==2){
                    
                 }
             }
