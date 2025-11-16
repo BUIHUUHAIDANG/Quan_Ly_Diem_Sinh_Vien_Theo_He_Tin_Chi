@@ -1,4 +1,5 @@
 #include "LopSinhVien.h"
+#include "CTDL.h"
 #include <cstring>
 #include <iostream>
 #include <algorithm>
@@ -7,7 +8,7 @@
 
 using namespace std;
 
-nodeSV::nodeSV() { next = nullptr; }
+/*nodeSV::nodeSV() { next = nullptr; }
 LopSV::LopSV() { FirstSV = nullptr; MALOP[0]=0; TENLOP[0]=0; }
 DS_LOPSV::DS_LOPSV() { n = 0; for(int i=0;i<MAX_LOPSV;i++) nodes[i]=nullptr; }
 nodeDK::nodeDK() { next = nullptr; }
@@ -17,7 +18,7 @@ LopTinChi::LopTinChi() {
     huylop = false; dssvdk = nullptr;
 }
 nodeLTC::nodeLTC() { next = nullptr; }
-nodeLTC::nodeLTC(LopTinChi data) { this->ltc = data; this->next = nullptr; }
+nodeLTC::nodeLTC(LopTinChi data) { this->ltc = data; this->next = nullptr; }*/
 
 
 void initializeLTC(PTRLTC & First) { First = nullptr; }
@@ -84,7 +85,7 @@ bool editLopTinChi(PTRLTC &First,int x){
     cin.ignore();
     return true;
 }
-void showDanhSachSinhVienDangKy(PTRLTC &l){
+/*void showDanhSachSinhVienDangKy(PTRLTC &l){
     cout << "Danh Sach Sinh Vien Da Dang Ky:\n";
     PTRDK p = l->ltc.dssvdk;
     while(p!=nullptr){
@@ -94,7 +95,7 @@ void showDanhSachSinhVienDangKy(PTRLTC &l){
             <<"\nPhai: "<<p->dk.sinhVien->sv.PHAI<<"\n";
         p=p->next;
     }
-}
+}*/
 void showLopTinChi(PTRLTC &l){
     cout<<"Chi Tiet Cua Lop Tin Chi\nMa lop tin chi: "<<l->ltc.MALOPTC
         <<"\nMa mon hoc: "<<l->ltc.MAMH
@@ -175,23 +176,23 @@ LopSV* searchLopSV(DS_LOPSV dsLop,char MALOP[16]){
 }
 
 // -----------------------------------------------------------------------------------
-void DeleteDSSV(PTRSV &FirstSV) {
+void DeleteDSSV(PTRSV &FirstSV) { // Delete toan bo dssv cua mot lop
     while(FirstSV != NULL) {
         PTRSV temp = FirstSV;
         FirstSV = FirstSV ->next;
         delete temp;
     }
 }
-void DeleteDSLopSV(DS_LOPSV &dslop) {
-    for (int i = 0; i < dslop.n; i++) {
+void DeleteDSLopSV(DS_LOPSV &dslop) {   // Delete toan bo dssv cua tat
+    for (int i = 0; i < dslop.n; i++) { // ca cac lop sau do gan so lop = 0
         DeleteDSSV(dslop.nodes[i]->FirstSV);
         delete dslop.nodes[i];
     }
     dslop.n = 0;
 }
-int SaveFile_LopSV(const char* tenfile, DS_LOPSV &dslop) {
-    FILE *f = fopen(tenfile, "wb");
-    if (f == NULL) {
+int SaveFile_LopSV(const char* tenfile, DS_LOPSV &dslop) { // Save toan bo thong tin lop cua tat ca cac lop
+    FILE *f = fopen(tenfile, "wb");                        // Thong tin lop: MALOP, TENLOP, so luong sv, tat ca      
+    if (f == NULL) {                                       // cac sinh vien cua lop
         cout << "Khong the save duoc file!\n";
         return 0;
     }
@@ -213,10 +214,10 @@ int SaveFile_LopSV(const char* tenfile, DS_LOPSV &dslop) {
     fclose(f);
     return 1;
 }
-int LoadFile_LopSV(const char* tenfile, DS_LOPSV &dslop) {
-    FILE* f = fopen(tenfile, "rb");
-    if (!f) return 0;
-
+int LoadFile_LopSV(const char* tenfile, DS_LOPSV &dslop) {  // Load toan bo thong tin lop cua tat ca cac lop
+    FILE* f = fopen(tenfile, "rb");                         // Thong tin lop: MALOP, TENLOP, so luong sv, tat ca
+    if (!f) return 0;                                       // cac sinh vien cua lop. Tat ca cac sv duoc doc ra
+                                                            // se dua vao cac node sinh vien de tao ra DSSV.
     
     DeleteDSLopSV(dslop);
 
@@ -255,7 +256,7 @@ int LoadFile_LopSV(const char* tenfile, DS_LOPSV &dslop) {
 
 
 // ===
-void DeleteDSLTC(PTRLTC FirstLTC) {
+void DeleteDSLTC(PTRLTC FirstLTC) { // Delete toan bo cac LTC trong danh sach lien ket
     while (FirstLTC != NULL) {
         PTRLTC temp = FirstLTC;
         FirstLTC = FirstLTC->next;
@@ -270,7 +271,7 @@ void DeleteDSLTC(PTRLTC FirstLTC) {
         delete temp;
     }
 }
-void InsertLast_LTC(PTRLTC FirstLTC,LopTinChi ltc) {
+void InsertLast_LTC(PTRLTC FirstLTC,LopTinChi ltc) { // Insert mot LTC vao DSLTC
     PTRLTC newNode = new nodeLTC;
     newNode->ltc = ltc;
     newNode->next = NULL;
@@ -283,7 +284,7 @@ void InsertLast_LTC(PTRLTC FirstLTC,LopTinChi ltc) {
         p->next = newNode;
     }
 }
-void InsertLast_DK(PTRDK dssvdk, DangKy dk) {
+void InsertLast_DK(PTRDK dssvdk, DangKy dk) { // Insert mot sinh vien dang ky vao dssvdk ltc do
     PTRDK newNode = new nodeDK;
     newNode->dk = dk;
     newNode->next = NULL;
@@ -293,7 +294,7 @@ void InsertLast_DK(PTRDK dssvdk, DangKy dk) {
         dssvdk = newNode; 
     }
 }
-int SaveFile_LTC(const char* tenfile, PTRLTC FirstLTC) {
+int SaveFile_LTC(const char* tenfile, PTRLTC FirstLTC) { 
     FILE *f = fopen(tenfile, "wb");
     if (f == NULL) return 0;
 
