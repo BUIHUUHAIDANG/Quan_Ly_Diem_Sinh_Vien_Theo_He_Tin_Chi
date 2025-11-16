@@ -49,9 +49,15 @@ int menu(const char *title, const char *role, const char *options[], int n) {
 
 
 int main() {
+    DS_LOPSV ds;
+    ds.n=0;
     PTRLTC FirstLTC;
+   // PTRSV FirstSV;
     initializeLTC(FirstLTC);
     loadLopTinChiFromFileText(FirstLTC, "LopTinChi.txt");
+    loadLopSV(ds, "LopSV.txt", "SinhVien.txt");
+   // initializeSV(FirstSV);
+   // loadSinhVienFromFile(FirstSV,"SinhVien.txt"); 
     const char *roles[] = {"Sinh vien", "Giang vien", "Admin", "Thoat"};
     const char *features_sinhvien[] = {
         "Xem danh sach mon hoc",
@@ -73,14 +79,14 @@ int main() {
         "← Quay lai"
     };
     const char *features_admin[] = {
-         "Xem danh sach mon hoc",
+        "Xem danh sach mon hoc",
         "Xem danh sach lop tin chi",
         "Them/cap nhat/xoa mon hoc",
         "Them/cap nhat/huy lop tin chi",
         "Xem danh sach sinh vien da dang ki lop tin chi",
         "Xem bang diem cua lop tin chi",
         "Them/cap nhat/huy lop sinh vien",
-        "Them/cap nhat/xoa sinh vien",
+        "Them sinh vien vao 1 lop",
         "Xem danh sach sinh vien",
         "Xem bang diem trung binh",
         "Xem bang diem tong ket",
@@ -94,6 +100,12 @@ int main() {
         "← Quay lai"
     };
     int n_features_admin_3=4;// num of func 6
+    //function xem danh sach sinh 
+    const char *features_admin_8[] ={
+        "Xem danh sach sinh vien(dua vao ma lop) theo thu tu alphabet theo ten",
+        "xem danh sach ....",
+    };
+    int n_features_admin_8=2;
 
 
     int n_roles = 4, n_features_sinhvien = 6,n_features_giangvien=9,n_features_admin=12;
@@ -224,47 +236,87 @@ int main() {
            
             }
             if(f==7){
-                while(1){
-                int n = menu("=======THEM/XOA/SUA SINH VIEN CUA 1 LOP=======","",features_admin_3,n_features_admin_3);
-                if(n==n_features_admin_3-1)break;
-                if(n==0){
-                    clrscr();
-                    gotoxy(10, 10);
-                    cout << "Ban da chon: " << features_admin_3[n];
-                    gotoxy(10, 12);
-                    cout << "(Nhan phim bat ky de quay lai...)";
-                    getch();
-                }
-                if(n==1){
-                    clrscr();
-                    gotoxy(10, 10);
-                    cout << "Ban da chon: " << features_admin_3[n];
-                    gotoxy(10, 12);
-                    cout << "(Nhan phim bat ky de quay lai...)";
-                    getch();
-                }
-                if(n==2){
-                    clrscr();
-                    gotoxy(10, 10);
-                    cout << "Ban da chon: " << features_admin_3[n];
-                    gotoxy(10, 12);
-                    cout << "(Nhan phim bat ky de quay lai...)";
-                    getch();
-                }
-            }
-            }
-            if(f==8){
                 clrscr();
-            gotoxy(10, 10);
-            cout << "Ban da chon: " << features_admin[f];
-            gotoxy(10, 12);
+                gotoxy(10, 10);
+                cout << "=== NHAP SINH VIEN VAO LOP ===\n";
+
+                char malop[16];
+                cout << "Nhap Ma Lop: ";
+                cin.getline(malop, 16);
+
+                LopSV* lop = searchLopSV(ds, malop);
+                if(!lop){
+                cout << "Khong tim thay lop!\n";
+               getch();
+               continue;
+                }
+
+    
+               cout << "Ten lop: " << lop->TENLOP << endl;
+               SinhVien sv;
+               while(true){
+                    cout << "\nNhap ma SV (Enter de dung): ";
+                    cin.getline(sv.MASV, 16);
+                    if(sv.MASV[0] == '\0') break;
+
+                      cout << "Nhap ho: "; cin.getline(sv.HO, 51);
+                      cout << "Nhap ten: "; cin.getline(sv.TEN, 11);
+                      cout << "Nhap phai: "; cin.getline(sv.PHAI, 4);
+                      cout << "Nhap so dien thoai: "; cin.getline(sv.SODT, 16);
+                      cout << "Nhap email: "; cin.getline(sv.Email, 50);
+
+                      insertSinhVien(lop->FirstSV, sv);
+                    }
+
+    
+            saveLopSV(ds, "LopSV.txt", "SinhVien.txt");
+
+            cout << "\n>>> Da cap nhat danh sach sinh vien vao lop!\n";
             cout << "(Nhan phim bat ky de quay lai...)";
             getch();
+             
+            }
+            if(f==8){
+               while(1){
+                int n = menu("======= XEM DANH SACH SINH VIEN =======","",features_admin_8,n_features_admin_8);
+                if(n==n_features_admin_8-1)break;
+                if(n==0){
+                  
+                 clrscr();
+                 cout << "=== XEM DANH SACH SINH VIEN THEO ALPHABET ===\n";
+
+                 char malop[20];
+                 cout << "Nhap Ma Lop: ";
+                 cin >> malop;
+                 cin.ignore();
+
+                 LopSV *lop = searchLopSV(ds, malop);
+                 if(!lop){
+                   cout << "\n>>> Khong tim thay lop!\n";
+                   cout << "Nhan phim bat ky de quay lai...";
+                   getch();
+                   continue;
+                }
+                 cout << "\nMa lop : " << lop->MALOP << endl;
+                 cout << "Ten lop: " << lop->TENLOP << endl;
+                printDSSV_sorted(lop);
+
+                 cout << "\nNhan phim bat ky de quay lai...";
+                 getch();
+                 }
+                if(n==1){
+                   
+                }
+                if(n==2){
+                   
+                }
+            }
             }
         }}
     }
-    // don dep LTC truoc khi thoat ra ngoai
+    // don dep LTC,SV truoc khi thoat ra ngoai
     Clearlist(FirstLTC);
+    ClearDS_Lop(ds);
     clrscr();
     gotoxy(10, 10);
     cout << "Tam biet!\n";

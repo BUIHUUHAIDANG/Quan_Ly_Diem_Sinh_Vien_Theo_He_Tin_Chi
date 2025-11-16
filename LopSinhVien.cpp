@@ -22,6 +22,7 @@ nodeLTC::nodeLTC(LopTinChi data) { this->ltc = data; this->next = nullptr; }
 
 
 void initializeLTC(PTRLTC & First) { First = nullptr; }
+void initializeSV(PTRSV &FirstSV){FirstSV=nullptr;}
 PTRLTC createNodeLopTinChi(LopTinChi data) { return new nodeLTC(data); }
 void insertLopTinChi(PTRLTC &First, LopTinChi data){
     PTRLTC p = createNodeLopTinChi(data);
@@ -56,6 +57,18 @@ int deleteLopTinChi(PTRLTC &First,int MALTC){
     return 0;
 }
 void Clearlist(PTRLTC &First){ while(First!=nullptr) deleteFirst(First); }
+void ClearlistSV(PTRSV &First){ while(First!=nullptr) deleteFirstSinhVien(First);}
+void ClearDS_Lop(DS_LOPSV &ds) {
+    for (int i = 0; i < ds.n; i++) {
+        if (ds.nodes[i]) {
+            ClearlistSV(ds.nodes[i]->FirstSV);
+            delete ds.nodes[i];
+            ds.nodes[i] = nullptr;
+        }
+    }
+    ds.n = 0; 
+}
+
 PTRLTC searchLopTinChi(PTRLTC &First,int x){
     PTRLTC p=First;
     while(p!=nullptr){ if(p->ltc.MALOPTC==x) return p; p=p->next; }
@@ -150,21 +163,6 @@ bool editSinhVien(PTRSV &sv){
     cout<<"email moi: "; cin.getline(email,50); if(strlen(email)>0) strcpy(sv->sv.Email,email);
     return true;
 }
-bool nhapSinhVienVao1Lop(LopSV *lop){
-    if(!lop) return false;
-    SinhVien sv;
-    while(true){
-        cout<<"\nNhap ma SV (Enter de dung): "; cin.getline(sv.MASV,16);
-        if(sv.MASV[0]=='\0') break;
-        cout<<"Nhap ho: "; cin.getline(sv.HO,51);
-        cout<<"Nhap ten: "; cin.getline(sv.TEN,11);
-        cout<<"Nhap phai: "; cin.getline(sv.PHAI,4);
-        cout<<"Nhap so dien thoai: "; cin.getline(sv.SODT,16);
-        insertSinhVien(lop->FirstSV,sv);
-    }
-    cout<<"cap nhap sinh vien thanh cong"<<endl;
-    return true;
-}
 void InDSSV_TheoTen(PTRSV first){
     if(!first){ cout<<"Danh sach rong!\n"; return; }
     int n=0; for(PTRSV p=first;p;p=p->next) n++;
@@ -187,6 +185,54 @@ LopSV* searchLopSV(DS_LOPSV dsLop,char MALOP[16]){
     }
     return nullptr;
 }
+int compareSV(const SinhVien& a, const SinhVien& b) {
+    int cmp = strcmp(a.TEN, b.TEN);
+    if (cmp != 0) return cmp;
+    return strcmp(a.HO, b.HO);
+}
+void sortSinhVien(SinhVien arr[], int n) {
+    for(int i = 0; i < n - 1; i++) {
+        for(int j = i + 1; j < n; j++) {
+            if(compareSV(arr[i], arr[j]) > 0) {
+                SinhVien tmp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = tmp;
+            }
+        }
+    }
+}
+void printDSSV_sorted(LopSV *lop) {
+    if(!lop || !lop->FirstSV) {
+        cout << "Lop khong co sinh vien!\n";
+        return;
+    }
+    int n = 0;
+    PTRSV p = lop->FirstSV;
+    while(p){ n++; p = p->next; }
+
+    SinhVien* arr = new SinhVien[n];
+    p = lop->FirstSV;
+    for(int i=0;i<n;i++){
+        arr[i] = p->sv;
+        p = p->next;
+    }
+
+    sortSinhVien(arr, n);
+
+    cout << "\n===== DANH SACH SINH VIEN (SORT BY TEN + HO) =====\n";
+    for(int i=0;i<n;i++){
+        cout << i+1 << ". "
+             << arr[i].HO << " " << arr[i].TEN
+             << " | MSV: " << arr[i].MASV
+             << " | Phai: " << arr[i].PHAI
+             << " | SDT: " << arr[i].SODT
+             << " | Email: " << arr[i].Email
+             << endl;
+    }
+
+    delete[] arr; 
+}
+
 LopTinChi NhapLTC(){
      LopTinChi ltc;
 
@@ -295,47 +341,121 @@ PTRLTC findLTCByParams(PTRLTC FirstLTC) {
 
     return searchLTC(FirstLTC, nienkhoa, hocky, nhom, MAMH);
 }
-void saveSinhVienToFile(PTRSV First, const string &filename) {
-    ofstream f(filename);
-    if(!f) {
-        cout << "Khong mo duoc file de ghi!\n";
-        return;
-    }
+// void saveSinhVienToFile(PTRSV First, const string &filename) {
+//     ofstream f(filename);
+//     if(!f) {
+//         cout << "Khong mo duoc file de ghi!\n";
+//         return;
+//     }
 
-    PTRSV p = First;
-    while(p) {
-        f << p->sv.MASV << "|"
-          << p->sv.HO << "|"
-          << p->sv.TEN << "|"
-          << p->sv.PHAI << "|"
-          << p->sv.SODT << "|"
-          << p->sv.Email << "\n";
-        p = p->next;
-    }
+//     PTRSV p = First;
+//     while(p) {
+//         f << p->sv.MASV << "|"
+//           << p->sv.HO << "|"
+//           << p->sv.TEN << "|"
+//           << p->sv.PHAI << "|"
+//           << p->sv.SODT << "|"
+//           << p->sv.Email << "\n";
+//         p = p->next;
+//     }
 
-    f.close();
+//     f.close();
+// }
+// void loadSinhVienFromFile(PTRSV &First, const string &filename) {
+//     ifstream f(filename);
+//     if(!f) {
+//         cout << "Khong tim thay file du lieu!\n";
+//         First = nullptr;
+//         return;
+//     }
+//     while(First) {
+//         PTRSV tmp = First;
+//         First = First->next;
+//         delete tmp;
+//     }
+
+//     string line;
+//     while(getline(f, line)) {
+//         if(line.empty()) continue;
+
+//         stringstream ss(line);
+//         SinhVien sv;
+//         string temp;
+
+//         getline(ss, temp, '|'); strcpy(sv.MASV, temp.c_str());
+//         getline(ss, temp, '|'); strcpy(sv.HO, temp.c_str());
+//         getline(ss, temp, '|'); strcpy(sv.TEN, temp.c_str());
+//         getline(ss, temp, '|'); strcpy(sv.PHAI, temp.c_str());
+//         getline(ss, temp, '|'); strcpy(sv.SODT, temp.c_str());
+//         getline(ss, temp, '|'); strcpy(sv.Email, temp.c_str());
+
+//         insertSinhVien(First, sv);
+//     }
+
+//     f.close();
+// }
+LopSV* searchLopSV(DS_LOPSV &ds, const char* MALOP) {
+    for (int i = 0; i < ds.n; i++) {
+        if (strcmp(ds.nodes[i]->MALOP, MALOP) == 0)
+            return ds.nodes[i];
+    }
+    return nullptr;
 }
-void loadSinhVienFromFile(PTRSV &First, const string &filename) {
-    ifstream f(filename);
-    if(!f) {
-        cout << "Khong tim thay file du lieu!\n";
-        First = nullptr;
-        return;
+void saveLopSV(DS_LOPSV &ds, const string &fileLop, const string &fileSV) {
+    ofstream fLop(fileLop);
+    ofstream fSV(fileSV);
+    if(!fLop || !fSV) { cout << "Khong mo duoc file!\n"; return; }
+
+    for(int i=0;i<ds.n;i++){
+        fLop << ds.nodes[i]->MALOP << "|" << ds.nodes[i]->TENLOP << "\n";
+        PTRSV p = ds.nodes[i]->FirstSV;
+        while(p){
+            fSV << ds.nodes[i]->MALOP << "|"
+                << p->sv.MASV << "|"
+                << p->sv.HO << "|"
+                << p->sv.TEN << "|"
+                << p->sv.PHAI << "|"
+                << p->sv.SODT << "|"
+                << p->sv.Email << "\n";
+            p = p->next;
+        }
     }
-    while(First) {
-        PTRSV tmp = First;
-        First = First->next;
-        delete tmp;
-    }
+
+    fLop.close();
+    fSV.close();
+}
+void loadLopSV(DS_LOPSV &ds, const string &fileLop, const string &fileSV) {
+    ds.n = 0;
+    ifstream fLop(fileLop);
+    if(!fLop){ cout << "Khong tim thay file LopSV\n"; return; }
 
     string line;
-    while(getline(f, line)) {
+    while(getline(fLop,line)){
         if(line.empty()) continue;
-
         stringstream ss(line);
+        string malop, tenlop;
+        getline(ss, malop, '|');
+        getline(ss, tenlop, '|');
+
+        LopSV* lop = new LopSV;
+        strcpy(lop->MALOP, malop.c_str());
+        strcpy(lop->TENLOP, tenlop.c_str());
+        lop->FirstSV = nullptr;
+
+        ds.nodes[ds.n++] = lop;
+    }
+    fLop.close();
+
+    ifstream fSV(fileSV);
+    if(!fSV){ cout << "Khong tim thay file SinhVien\n"; return; }
+
+    while(getline(fSV,line)){
+        if(line.empty()) continue;
+        stringstream ss(line);
+        string malop;
         SinhVien sv;
         string temp;
-
+        getline(ss, malop, '|');
         getline(ss, temp, '|'); strcpy(sv.MASV, temp.c_str());
         getline(ss, temp, '|'); strcpy(sv.HO, temp.c_str());
         getline(ss, temp, '|'); strcpy(sv.TEN, temp.c_str());
@@ -343,10 +463,10 @@ void loadSinhVienFromFile(PTRSV &First, const string &filename) {
         getline(ss, temp, '|'); strcpy(sv.SODT, temp.c_str());
         getline(ss, temp, '|'); strcpy(sv.Email, temp.c_str());
 
-        insertSinhVien(First, sv);
+        LopSV* lop = searchLopSV(ds, malop.c_str());
+        if(lop) insertSinhVien(lop->FirstSV, sv);
     }
-
-    f.close();
+    fSV.close();
 }
 
 

@@ -69,6 +69,7 @@ struct nodeLTC {
 typedef nodeLTC* PTRLTC;
 
 void initializeLTC(PTRLTC &First);
+void initializeSV(PTRSV & FirstSV);
 PTRLTC createNodeLopTinChi(LopTinChi data);
 void insertLopTinChi(PTRLTC &First, LopTinChi data);
 bool isEmpty(PTRLTC &First);
@@ -76,6 +77,8 @@ int deleteFirst(PTRLTC &First);
 int deleteAfter(PTRLTC p);
 int deleteLopTinChi(PTRLTC &First,int MALTC);
 void Clearlist(PTRLTC &First);
+void ClearlistSV(PTRSV &First);
+void ClearDS_Lop(DS_LOPSV &ds);
 PTRLTC searchLopTinChi(PTRLTC &First,int x);
 PTRLTC searchLTC(PTRLTC &First,char nienkhoa[10],int hocky,int nhom,char MAMH[11]);
 bool editLopTinChi(PTRLTC &First,int x);
@@ -90,10 +93,12 @@ int deleteAfterSinhVien(PTRSV p);
 int deleteSinhVien(PTRSV &First,char MASV[16]);
 bool findSinhVien(PTRSV &First,char MASV[16]);
 bool editSinhVien(PTRSV &sv);
-bool nhapSinhVienVao1Lop(LopSV *lop);
-void InDSSV_TheoTen(PTRSV first);
 
 LopSV* searchLopSV(DS_LOPSV dsLop,char MALOP[16]);
+int compareSV(const SinhVien& a, const SinhVien& b);
+int listToArray(PTRSV First, SinhVien arr[]);
+void sortSinhVien(SinhVien arr[], int n);
+void printDSSV_sorted(LopSV *lop);
 LopTinChi NhapLTC();
 void saveLopTinChiToFileText(PTRLTC First, const string &filename);
 void loadLopTinChiFromFileText(PTRLTC &First, const string &filename);
@@ -101,6 +106,9 @@ int getNextMaLopTinChi(PTRLTC First);
 string inputOrKeep(const string &oldValue, const string &label);
 int inputIntOrKeep(int oldValue, const string &label);
 PTRLTC findLTCByParams(PTRLTC FirstLTC);
-void saveSinhVienToFile(PTRSV First, const string &filename);
-void loadSinhVienFromFile(PTRSV &First, const string &filename);
+// void saveSinhVienToFile(PTRSV First, const string &filename);
+// void loadSinhVienFromFile(PTRSV &First, const string &filename);
+LopSV* searchLopSV(DS_LOPSV &ds, const char* MALOP);
+void saveLopSV(DS_LOPSV &ds, const string &fileLop, const string &fileSV);
+void loadLopSV(DS_LOPSV &ds, const string &fileLop, const string &fileSV);
 #endif

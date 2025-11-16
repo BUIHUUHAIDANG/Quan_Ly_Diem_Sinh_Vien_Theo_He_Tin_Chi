@@ -1,0 +1,15 @@
+L01|SV001|Nguyen|An|Nam|0912345678|an.nguyen@example.com
+L01|SV002|Tran|Binh|Nam|0912345679|binh.tran@example.com
+L01|SV003|Le|Cuong|Nam|0912345680|cuong.le@example.com
+L01|SV004|Pham|Dung|Nu|0912345681|dung.pham@example.com
+L01|SV005|Hoang|Em|Nu|0912345682|em.hoang@example.com
+L02|SV006|Nguyen|Hanh|Nu|0912345683|hanh.nguyen@example.com
+L02|SV007|Tran|Khanh|Nam|0912345684|khanh.tran@example.com
+L02|SV008|Le|Linh|Nu|0912345685|linh.le@example.com
+L02|SV009|Pham|Minh|Nam|0912345686|minh.pham@example.com
+L02|SV010|Hoang|Ngoc|Nu|0912345687|ngoc.hoang@example.com
+L03|SV011|Nguyen|Phu|Nam|0912345688|phu.nguyen@example.com
+L03|SV012|Tran|Quang|Nam|0912345689|quang.tran@example.com
+L03|SV013|Le|Son|Nam|0912345690|son.le@example.com
+L03|SV014|Pham|Tam|Nu|0912345691|tam.pham@example.com
+L03|SV015|Hoang|Uyen|Nu|0912345692|uyen.hoang@example.com
