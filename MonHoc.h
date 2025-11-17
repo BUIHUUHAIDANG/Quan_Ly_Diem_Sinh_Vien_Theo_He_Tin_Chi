@@ -2,26 +2,11 @@
 #define MONHOC_H
 
 #include <iostream>
+#include "CTDL.h"
 using namespace std;
 
 // -------------------- CẤU TRÚC --------------------
-struct MonHoc
-{
-    char MAMH[11];
-    char TENMH[51];
-    int STCLT;
-    int STCTH;
-};
 
-struct nodeMH // cây AVL
-{
-    MonHoc mh;
-    nodeMH *left;
-    nodeMH *right;
-    int height;
-};
-
-typedef nodeMH* treeMH;
 
 // -------------------- HÀM AVL --------------------
 int GetHeight(treeMH t);
@@ -33,8 +18,13 @@ treeMH Insert(treeMH t, MonHoc mh);
 treeMH XoaMH(treeMH &t, char MAMH[]);
 
 // -------------------- HÀM FILE --------------------
-void LuuMonHoc(treeMH t, string filename);
-treeMH DocMonHoc(string filename);
+                // Save load theo text
+//void LuuMonHoc(treeMH t, string filename);
+//treeMH DocMonHoc(string filename);
+                // Save load theo binary
+void GhiNode(FILE* f, treeMH t);
+void LuuMonHoc(treeMH t, const char* tenfile);
+treeMH DocMonHoc(const char* tenfile);
 
 // -------------------- HÀM HỖ TRỢ --------------------
 bool checkMH(treeMH t, MonHoc mh);

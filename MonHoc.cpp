@@ -1,8 +1,13 @@
 #include "MonHoc.h"
-#include <fstream>
-#include <sstream>
+#include "CTDL.h"
 #include <cstring>
+#include <iostream>
 #include <algorithm>
+#include <iomanip>
+#include <string>
+#include <fstream>      
+#include <sstream>   
+#include <limits>  
 
 using namespace std;
 
@@ -106,7 +111,7 @@ treeMH XoaMH(treeMH &t, char MAMH[]) {
 }
 
 // -------------------- HÀM FILE --------------------
-void LuuMonHoc(treeMH t, string filename) {
+/*void LuuMonHoc(treeMH t, string filename) {
     ofstream f(filename, ios::app);
     if (!t) {
         f << "#\n";
@@ -123,11 +128,12 @@ void LuuMonHoc(treeMH t, string filename) {
     LuuMonHoc(t->right, filename);
     f.close();
 }
+    
 
 treeMH DocMonHoc(string filename) {
     ifstream f(filename);
     if (!f.is_open()) {
-        cout << "Khong mo duoc file!\n";
+        cout << "\nFile chua ton tai.\n";
         return nullptr;
     }
 
@@ -150,7 +156,41 @@ treeMH DocMonHoc(string filename) {
 
     f.close();
     return root;
+}*/
+
+void GhiNode(FILE* f, treeMH t) {
+    if(t == nullptr) return;
+    fwrite(&t->mh, sizeof(MonHoc),1,f);
+    GhiNode(f,t->left);
+    GhiNode(f,t->right);
 }
+void LuuMonHoc(treeMH t, const char* tenfile) {
+    
+    FILE* f = fopen(tenfile, "wb");
+    if(f == nullptr) {
+        cout << "Khong mo duoc file de ghi!\n";
+        return;
+    }
+    GhiNode(f,t);
+    fclose(f);
+
+    cout << "Da luu danh sach mon hoc vao file thanh cong!";
+}
+treeMH DocMonHoc(const char* tenfile) {
+    FILE* f = fopen(tenfile, "rb");
+    if(f == nullptr) {
+        cout << "Khong the mo file de doc!\n";
+        return nullptr;
+    }
+    treeMH t = nullptr;
+    MonHoc mh;
+    while(fread(&mh, sizeof(MonHoc),1,f) ==1) {
+        t = Insert(t, mh);
+    }
+    fclose(f);
+    return t;
+}
+    
 
 // -------------------- HÀM HỖ TRỢ --------------------
 bool checkMH(treeMH t, MonHoc mh) {
@@ -160,8 +200,8 @@ bool checkMH(treeMH t, MonHoc mh) {
     return checkMH(t->right, mh);
 }
 
-void NhapMonHoc(treeMH &t) {
-    t = DocMonHoc("D:\\MonHocdata.txt");
+/*void NhapMonHoc(treeMH &t) {
+    t = DocMonHoc("MonHocdata.txt");
 
     while (true) {
         MonHoc mh;
@@ -181,12 +221,50 @@ void NhapMonHoc(treeMH &t) {
         cin >> mh.STCLT;
         cout << "Nhap so tin chi thuc hanh: ";
         cin >> mh.STCTH;
+        cin.ignore()
 
         t = Insert(t, mh);
-        LuuMonHoc(t, "D:\\MonHocdata.txt");
+        //LuuMonHoc(t, "MonHocdata.txt");
+        cout << "Luu thanh cong!\n\n";
+    }
+}*/
+
+
+void NhapMonHoc(treeMH &t) {
+    t = DocMonHoc("MonHocdata.txt");
+
+    while (true) {
+        MonHoc mh;
+
+        cout << "\nNhap ma mon hoc (nhap 0 de thoat): ";
+        cin >> mh.MAMH;
+
+        // CLEAR buffer
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        if (strcmp(mh.MAMH, "0") == 0) break;
+
+        if (checkMH(t, mh)) {
+            cout << "Ma mon hoc da ton tai. Vui long nhap lai.\n";
+            continue;
+        }
+
+        cout << "Nhap ten mon hoc: ";
+        cin.getline(mh.TENMH, 51);
+
+        cout << "Nhap so tin chi ly thuyet: ";
+        cin >> mh.STCLT;
+
+        cout << "Nhap so tin chi thuc hanh: ";
+        cin >> mh.STCTH;
+
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        t = Insert(t, mh);
         cout << "Luu thanh cong!\n\n";
     }
 }
+
 
 void SuaMH(treeMH &t, MonHoc mh) {
     if (!t) { cout << "Khong tim thay mon hoc de sua\n"; return; }
@@ -207,9 +285,12 @@ void SuaMH(treeMH &t, MonHoc mh) {
 }
 
 void InDSMH(treeMH t) {
-    if (!t) return;
+    if (!t) {
+        
+        return;
+    }
     InDSMH(t->left);
-    cout << "Ma MH: " << t->mh.MAMH << ", Ten MH: " << t->mh.TENMH << endl;
+    cout << "Ma MH: " << t->mh.MAMH << ", Ten MH: " << t->mh.TENMH << ", STCLT: " << t->mh.STCLT << ", STCTH: " << t->mh.STCTH << endl;
     InDSMH(t->right);
 }
 
