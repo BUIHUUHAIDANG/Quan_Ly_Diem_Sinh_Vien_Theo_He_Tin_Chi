@@ -4,8 +4,10 @@
 #include <cstdio>
 #include <cstring>
 #include "mylib.h"    
-#include "MonHoc.h"
-#include "LopSinhVien.h"
+#include "CTDL.h"
+#include "monhoc.h"
+#include "lopsinhvien.h"
+
 
 using namespace std;
 // === Draw Menu ===
@@ -67,40 +69,47 @@ int main() {
     SetConsoleOutputCP(CP_UTF8);
     const char *roles[] = {"Sinh vien", "Giang vien", "Admin", "Thoat"};
     const char *features_sinhvien[] = {
-        "Xem danh sach mon hoc",
-        "Dang ki/Huy dang ki lop tin chi",
-        "Xem danh sach lop tin chi da dang ky",
-        "Xem diem trung binh",
-        "Xem diem tong ket",
+        "Xem danh sach mon hoc", // 0
+        "Dang ki/Huy dang ki lop tin chi", // 1
+        "Xem danh sach lop tin chi da dang ky", // 2
+        "Xem diem trung binh", // m + // 3
+        "Xem diem tong ket", // m + // 4
         "← Quay lai"
     };
     const char *features_giangVien[] = {
-        "Xem danh sach mon hoc",
-        "Xem danh sach sinh vien",
-        "Xem danh sach lop tin chi phu trach",
-        "Xem danh sach sinh vien da dang ki lop tin chi phu trach",
-        "Nhap diem/ Sua diem cua sinh vien",
-        "Xem bang diem cua mot lop tin chi",
-        "Xem bang diem trung binh",
-        "Xem bang diem tong ket",
+        "Xem danh sach mon hoc", // 0
+        "Xem danh sach sinh vien", // 1
+        "Xem danh sach lop tin chi phu trach", // 2
+        "Xem danh sach sinh vien da dang ki lop tin chi phu trach", // 3 
+        "Nhap diem/ Sua diem cua sinh vien", // m + // 4
+        "Xem bang diem cua mot lop tin chi", // m // 5
+        "Xem bang diem trung binh", // m + // 6
+        "Xem bang diem tong ket", // m + // 7
         "← Quay lai"
     };
     const char *features_admin[] = {
-        "Xem danh sach mon hoc",
-        "Xem danh sach lop tin chi",
-        "Them/cap nhat/xoa mon hoc",
-        "Them/cap nhat/huy lop tin chi",
-        "Xem danh sach sinh vien da dang ki lop tin chi",
-        "Xem bang diem cua lop tin chi",
-        "Them/cap nhat/huy lop sinh vien",
-        "Them/cap nhat/xoa sinh vien",
-        "Xem danh sach sinh vien",
-        "Xem bang diem trung binh",
-        "Xem bang diem tong ket",
+        "Xem danh sach mon hoc", // 0
+        "Xem danh sach lop tin chi", // 1
+        "Them/cap nhat/xoa mon hoc", // 2
+        "Them/cap nhat/huy lop tin chi", // 3
+        "Xem danh sach sinh vien da dang ki lop tin chi", // 4
+        "Xem bang diem cua lop tin chi", // m // 5
+        "Them/cap nhat/huy lop sinh vien", // 6
+        "Them/cap nhat/xoa sinh vien", // 7
+        "Xem danh sach sinh vien", // 8
+        "Xem bang diem trung binh", // m + // 9
+        "Xem bang diem tong ket", // m + // 10
         "← Quay lai"
     };
+    const char *featuresthemcapnhatxoa[] = {"Them", "Cap nhat", "Xoa", "← Quay lai"};
+    const char *featuresthemcapnhathuy[] = {"Them", "Cap nhat", "Huy", "← Quay lai"};
 
-    int n_roles = 4, n_features_sinhvien = 7, n_features_giangvien = 7, n_features_admin = 10;
+
+    int n_roles = sizeof(roles) / sizeof(roles[0]);
+    int n_features_sinhvien = sizeof(features_sinhvien) / sizeof(features_sinhvien[0]);
+    int n_features_giangvien = sizeof(features_giangVien) / sizeof(features_giangVien[0]);
+    int n_features_admin = sizeof(features_admin) / sizeof(features_admin[0]);
+    int n_featuresthemcapnhatxoa = sizeof(featuresthemcapnhatxoa) / sizeof(featuresthemcapnhatxoa[0]);
 
     while (1) {
         int r = menu("CHON VAI TRO DANG NHAP", "", roles, n_roles);
@@ -114,7 +123,31 @@ int main() {
 
                 clrscr();
                 gotoxy(10, 10);
-                cout << "Ban da chon: " << features_sinhvien[f];
+                //cout << "Ban da chon: " << features_sinhvien[f];
+                switch(f) {
+                    case 3: {
+                        PTRLTC FirstLTC;
+                        DS_LOPSV dslop;
+                        treeMH dsmh;
+                        LoadFile_LTC("LopTinChi.txt",FirstLTC);
+                        LoadFile_LopSV("LopSinhVien.txt", dslop);
+                        dsmh = DocMonHoc("MonHoc.txt");
+                        IndiemtbSinhvien(FirstLTC, dslop, dsmh);
+                    }
+                    break;
+                    case 4: {
+                        PTRLTC FirstLTC;
+                        DS_LOPSV dslop;
+                        treeMH dsmh;
+                        LoadFile_LTC("LopTinChi.txt",FirstLTC);
+                        LoadFile_LopSV("LopSinhVien.txt", dslop);
+                        dsmh = DocMonHoc("MonHoc.txt");
+                        InbangdiemtongketSinhvien(FirstLTC, dslop, dsmh);
+                    }
+                    break;
+                    default:
+                    break;
+                }   
                 gotoxy(10, 12);
                 cout << "(Nhan phim bat ky de quay lai...)";
                 _getch();
@@ -126,22 +159,106 @@ int main() {
 
                 clrscr();
                 gotoxy(10, 10);
-                cout << "Ban da chon: " << features_giangVien[f];
+                //cout << "Ban da chon: " << features_giangVien[f];
+                switch(f) {
+                    
+                    case 4: {
+                        PTRLTC FirstLTC;
+                        DS_LOPSV dslop;
+                        LoadFile_LTC("LopTinChi.txt", FirstLTC);
+                        LoadFile_LopSV("LopSinhVien.txt", dslop);
+                        NhapDiem(FirstLTC, dslop);
+                        SaveFile_LTC("LopTinChi.txt", FirstLTC);
+                    }
+                    break;
+                    case 5:
+                        //InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV dslop);
+                    break;
+                    case 6:
+                        //IndiemtbLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
+                    break;
+                    case 7:
+                        //InbangdiemtongketLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
+                    break;
+                    default:
+                    break;
+                }   
                 gotoxy(10, 12);
                 cout << "(Nhan phim bat ky de quay lai...)";
                 _getch();
             }
-        } else if (r == 2) {
+        } else if (r == 2) { // ADMIN
             while (1) {
                 int f = menu("🏫 QUAN LY HE TIN CHI 🏫", role, features_admin, n_features_admin);
-                if (f == n_features_admin - 1) break;
+                   
+                if (f == n_features_admin - 1) {
+                     
+                    break;
+                }
+                    
 
-                clrscr();
-                gotoxy(10, 10);
-                cout << "Ban da chon: " << features_admin[f];
-                gotoxy(10, 12);
-                cout << "(Nhan phim bat ky de quay lai...)";
-                _getch();
+                //clrscr();
+                //gotoxy(10, 10);
+                //cout << "Ban da chon: " << features_admin[f] << "\n";
+                switch(f) {
+                    case 0:{ // Xem danh sach mon hoc
+                        treeMH t = DocMonHoc("MonHocdata.txt");
+                        InDSMH(t);
+                       
+                        cout << "\n(Nhan phim bat ky de quay lai...)";
+                        _getch();
+                        //return 0;
+                        break;
+                    }
+                    case 1: { // Xem danh sach LTC
+                        break;
+                    }
+                    case 2: { // Them/cap nhat/xoa mon hoc
+                        int g = menu("   QUAN LY MON HOC",role, featuresthemcapnhatxoa, n_featuresthemcapnhatxoa);
+                        switch(g) {
+                            case 0: { // them
+                                treeMH t;
+                                NhapMonHoc(t);
+                                LuuMonHoc(t, "MonHocdata.txt");
+                                break;
+                            }
+                            case 1: 
+                            break;
+                            case 2:
+                            break;
+                        }
+                        break;
+                    }
+                    case 3: { // Them/cap nhat/xoa lop tin chi
+                        int g = menu("  QUAN LY LOP TIN CHI",role, featuresthemcapnhatxoa, n_featuresthemcapnhatxoa);
+                        gotoxy(30,30);
+                        cout << "Gia tri g:" << g;
+                        switch(g) {
+                            case 0: { // them
+                                PTRLTC FirstLTC = nullptr;
+                                NhapLTC(FirstLTC);
+                                SaveFile_LTC("LopTinChi.txt",FirstLTC);
+                                break;
+                            }
+                            case 1: 
+                            break;
+                            case2: 
+                            break;
+                        }
+                    }
+                    case 5:
+                        //InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV dslop);
+                    break;
+                    case 9:
+                        //IndiemtbLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
+                    break;
+                    case 10:
+                        //InbangdiemtongketLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
+                    break;
+                    default:
+                    break;
+                    
+                }   
             }
         }
     }
@@ -151,3 +268,6 @@ int main() {
     cout << "Tam biet!\n";
     return 0;
 }
+
+// g++ main.cpp CTDL.cpp LopSinhVien.cpp MonHoc.cpp -o main.exe
+

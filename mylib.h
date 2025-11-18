@@ -1,6 +1,5 @@
 #ifndef MYLIB_H
 #define MYLIB_H
-
 #include <windows.h>
 #include <conio.h>
 #include <stdio.h>
