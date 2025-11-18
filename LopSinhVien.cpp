@@ -124,7 +124,7 @@ void showDanhSachSinhVienDangKy(PTRLTC &l){
         p=p->next;
     }
 }
-void showLopTinChi(PTRLTC &l){
+/*void showLopTinChi(PTRLTC &l){
     cout<<"\nChi Tiet Cua Lop Tin Chi\nMa lop tin chi: "<<l->ltc.MALOPTC
         <<"\nMa mon hoc: "<<l->ltc.MAMH
         <<"\nNien Khoa: "<<l->ltc.NienKhoa
@@ -132,8 +132,35 @@ void showLopTinChi(PTRLTC &l){
         <<"\nNhom: "<<l->ltc.Nhom
         <<"\nSo sinh vien toi da: "<<l->ltc.sosvmax
         <<"\nSo sinh vien toi thieu: "<<l->ltc.sosvmin<<endl;
+}*/
+void InDSLTC(PTRLTC &FirstLTC) {
+    if(!FirstLTC) {
+        cout << "\n\nDanh sach LTC rong!";
+        return;
+    }
+    for(PTRLTC p = FirstLTC; p != nullptr; p=p->next) {
+        cout << "Chi Tiet Cua Lop Tin Chi";
+        cout<<"\n\nMa lop tin chi: "<<p->ltc.MALOPTC
+            <<"\nMa mon hoc: "<<p->ltc.MAMH
+            <<"\nNien Khoa: "<<p->ltc.NienKhoa
+            <<"\nHoc ky: "<<p->ltc.Hocky
+            <<"\nNhom: "<<p->ltc.Nhom
+            <<"\nSo sinh vien toi da: "<<p->ltc.sosvmax
+            <<"\nSo sinh vien toi thieu: "<<p->ltc.sosvmin<<endl;
+    }
 }
-
+void InDSLSV(DS_LOPSV &dslop) {
+    if(dslop.n == 0) {
+        cout << "\n\nDanh sach LopSV rong!";
+        return;
+    }
+    
+    for(int i = 0; i < dslop.n; i++) {
+        cout << "Chi tiet lop SV";
+        cout<<"\nMa lop: "<<dslop.nodes[i]->MALOP
+            <<"\nTen lop: "<<dslop.nodes[i]->TENLOP<<endl;
+    }
+}
 
 bool isEmptySinhVien(PTRSV &First){ return First == nullptr; }
 void insertSinhVien(PTRSV &First,SinhVien x){
@@ -237,12 +264,22 @@ void printDSSV_sorted(LopSV *lop) {
 bool checkLTC(PTRLTC FirstLTC, LopTinChi ltc) { // Kiem tra xem lop tin chi co trong danh sach lop tin chi khong
                                                 // Neu co thi tra ve true
     if (!FirstLTC) return false;
-    if ((strcmp(ltc.MAMH, FirstLTC->ltc.MAMH) == 0)
-     && (strcmp(ltc.NienKhoa, FirstLTC->ltc.NienKhoa) == 0)
-     && (ltc.Hocky == FirstLTC->ltc.Hocky)
-     && (ltc.Nhom == FirstLTC->ltc.Nhom)
-    ) return true;
-    else return false;
+    for(PTRLTC p = FirstLTC; p != nullptr; p=p->next ) {
+        if ((strcmp(ltc.MAMH, p->ltc.MAMH) == 0)
+        && (strcmp(ltc.NienKhoa, p->ltc.NienKhoa) == 0)
+        && (ltc.Hocky == p->ltc.Hocky)
+        && (ltc.Nhom == p->ltc.Nhom)
+        ) return true;
+    }
+    return false;
+}
+bool CheckLopSV(DS_LOPSV dslop, LopSV lop) { // Kiem tra xem lop sinh vien co trong danh sach lop sinh vien khong
+                                             // Neu co thi tra ve true
+    if (dslop.n==0) return false;
+    for(int i = 0; i< dslop.n; i++) {
+        if ((strcmp(lop.MALOP, dslop.nodes[i]->MALOP) == 0)) return true;
+    }
+    return false;
 }
 void NhapLTC(PTRLTC &FirstLTC){
     LoadFile_LTC("LopTinChi.txt", FirstLTC);
@@ -267,6 +304,28 @@ void NhapLTC(PTRLTC &FirstLTC){
         ltc.MALOPTC = getNextMaLopTinChi(FirstLTC);
         InsertLast_LTC(FirstLTC, ltc);
 
+        cout << "Luu thanh cong!\n\n";
+    }   
+}
+void NhapLopSV(DS_LOPSV &dslop){
+    LoadFile_LopSV("LopSinhVien.txt",dslop);
+    if (dslop.n >= MAX_LOPSV) {
+        cout << "Da dat so luong lop toi da!\n";
+        return;
+    }
+    while (true) {
+        LopSV lop;
+
+        cout << "\nNhap Ma Lop (Nhap 0 de thoat):"; cin.getline(lop.MALOP,16);
+        if (strcmp(lop.MALOP, "0") == 0) break;
+        cout << "Nhap Ten Lop: "; cin.getline(lop.TENLOP,51);
+        if (CheckLopSV(dslop,lop)) {
+            cout << "LopSV da ton tai. Vui long nhap lai.\n";
+            continue;
+        }
+        lop.FirstSV = nullptr;
+        dslop.nodes[dslop.n] = new LopSV(lop);
+        dslop.n++;
         cout << "Luu thanh cong!\n\n";
     }   
 }
@@ -568,7 +627,7 @@ int LoadFile_LopSV(const char* tenfile, DS_LOPSV &dslop) {  // Load toan bo thon
 
 
 // ===
-void DeleteDSLTC(PTRLTC FirstLTC) { // Delete toan bo cac LTC trong danh sach lien ket
+void DeleteDSLTC(PTRLTC &FirstLTC) { // Delete toan bo cac LTC trong danh sach lien ket
     while (FirstLTC != NULL) {
         PTRLTC temp = FirstLTC;
         FirstLTC = FirstLTC->next;
@@ -598,7 +657,7 @@ void InsertLast_LTC(PTRLTC &FirstLTC,LopTinChi &ltc) { // Insert mot LTC vao DSL
         p->next = newNode;
     }
 }
-void InsertLast_DK(PTRDK dssvdk, DangKy dk) { // Insert mot sinh vien dang ky vao dssvdk ltc do
+void InsertLast_DK(PTRDK &dssvdk, DangKy dk) { // Insert mot sinh vien dang ky vao dssvdk ltc do
     PTRDK newNode = new nodeDK;
     newNode->dk = dk;
     newNode->next = NULL;
@@ -636,7 +695,7 @@ int SaveFile_LTC(const char* tenfile, PTRLTC FirstLTC) {
     return 1;
 }
 // === load dslk ltc ===
-int LoadFile_LTC(const char* tenfile, PTRLTC FirstLTC) {
+int LoadFile_LTC(const char* tenfile, PTRLTC &FirstLTC) {
     FILE* f = fopen(tenfile, "rb");
     if (f == NULL) return 0;
     DeleteDSLTC(FirstLTC);
@@ -693,6 +752,8 @@ float Tinhdiemtb(SinhVien sv, PTRLTC dsltc, treeMH dsmh) {
     }
     return (tongTinChi > 0) ? (tongDiem / tongTinChi) : -1; 
 }
+
+
 void IndiemtbLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh) { // In diem tb cho ca lop
     char malop[16];
     cout << "Nhap ma lop: ";

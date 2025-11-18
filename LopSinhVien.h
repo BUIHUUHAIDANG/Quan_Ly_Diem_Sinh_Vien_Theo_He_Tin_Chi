@@ -19,7 +19,10 @@ PTRLTC searchLopTinChi(PTRLTC &First,int x);
 PTRLTC searchLTC(PTRLTC &First,char nienkhoa[10],int hocky,int nhom,char MAMH[11]);
 bool editLopTinChi(PTRLTC &First,int x);
 void showDanhSachSinhVienDangKy(PTRLTC &l);
-void showLopTinChi(PTRLTC &l);
+//void showLopTinChi(PTRLTC &l);
+void InDSLTC(PTRLTC &FirstLTC); // In DSLTC
+void InDSLSV(DS_LOPSV &dslop);  // In DSLOPSV
+
 bool showDSSVOfLopTinChi(PTRLTC &First,char nienkhoa[10],int hocky,int nhom,char MAMH[11]);
 
 bool isEmptySinhVien(PTRSV &First);
@@ -35,7 +38,8 @@ int compareSV(const SinhVien& a, const SinhVien& b);
 int listToArray(PTRSV First, SinhVien arr[]);
 void sortSinhVien(SinhVien arr[], int n);
 void printDSSV_sorted(LopSV *lop);
-void NhapLTC(PTRLTC &FirstLTC);
+void NhapLTC(PTRLTC &FirstLTC); // Nhap LTC
+void NhapLopSV(DS_LOPSV &dslop); // Nhap LopSV
 void saveLopTinChiToFileText(PTRLTC First, const string &filename);
 void loadLopTinChiFromFileText(PTRLTC &First, const string &filename);
 int getNextMaLopTinChi(PTRLTC First);
@@ -53,16 +57,16 @@ void loadLopSV(DS_LOPSV &ds, const string &fileLop, const string &fileSV);
 // -- HAM HO TRO --
 void DeleteDSSV(PTRSV &FirstSV);
 void DeleteDSLopSV(DS_LOPSV &dslop);
-void DeleteDSLTC(PTRLTC FirstLTC);
+void DeleteDSLTC(PTRLTC &FirstLTC);
 void InsertLast_LTC(PTRLTC &FirstLTC,LopTinChi &ltc);
-void InsertLast_DK(PTRDK dssvdk, DangKy dk);
+void InsertLast_DK(PTRDK &dssvdk, DangKy dk);
 void duyettreeMH(treeMH t, char dsMAMH[][11], int &soMH);
 
 // -- SAVE LOAD --
 int SaveFile_LopSV(const char* tenfile, DS_LOPSV &dslop);
 int LoadFile_LopSV(const char* tenfile, DS_LOPSV &dslop);
 int SaveFile_LTC(const char* tenfile, PTRLTC FirstLTC);
-int LoadFile_LTC(const char* tenfile, PTRLTC FirstLTC);
+int LoadFile_LTC(const char* tenfile, PTRLTC &FirstLTC);
 
 // -- DIEM --
 float Tinhdiemtb(SinhVien sv, PTRLTC dsltc, treeMH dsmh);
