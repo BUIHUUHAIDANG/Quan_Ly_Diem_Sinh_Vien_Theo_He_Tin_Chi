@@ -238,9 +238,7 @@ void UndoSuaMH (treeMH &t, MonHoc mh) {
     } else if (strcmp(mh.MAMH, t->mh.MAMH) > 0) {
         UndoSuaMH(t->right, mh);
     } else {
-        strcpy(t->mh, mh);
-        t->mh.STCLT = mh.STCLT;
-        t->mh.STCTH = mh.STCTH;
+        t->mh = mh;
         return;
     }
 }
