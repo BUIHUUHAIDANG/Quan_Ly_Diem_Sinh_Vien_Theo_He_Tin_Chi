@@ -23,6 +23,11 @@ struct nodeMH // cây AVL
 
 typedef nodeMH* treeMH;
 
+struct ActionMH {
+    int type = 0; //1 = them, 2 = xoa, 3 = sua mh
+    MonHoc mh;
+}
+
 // -------------------- HÀM AVL --------------------
 int GetHeight(treeMH t);
 int GetBalance(treeMH t);
