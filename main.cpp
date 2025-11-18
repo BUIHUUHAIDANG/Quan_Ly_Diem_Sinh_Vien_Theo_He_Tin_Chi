@@ -56,9 +56,6 @@ int main() {
     initializeLTC(FirstLTC);
     loadLopTinChiFromFileText(FirstLTC, "LopTinChi.txt");
     loadLopSV(ds, "LopSinhVien.txt", "SinhVien.txt");
-     for(int i=0;i<ds.n;i++){
-        cout << ds.nodes[i]->MALOP << endl; 
-    }
    // initializeSV(FirstSV);
    // loadSinhVienFromFile(FirstSV,"SinhVien.txt"); 
     const char *roles[] = {"Sinh vien", "Giang vien", "Admin", "Thoat"};
