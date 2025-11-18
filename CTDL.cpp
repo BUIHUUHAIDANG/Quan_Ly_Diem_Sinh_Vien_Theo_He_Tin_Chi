@@ -13,6 +13,11 @@ LopSV::LopSV() {
     MALOP[0] = 0;
     TENLOP[0] = 0;
 }
+LopSV::LopSV(const LopSV &lop) {
+    strcpy(MALOP, lop.MALOP);
+    strcpy(TENLOP, lop.TENLOP);
+    FirstSV = nullptr;  
+}
 
 // DS_LOPSV
 DS_LOPSV::DS_LOPSV() {

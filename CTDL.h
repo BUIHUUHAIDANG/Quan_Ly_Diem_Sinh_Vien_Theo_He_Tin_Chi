@@ -38,6 +38,7 @@ struct LopSV {
     char TENLOP[51];
     PTRSV FirstSV;
     LopSV();
+    LopSV(const LopSV &lop);
 };
 
 struct DS_LOPSV {
@@ -80,8 +81,8 @@ struct nodeLTC {
 };
 typedef nodeLTC* PTRLTC;
 
-void initializeLTC(PTRLTC &First);
-PTRLTC createNodeLopTinChi(LopTinChi data);
+//void initializeLTC(PTRLTC &First);
+//PTRLTC createNodeLopTinChi(LopTinChi data);
 
 
 #endif
