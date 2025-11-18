@@ -2,28 +2,8 @@
 #define MONHOC_H
 
 #include <iostream>
+#include <CTDL.h>
 using namespace std;
-
-// -------------------- CẤU TRÚC --------------------
-struct MonHoc
-{
-    char MAMH[11];
-    char TENMH[51];
-    int STCLT;
-    int STCTH;
-};
-
-struct nodeMH // cây AVL
-{
-    MonHoc mh;
-    nodeMH *left;
-    nodeMH *right;
-    int height;
-};
-
-typedef nodeMH* treeMH;
-
-// -------------------- HÀM AVL --------------------
 int GetHeight(treeMH t);
 int GetBalance(treeMH t);
 treeMH RotateRight(treeMH y);

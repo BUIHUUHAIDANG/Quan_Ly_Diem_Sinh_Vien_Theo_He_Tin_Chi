@@ -6,6 +6,7 @@
 #include "console.h"
 #include "MonHoc.h"
 #include "LopSinhVien.h"
+#include "CTDL.h"
 using namespace std;
 void drawMenu(const char *title, const char *role, const char *options[], int n, int highlight) {
     clrscr();
