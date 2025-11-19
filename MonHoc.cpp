@@ -66,6 +66,32 @@ treeMH CheckandRotation(treeMH t) {
     return t;
 }
 
+void init(stack &s) {
+    s.top = nullptr;
+}
+
+bool empty(stack s) {
+    return s.top == nullptr;
+}
+
+void push(stack &s, ActionMH action) {
+    PTRNode newNode = new node;
+    newNode->data = action;
+    newNode->next = s.top;
+    s.top = newNode;
+}
+
+void pop(stack &s) {
+    if (empty(s)) return;
+    PTRNode temp = s.top;
+    s.top = s.top->next;
+    delete temp;
+}
+
+ActionMH top(stack s) {
+    return s.top->data; 
+}
+
 PTRLTC FilterLTC(PTRLTC First, char nienkhoa[], int hocky) {
        while(First!=nullptr){
         if(strcmp(First->ltc.NienKhoa, nienkhoa) == 0 && First->ltc.Hocky == hocky)return First;
