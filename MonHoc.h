@@ -46,6 +46,24 @@ struct ActionMH {
     MonHoc mh;
 }
 
+struct node {
+    ActionMH data;
+    node* next;
+};
+
+typedef node* PTRNode;
+
+struct stack {
+    node* top = nullptr; // đỉnh stack
+};
+
+// -------------------- HÀM HỖ TRỢ STACK --------------
+void init(stack &s);
+bool empty(stack s);
+void push(stack &s, ActionMH action);
+void pop(stack &s);
+ActionMH top(stack s);
+
 // -------------------- HÀM AVL --------------------
 int GetHeight(treeMH t);
 int GetBalance(treeMH t);
@@ -62,11 +80,12 @@ treeMH DocMonHoc(string filename);
 PTRLTC FilterLTC(PTRLTC First, char nienkhoa[], int hocky);
 PTRSV findSinhVien(PTRSV First, char MASV[]);
 bool checkMH(treeMH t, MonHoc mh);
-void NhapMonHoc(treeMH &t);
-treeMH XoaMH(treeMH &t, char MAMH[]);
+void NhapMonHoc(treeMH &t, stack &undostackMH);
+treeMH UndoThemMH (treeMH &t, char MAMH[]);
+treeMH XoaMH(treeMH &t, char MAMH[], stack &undostackMH);
 void UndoSuaMH (treeMH &t, MonHoc mh);
-void SuaMH(treeMH &t, MonHoc mh);
-void UndoMH (treeMH &t);
+void SuaMH(treeMH &t, MonHoc mh, stack &undostackMH);
+void UndoMH (treeMH &t, stack &undostackMH);
 void InDSMH(treeMH t);
 bool timMonHoc(treeMH t, char mamh[]);
 void InLTC (PTRLTC &loptinchi, char nienkhoa[], int hocky, treeMH &t);
