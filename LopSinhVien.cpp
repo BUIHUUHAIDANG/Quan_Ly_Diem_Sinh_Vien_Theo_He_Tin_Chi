@@ -19,8 +19,64 @@ using namespace std;
 // }
 // nodeLTC::nodeLTC() { next = nullptr; }
 // nodeLTC::nodeLTC(LopTinChi data) { this->ltc = data; this->next = nullptr; }
-
-
+stackNode* newNode(ActionLTC Data){
+    stackNode* p= new stackNode();
+    p->data=Data;
+    p->next=nullptr;
+    return p;
+}
+bool isEmpty(stackNode* &root){
+    return !root;
+}
+void push(stackNode* &root,ActionLTC data){
+     stackNode* p= newNode(data);
+     p->next=root;
+     root=p;
+}
+void pop(stackNode* &root){
+    if(isEmpty(root))return;
+    stackNode* tmp= root;
+    root=root->next;
+    delete(tmp);
+}
+ActionLTC top(stackNode* &root){
+     return root->data;
+}
+void undoSuaLTC(PTRLTC &First,LopTinChi ltc){
+     PTRLTC p=searchLopTinChi(First,ltc.MALOPTC);
+     if(!p){
+        cout<<"Khong tim thay Lop Tin Chi"<<endl;
+        return;
+     }
+     strcpy(p->ltc.MAMH, ltc.MAMH);       
+     strcpy(p->ltc.NienKhoa, ltc.NienKhoa);
+     p->ltc.Hocky=ltc.Hocky;
+     p->ltc.Nhom=ltc.Nhom;
+     p->ltc.sosvmax=ltc.sosvmax;
+     p->ltc.sosvmin=ltc.sosvmin;
+}
+void undoLTC(PTRLTC &First,stackNode* &root){
+    if(isEmpty(root)){
+        cout<<"khong co gi de hieu chinh Lop Tin Chi"<<endl;
+        return;
+    }
+    ActionLTC act =root->data;
+    pop(root);
+    //them
+    if(act.type==1){
+       deleteLopTinChi(First,act.ltc.MALOPTC);
+    }
+    //xoa
+    else if(act.type==2){
+       insertLopTinChi(First,act.ltc);
+    }
+    //sua
+    else if(act.type==3){
+       undoSuaLTC(First,act.ltc);
+    }
+    return;
+}
+void initializeStackNode(stackNode* root){root=nullptr;}
 void initializeLTC(PTRLTC & First) { First = nullptr; }
 void initializeSV(PTRSV &FirstSV){FirstSV=nullptr;}
 PTRLTC createNodeLopTinChi(LopTinChi data) { return new nodeLTC(data); }
@@ -41,6 +97,13 @@ int deleteFirst(PTRLTC &First){
     delete p;
     return 1;
 }
+int deleteFirstDK(PTRDK &First){
+    if(!First)return 0;
+    PTRDK p = First;
+    First = p->next;
+    delete p;
+    return 1;
+}
 int deleteAfter(PTRLTC p){
     if(!p || !p->next) return 0;
     PTRLTC q = p->next;
@@ -56,7 +119,16 @@ int deleteLopTinChi(PTRLTC &First,int MALTC){
     if(p->next != nullptr) return deleteAfter(p);
     return 0;
 }
-void Clearlist(PTRLTC &First){ while(First!=nullptr) deleteFirst(First); }
+void ClearlistDSSVDK(PTRDK &First){
+      while(First!=nullptr) deleteFirstDK(First);
+}
+void ClearLTC(PTRLTC &First){
+     while(First!=nullptr){
+          ClearlistDSSVDK(First->ltc.dssvdk);
+          deleteFirst(First);
+          First=First->next;
+     }
+}
 void ClearlistSV(PTRSV &First){ while(First!=nullptr) deleteFirstSinhVien(First);}
 void ClearDS_Lop(DS_LOPSV &ds) {
     for (int i = 0; i < ds.n; i++) {
@@ -111,17 +183,6 @@ bool editLopTinChi(PTRLTC &First, int id) {
     cout << "\n>>> Cap nhat lop tin chi thanh cong!\n";
     return true;
 }
-void showDanhSachSinhVienDangKy(PTRLTC &l){
-    cout << "Danh Sach Sinh Vien Da Dang Ky:\n";
-    PTRDK p = l->ltc.dssvdk;
-    while(p!=nullptr){
-        cout<<"Ma SV: "<<p->dk.MASV<<"\nHo: "<<p->dk.sinhVien->sv.HO
-            <<"\nTen: "<<p->dk.sinhVien->sv.TEN
-            <<"\nSo DT: "<<p->dk.sinhVien->sv.SODT
-            <<"\nPhai: "<<p->dk.sinhVien->sv.PHAI<<"\n";
-        p=p->next;
-    }
-}
 void showLopTinChi(PTRLTC &l){
     cout<<"Chi Tiet Cua Lop Tin Chi\nMa lop tin chi: "<<l->ltc.MALOPTC
         <<"\nMa mon hoc: "<<l->ltc.MAMH
@@ -138,6 +199,13 @@ void insertSinhVien(PTRSV &First,SinhVien x){
     PTRSV p = new nodeSV; p->sv=x; p->next=nullptr;
     if(!First) First=p;
     else { PTRSV tmp=First; while(tmp->next) tmp=tmp->next; tmp->next=p; }
+}
+void insertSinhVienDangKy(PTRDK &First,DangKy svdk){
+    PTRDK p=new nodeDK; 
+    p->dk=svdk;
+    p->next=nullptr;
+    if(!First)First=p;
+    else { PTRDK tmp=First; while(tmp->next) tmp=tmp->next; tmp->next=p; }
 }
 int deleteFirstSinhVien(PTRSV &First){ if(isEmptySinhVien(First)) return 0; PTRSV p=First; First=p->next; delete p; return 1; }
 int deleteAfterSinhVien(PTRSV p){ if(!p||!p->next) return 0; PTRSV q=p->next; p->next=q->next; delete q; return 1; }
@@ -248,61 +316,97 @@ LopTinChi NhapLTC(){
 
         return ltc;
 }
-void saveLopTinChiToFileText(PTRLTC First, const string &filename) {
-    ofstream f(filename);
-    if (!f) {
-        cout << "Khong mo duoc file de ghi!\n";
+void saveLopTinChi(PTRLTC &First, const string &fileLoptinchi, const string &fileSVDK){
+     ofstream fLTC(fileLoptinchi);
+     ofstream fSVDK(fileSVDK);
+     if(!fLTC||!fSVDK){
+        cout<<"Khong the mo file!"<<endl;
         return;
-    }
-
-    PTRLTC p = First;
-    while (p) {
-        f << p->ltc.MALOPTC << "|"
-          << p->ltc.MAMH << "|"
-          << p->ltc.NienKhoa << "|"
-          << p->ltc.Hocky << "|"
-          << p->ltc.Nhom << "|"
-          << p->ltc.sosvmin << "|"
-          << p->ltc.sosvmax << "|"
-          << p->ltc.huylop << "\n";
-        p = p->next;
-    }
-
-    f.close();
+     }
+     while(!First){
+        fLTC << First->ltc.MALOPTC<<"|"
+             <<First->ltc.MAMH<<"|"
+             <<First->ltc.NienKhoa<<"|"
+             <<First->ltc.Hocky<<"|"
+             <<First->ltc.Nhom<<"|"
+             <<First->ltc.sosvmin<<"|"
+             <<First->ltc.sosvmax<<"|"
+             <<First->ltc.huylop<<endl;
+        PTRDK p=First->ltc.dssvdk;
+        while(!p){
+         fSVDK <<First->ltc.MALOPTC<<"|"
+               <<p->dk.MASV<<"|"
+               <<p->dk.DIEM<<"|"
+               <<p->dk.HuyDK<<"|"<<endl;
+               p=p->next; 
+        }
+        First=First->next;
+     }
+     fLTC.close();
+     fSVDK.close();
 }
-void loadLopTinChiFromFileText(PTRLTC &First, const string &filename) {
-    ifstream f(filename);
-    if (!f) {
-        cout << "Khong tim thay file du lieu!\n";
-        First = nullptr;
+void loadLopTinChi(PTRLTC &First, const string &fileLopTinChi, const string &fileSVDK){
+     ifstream fLTC(fileLopTinChi);
+     if(!fLTC){
+        cout<<"Khong mo duoc file"<<endl;
         return;
-    }
+     }
+     string line;
+     while(getline(fLTC,line)){
+           if(line.empty()){
+            continue;
+           }
+           stringstream ss(line);
+           string maloptc;
+           string mamh;
+           string nienkhoa;
+           string hk;
+           string nhom;
+           string svmax;
+           string svmin;
+           string huylop;
+           getline(ss, maloptc, '|');
+           getline(ss, mamh, '|');
+           getline(ss, nienkhoa, '|');
+           getline(ss, hk, '|');
+           getline(ss, nhom, '|');
+           getline(ss, svmax, '|');
+           getline(ss, svmin, '|');
+           getline(ss, huylop, '|');
+           LopTinChi ltc;
+           ltc.MALOPTC = stoi(maloptc);
+           strcpy(ltc.MAMH, mamh.c_str());
+           strcpy(ltc.NienKhoa, nienkhoa.c_str());
+           ltc.Hocky = stoi(hk);
+           ltc.Nhom = stoi(nhom);
+           ltc.sosvmin = stoi(svmax);
+           ltc.sosvmax = stoi(svmin);
+           ltc.huylop = (huylop == "1");
+           ltc.dssvdk=nullptr;
+           insertLopTinChi(First, ltc);
+     }
+     fLTC.close();
+     ifstream fSVDK(fileSVDK);
+     if(!fSVDK){
+        cout<<"khong mo duoc file!"<<endl;
+        return;
+     }
+     string line;
+     while(getline(fSVDK,line)){
+        if(line.empty())continue;
+        stringstream ss(line);
+        int maloptc;
+        DangKy svdk;
+        string temp;
+        getline(ss, temp, '|'); maloptc=stoi(temp);
+        getline(ss, temp, '|'); strcpy(svdk.MASV, temp.c_str());
+        getline(ss, temp, '|'); svdk.DIEM=stof(temp);
+        getline(ss, temp, '|'); svdk.HuyDK = (temp == "1");
+        PTRLTC p=searchLopTinChi(First,maloptc);
+        if(p)insertSinhVienDangKy(p->ltc.dssvdk,svdk);
+     }
+     fSVDK.close();
 
-    Clearlist(First);
-
-    string line;
-    while (getline(f, line)) {
-    if (line.empty() || line == "#") continue;
-
-    stringstream ss(line);
-    LopTinChi ltc;
-    string temp;
-
-    
-    getline(ss, temp, '|'); ltc.MALOPTC = stoi(temp);
-    getline(ss, temp, '|'); strcpy(ltc.MAMH, temp.c_str());
-    getline(ss, temp, '|'); strcpy(ltc.NienKhoa, temp.c_str());
-    getline(ss, temp, '|'); ltc.Hocky = stoi(temp);
-    getline(ss, temp, '|'); ltc.Nhom = stoi(temp);
-    getline(ss, temp, '|'); ltc.sosvmin = stoi(temp);
-    getline(ss, temp, '|'); ltc.sosvmax = stoi(temp);
-    getline(ss, temp, '|'); ltc.huylop = (temp == "1");
-
-    insertLopTinChi(First, ltc);
-}
-
-
-    f.close();
 }
 int getNextMaLopTinChi(PTRLTC First) {
     int maxID = 0;
@@ -341,59 +445,6 @@ PTRLTC findLTCByParams(PTRLTC FirstLTC) {
 
     return searchLTC(FirstLTC, nienkhoa, hocky, nhom, MAMH);
 }
-// void saveSinhVienToFile(PTRSV First, const string &filename) {
-//     ofstream f(filename);
-//     if(!f) {
-//         cout << "Khong mo duoc file de ghi!\n";
-//         return;
-//     }
-
-//     PTRSV p = First;
-//     while(p) {
-//         f << p->sv.MASV << "|"
-//           << p->sv.HO << "|"
-//           << p->sv.TEN << "|"
-//           << p->sv.PHAI << "|"
-//           << p->sv.SODT << "|"
-//           << p->sv.Email << "\n";
-//         p = p->next;
-//     }
-
-//     f.close();
-// }
-// void loadSinhVienFromFile(PTRSV &First, const string &filename) {
-//     ifstream f(filename);
-//     if(!f) {
-//         cout << "Khong tim thay file du lieu!\n";
-//         First = nullptr;
-//         return;
-//     }
-//     while(First) {
-//         PTRSV tmp = First;
-//         First = First->next;
-//         delete tmp;
-//     }
-
-//     string line;
-//     while(getline(f, line)) {
-//         if(line.empty()) continue;
-
-//         stringstream ss(line);
-//         SinhVien sv;
-//         string temp;
-
-//         getline(ss, temp, '|'); strcpy(sv.MASV, temp.c_str());
-//         getline(ss, temp, '|'); strcpy(sv.HO, temp.c_str());
-//         getline(ss, temp, '|'); strcpy(sv.TEN, temp.c_str());
-//         getline(ss, temp, '|'); strcpy(sv.PHAI, temp.c_str());
-//         getline(ss, temp, '|'); strcpy(sv.SODT, temp.c_str());
-//         getline(ss, temp, '|'); strcpy(sv.Email, temp.c_str());
-
-//         insertSinhVien(First, sv);
-//     }
-
-//     f.close();
-// }
 void saveLopSV(DS_LOPSV &ds, const string &fileLop, const string &fileSV) {
     ofstream fLop(fileLop);
     ofstream fSV(fileSV);

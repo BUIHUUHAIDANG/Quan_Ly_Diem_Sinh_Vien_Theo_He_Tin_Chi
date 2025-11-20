@@ -53,9 +53,12 @@ int main() {
     DS_LOPSV ds;
     ds.n=0;
     PTRLTC FirstLTC;
+    stackNode* rootLTC;
+   //initializeStack
+   initializeStackNode(rootLTC);
    // PTRSV FirstSV;
     initializeLTC(FirstLTC);
-    loadLopTinChiFromFileText(FirstLTC, "LopTinChi.txt");
+    loadLopTinChi(FirstLTC, "LopTinChi.txt","DSSVDK.txt");
     loadLopSV(ds, "LopSinhVien.txt", "SinhVien.txt");
    // initializeSV(FirstSV);
    // loadSinhVienFromFile(FirstSV,"SinhVien.txt"); 
@@ -179,9 +182,14 @@ int main() {
                     ltc.MALOPTC = getNextMaLopTinChi(FirstLTC);
 
                     insertLopTinChi(FirstLTC, ltc);
-                    saveLopTinChiToFileText(FirstLTC, "LopTinChi.txt");
+                    saveLopTinChi(FirstLTC, "LopTinChi.txt","DSSVDK.txt");
 
                     cout << "\n>>> Da them lop tin chi thanh cong! MA MOI: "<< ltc.MALOPTC;
+                    ActionLTC act;
+                    act.type=1;
+                    act.ltc=ltc;
+                    push(rootLTC,act);
+                    cout << "\nNhan phim bat ky de quay lai...";
                     getch();
                 }
                 if(n==1){
@@ -192,14 +200,18 @@ int main() {
                     cout << "Nhap Ma Lop TC muon sua: ";
                     cin >> malop;
                     cin.ignore();
+                    PTRLTC tmp=searchLopTinChi(FirstLTC,malop);
 
                     if (editLopTinChi(FirstLTC, malop)) {
-                        saveLopTinChiToFileText(FirstLTC, "LopTinChi.txt");
+                        saveLopTinChi(FirstLTC, "LopTinChi.txt","DSSVDK.txt");
                         cout << "\n>>> Sua thong tin lop tin chi thanh cong!";
                         } else {
                         cout << "\n>>> Khong tim thay lop tin chi!";
                         }
-
+                     ActionLTC act;
+                     act.type=3;
+                     act.ltc=tmp->ltc;
+                     push(rootLTC,act);                 
                      cout << "\nNhan phim bat ky de quay lai...";
                     getch();
                 }
@@ -315,7 +327,7 @@ int main() {
         }}
     }
     // don dep LTC,SV truoc khi thoat ra ngoai
-    Clearlist(FirstLTC);
+
     ClearDS_Lop(ds);
     clrscr();
     gotoxy(10, 10);

@@ -49,8 +49,7 @@ struct DS_LOPSV {
 struct DangKy {
     char MASV[16];
     float DIEM;
-    bool HuyDK;
-    PTRSV sinhVien;
+    bool HuyDK=false;
 };
 
 struct nodeDK {
@@ -67,7 +66,7 @@ struct LopTinChi {
     int Hocky;
     int Nhom;
     int sosvmin, sosvmax;
-    bool huylop;
+    bool huylop=false;
     PTRDK dssvdk;
     LopTinChi();
 };
@@ -79,5 +78,16 @@ struct nodeLTC {
     nodeLTC(LopTinChi data);
 };
 typedef nodeLTC* PTRLTC;
+struct ActionLTC {
+    int type;
+    LopTinChi ltc;
+};
+struct stackNode
+{
+    ActionLTC data;
+    stackNode* next;
+};
+
+
 
 #endif
