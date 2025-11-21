@@ -512,6 +512,147 @@ void loadLopSV(DS_LOPSV &ds, const string &fileLop, const string &fileSV) {
     }
     fSV.close();
 }
+void saveLopSV_Binary(DS_LOPSV &ds, const string &fileLop, const string &fileSV) {
+    FILE *fLop = fopen(fileLop.c_str(), "wb");
+    FILE *fSV  = fopen(fileSV.c_str(), "wb");
+    if(!fLop || !fSV){ 
+        cout << "Khong mo duoc file!\n"; 
+        return; 
+    }
+    fwrite(&ds.n, sizeof(int), 1, fLop);
+
+    for(int i=0; i<ds.n; i++){
+        LopSV* lop = ds.nodes[i];
+        fwrite(lop->MALOP, sizeof(lop->MALOP), 1, fLop);
+        fwrite(lop->TENLOP, sizeof(lop->TENLOP), 1, fLop);
+        int countSV = 0;
+        for(PTRSV p = lop->FirstSV; p != nullptr; p = p->next) countSV++;
+        fwrite(&countSV, sizeof(int), 1, fLop);
+        for(PTRSV p = lop->FirstSV; p != nullptr; p = p->next){
+            fwrite(lop->MALOP, sizeof(lop->MALOP), 1, fSV);
+            fwrite(&p->sv, sizeof(SinhVien), 1, fSV);
+        }
+    }
+
+    fclose(fLop);
+    fclose(fSV);
+}
+void loadLopSV_Binary(DS_LOPSV &ds, const string &fileLop, const string &fileSV) {
+    FILE *fLop = fopen(fileLop.c_str(), "rb");
+    if(!fLop){ 
+        cout << "Khong mo duoc file LopSV!\n"; 
+        return; 
+    }
+    fread(&ds.n, sizeof(int), 1, fLop);
+
+    for(int i=0; i<ds.n; i++){
+        LopSV* lop = new LopSV;
+
+        fread(lop->MALOP, sizeof(lop->MALOP), 1, fLop);
+        fread(lop->TENLOP, sizeof(lop->TENLOP), 1, fLop);
+
+        int countSV;
+        fread(&countSV, sizeof(int), 1, fLop);
+
+        lop->FirstSV = nullptr;
+        ds.nodes[i] = lop;
+    }
+    fclose(fLop);
+    FILE *fSV = fopen(fileSV.c_str(), "rb");
+    if(!fSV){ 
+        cout << "Khong mo duoc file SinhVien!\n"; 
+        return; 
+    }
+
+    while(true){
+        char malop[16];
+        SinhVien sv;
+
+        if(fread(malop, sizeof(malop), 1, fSV) != 1) break; // EOF
+        fread(&sv, sizeof(SinhVien), 1, fSV);
+
+        LopSV* lop = searchLopSV(ds, malop);
+        if(lop) insertSinhVien(lop->FirstSV, sv);
+    }
+
+    fclose(fSV);
+}
+void saveLopTinChi_Binary(PTRLTC &First, const string &fileLoptinchi, const string &fileSVDK) {
+    FILE *fLTC = fopen(fileLoptinchi.c_str(), "wb");
+    FILE *fSVDK = fopen(fileSVDK.c_str(), "wb");
+    if(!fLTC || !fSVDK){
+        cout << "Khong the mo duoc file!" << endl;
+        return;
+    }
+    int countLTC = 0;
+    for(PTRLTC p = First; p != nullptr; p = p->next) countLTC++;
+    fwrite(&countLTC, sizeof(int), 1, fLTC);
+    for(PTRLTC p = First; p != nullptr; p = p->next){
+        fwrite(&p->ltc.MALOPTC, sizeof(int), 1, fLTC);
+        fwrite(p->ltc.MAMH, sizeof(p->ltc.MAMH), 1, fLTC);
+        fwrite(p->ltc.NienKhoa, sizeof(p->ltc.NienKhoa), 1, fLTC);
+        fwrite(&p->ltc.Hocky, sizeof(int), 1, fLTC);
+        fwrite(&p->ltc.Nhom, sizeof(int), 1, fLTC);
+        fwrite(&p->ltc.sosvmin, sizeof(int), 1, fLTC);
+        fwrite(&p->ltc.sosvmax, sizeof(int), 1, fLTC);
+        fwrite(&p->ltc.huylop, sizeof(bool), 1, fLTC);
+        int countDK = 0;
+        for(PTRDK q = p->ltc.dssvdk; q != nullptr; q = q->next) countDK++;
+        fwrite(&countDK, sizeof(int), 1, fSVDK);
+
+        for(PTRDK q = p->ltc.dssvdk; q != nullptr; q = q->next){
+            fwrite(&p->ltc.MALOPTC, sizeof(int), 1, fSVDK); 
+            fwrite(&q->dk, sizeof(DangKy), 1, fSVDK);
+        }
+    }
+
+    fclose(fLTC);
+    fclose(fSVDK);
+}
+void loadLopTinChi_Binary(PTRLTC &First, const string &fileLoptinchi, const string &fileSVDK) {
+    FILE *fLTC = fopen(fileLoptinchi.c_str(), "rb");
+    if(!fLTC){
+        cout << "Khong mo duoc file!" << endl;
+        return;
+    }
+
+    int countLTC;
+    fread(&countLTC, sizeof(int), 1, fLTC);
+
+    for(int i=0; i<countLTC; i++){
+        LopTinChi ltc;
+        fread(&ltc.MALOPTC, sizeof(int), 1, fLTC);
+        fread(ltc.MAMH, sizeof(ltc.MAMH), 1, fLTC);
+        fread(ltc.NienKhoa, sizeof(ltc.NienKhoa), 1, fLTC);
+        fread(&ltc.Hocky, sizeof(int), 1, fLTC);
+        fread(&ltc.Nhom, sizeof(int), 1, fLTC);
+        fread(&ltc.sosvmin, sizeof(int), 1, fLTC);
+        fread(&ltc.sosvmax, sizeof(int), 1, fLTC);
+        fread(&ltc.huylop, sizeof(bool), 1, fLTC);
+
+        ltc.dssvdk = nullptr;
+        insertLopTinChi(First, ltc);
+    }
+    fclose(fLTC);
+
+    FILE *fSVDK = fopen(fileSVDK.c_str(), "rb");
+    if(!fSVDK){
+        cout << "Khong mo duoc file SVDK!" << endl;
+        return;
+    }
+
+    while(true){
+        int maloptc;
+        DangKy dk;
+        if(fread(&maloptc, sizeof(int), 1, fSVDK) != 1) break; // EOF
+        if(fread(&dk, sizeof(DangKy), 1, fSVDK) != 1) break;
+
+        PTRLTC p = searchLopTinChi(First, maloptc);
+        if(p) insertSinhVienDangKy(p->ltc.dssvdk, dk);
+    }
+
+    fclose(fSVDK);
+}
 
 
 

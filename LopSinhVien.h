@@ -47,20 +47,18 @@ int listToArray(PTRSV First, SinhVien arr[]);
 void sortSinhVien(SinhVien arr[], int n);
 void printDSSV_sorted(LopSV *lop);
 LopTinChi NhapLTC();
-// void saveLopTinChiToFileText(PTRLTC First, const string &filename);
-// void loadLopTinChiFromFileText(PTRLTC &First, const string &filename);
 void saveLopTinChi(PTRLTC &First, const string &fileLoptinchi, const string &fileSVDK);
 void loadLopTinChi(PTRLTC &First, const string &fileLop, const string &fileSVDK);
 int getNextMaLopTinChi(PTRLTC First);
 string inputOrKeep(const string &oldValue, const string &label);
 int inputIntOrKeep(int oldValue, const string &label);
 PTRLTC findLTCByParams(PTRLTC FirstLTC);
-// void saveSinhVienToFile(PTRSV First, const string &filename);
-// void loadSinhVienFromFile(PTRSV &First, const string &filename);
-// LopSV* searchLopSV(DS_LOPSV &ds, const char* MALOP);
 void saveLopSV(DS_LOPSV &ds, const string &fileLop, const string &fileSV);
 void loadLopSV(DS_LOPSV &ds, const string &fileLop, const string &fileSV);
-
+void saveLopSV_Binary(DS_LOPSV &ds, const string &fileLop, const string &fileSV);
+void loadLopSV_Binary(DS_LOPSV &ds, const string &fileLop, const string &fileSV);
+void saveLopTinChi_Binary(PTRLTC &First,const string &fileloptinchi,const string &fileSVDK);
+void loadLopTinChi_Binary(PTRLTC &First, const string &fileLop, const string &fileSVDK);
 
 
 #endif
