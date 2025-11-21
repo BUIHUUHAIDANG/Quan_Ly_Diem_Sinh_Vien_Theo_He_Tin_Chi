@@ -1,4 +1,5 @@
 #include "LopSinhVien.h"
+#include "CTDL.h"
 #include <cstring>
 #include <iostream>
 #include <algorithm>
@@ -64,7 +65,9 @@ void undoLTC(PTRLTC &First,stackNode* &root){
     pop(root);
     //them
     if(act.type==1){
+       int maloptc=act.ltc.MALOPTC;
        deleteLopTinChi(First,act.ltc.MALOPTC);
+       cout<<"Ban vua xoa di Lop Tin Chi vua tao voi MALOPTC la: "<<maloptc<<endl;
     }
     //xoa
     else if(act.type==2){
@@ -72,7 +75,9 @@ void undoLTC(PTRLTC &First,stackNode* &root){
     }
     //sua
     else if(act.type==3){
+        int maloptc=act.ltc.MALOPTC;
        undoSuaLTC(First,act.ltc);
+       cout<<"Ban vua quay nguoc lai du lieu cu cua MALOPTC "<<maloptc<<endl;
     }
     return;
 }
@@ -192,7 +197,12 @@ void showLopTinChi(PTRLTC &l){
         <<"\nSo sinh vien toi da: "<<l->ltc.sosvmax
         <<"\nSo sinh vien toi thieu: "<<l->ltc.sosvmin<<endl;
 }
-
+void showDanhSachSinhVienDangKy(PTRDK &l){
+     while(!l){
+        cout<<l->dk.MASV<<"|"<<l->dk.DIEM<<"|"<<l->dk.HuyDK<<endl;
+        l=l->next;
+     }
+}
 
 bool isEmptySinhVien(PTRSV &First){ return First == nullptr; }
 void insertSinhVien(PTRSV &First,SinhVien x){
@@ -391,7 +401,6 @@ void loadLopTinChi(PTRLTC &First, const string &fileLopTinChi, const string &fil
         cout<<"khong mo duoc file!"<<endl;
         return;
      }
-     string line;
      while(getline(fSVDK,line)){
         if(line.empty())continue;
         stringstream ss(line);

@@ -61,7 +61,21 @@ int main() {
     loadLopTinChi(FirstLTC, "LopTinChi.txt","DSSVDK.txt");
     loadLopSV(ds, "LopSinhVien.txt", "SinhVien.txt");
    // initializeSV(FirstSV);
-   // loadSinhVienFromFile(FirstSV,"SinhVien.txt"); 
+   // loadSinhVienFromFile(FirstSV,"SinhVien.txt");
+   for(int i=0;i<ds.n;i++){
+       cout<<ds.nodes[i]->MALOP<<endl;
+       PTRSV p=ds.nodes[i]->FirstSV;
+       while(!p){
+            cout<<p->sv.TEN<<endl;
+            p=p->next;
+       }
+   }
+    PTRLTC p=FirstLTC;
+    while(!p){
+    showLopTinChi(p);
+    showDanhSachSinhVienDangKy(p->ltc.dssvdk);
+    p=p->next;
+   }
     const char *roles[] = {"Sinh vien", "Giang vien", "Admin", "Thoat"};
     const char *features_sinhvien[] = {
         "Xem danh sach mon hoc",
@@ -100,7 +114,7 @@ int main() {
     const char *features_admin_3[] = {
         "Them moi Lop Tin Chi",
         "Cap nhat xoa sua Lop Tin Chi",
-        "Huy Lop Tin Chi",
+        "Hieu chinh Lop Tin Chi",
         "← Quay lai"
     };
     int n_features_admin_3=4;// num of func 6
@@ -165,7 +179,7 @@ int main() {
             getch();
             }
             if(f==2){
-                clrscr();
+              clrscr();
             gotoxy(10, 10);
             cout << "Ban da chon: " << features_admin[f];
             gotoxy(10, 12);
@@ -219,6 +233,7 @@ int main() {
                     clrscr();
                     gotoxy(10, 10);
                     cout << "Ban da chon: " << features_admin_3[n];
+                    undoLTC(FirstLTC,rootLTC);
                     gotoxy(10, 12);
                     cout << "(Nhan phim bat ky de quay lai...)";
                     getch();
@@ -230,7 +245,7 @@ int main() {
                 cout << "=== DANH SACH SINH VIEN DA DANG KY LOP TIN CHI ===\n";
                 PTRLTC pLTC = findLTCByParams(FirstLTC);
                 if(pLTC){
-                showDanhSachSinhVienDangKy(pLTC);
+                showDanhSachSinhVienDangKy(pLTC->ltc.dssvdk);
                 } else {
                  cout << "Khong tim thay lop tin chi voi cac tham so da nhap.\n";
                 }

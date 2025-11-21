@@ -2,7 +2,7 @@
 #define LOPSV_H
 
 #include <iostream>
-#include<CTDL.h>
+#include "CTDL.h"
 using namespace std;
 stackNode* newNode(ActionLTC data);
 bool isEmpty(stackNode* &root);
@@ -28,7 +28,7 @@ void ClearDS_Lop(DS_LOPSV &ds);
 PTRLTC searchLopTinChi(PTRLTC &First,int x);
 PTRLTC searchLTC(PTRLTC &First,char nienkhoa[10],int hocky,int nhom,char MAMH[11]);
 bool editLopTinChi(PTRLTC &First,int x);
-void showDanhSachSinhVienDangKy(PTRLTC &l);
+void showDanhSachSinhVienDangKy(PTRDK &l);
 void showLopTinChi(PTRLTC &l);
 bool showDSSVOfLopTinChi(PTRLTC &First,char nienkhoa[10],int hocky,int nhom,char MAMH[11]);
 
@@ -59,6 +59,7 @@ void saveLopSV_Binary(DS_LOPSV &ds, const string &fileLop, const string &fileSV)
 void loadLopSV_Binary(DS_LOPSV &ds, const string &fileLop, const string &fileSV);
 void saveLopTinChi_Binary(PTRLTC &First,const string &fileloptinchi,const string &fileSVDK);
 void loadLopTinChi_Binary(PTRLTC &First, const string &fileLop, const string &fileSVDK);
+
 
 
 #endif
