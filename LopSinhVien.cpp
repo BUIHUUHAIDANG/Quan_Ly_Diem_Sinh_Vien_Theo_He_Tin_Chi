@@ -20,6 +20,13 @@ using namespace std;
 // }
 // nodeLTC::nodeLTC() { next = nullptr; }
 // nodeLTC::nodeLTC(LopTinChi data) { this->ltc = data; this->next = nullptr; }
+time_t stringToTime(string s) {
+    tm t = {};
+    stringstream ss(s);
+    ss >> get_time(&t, "%Y-%m-%d %H:%M");
+    return mktime(&t);
+}
+
 stackNode* newNode(ActionLTC Data){
     stackNode* p= new stackNode();
     p->data=Data;
@@ -312,19 +319,44 @@ void printDSSV_sorted(LopSV *lop) {
 }
 
 LopTinChi NhapLTC(){
-     LopTinChi ltc;
+    LopTinChi ltc;
 
-        cout << "\n=== THEM LOP TIN CHI ===\n";
-        ltc.MALOPTC = -1; // sẽ gán tự động sau
+    cout << "\n=== THEM LOP TIN CHI ===\n";
+    ltc.MALOPTC = -1; // sẽ gán tự động sau
 
-        cout << "Nhap Ma Mon Hoc: "; cin.getline(ltc.MAMH, 11);
-        cout << "Nhap Nien Khoa: "; cin.getline(ltc.NienKhoa, 10);
-        cout << "Nhap Hoc Ky: "; cin >> ltc.Hocky;
-        cout << "Nhap Nhom: "; cin >> ltc.Nhom;
-        cout << "Nhap SV Min va Max: "; cin >> ltc.sosvmin >> ltc.sosvmax;
-        cin.ignore();
+    cout << "Nhap Ma Mon Hoc: "; cin.getline(ltc.MAMH, 11);
+    cout << "Nhap Nien Khoa: "; cin.getline(ltc.NienKhoa, 10);
+    cout << "Nhap Hoc Ky: "; cin >> ltc.Hocky;
+    cout << "Nhap Nhom: "; cin >> ltc.Nhom;
+    cout << "Nhap SV Min va Max: "; cin >> ltc.sosvmin >> ltc.sosvmax;
+    cout << "Nhap Deadline (YYYY-MM-DD HH:MM): ";
+    string deadlinestr;
+    cin.ignore();
+    getline(cin, deadlinestr);
+    ltc.deadline = stringToTime(deadlinestr);
+    ltc.huylop = false;
+    ltc.dssvdk = nullptr;
+    cin.ignore();
 
-        return ltc;
+    return ltc;
+}
+
+void AutoCancelExpiredClasses(PTRLTC &l) {
+    time_t now = time(nullptr);
+
+    PTRLTC* cur = nullptr;
+
+    while (cur != nullptr) {
+        bool hetHan = (now >= cur->ltc.deadline);
+        bool thieuSV = (cur->ltc.currentsv < cur->ltc.sosvmin);
+
+        if (hetHan && thieuSV) {
+            cur->ltc.huylop = true;
+        } 
+        else {
+            cur = cur->next;
+        }
+    }
 }
 void saveLopTinChi(PTRLTC &First, const string &fileLoptinchi, const string &fileSVDK){
      ofstream fLTC(fileLoptinchi);
