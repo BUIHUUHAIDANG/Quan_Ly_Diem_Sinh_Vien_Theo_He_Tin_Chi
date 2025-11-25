@@ -2,8 +2,10 @@
 #define LOPSV_H
 
 #include <iostream>
+#include <ctime>
 #include "CTDL.h"
 using namespace std;
+time_t stringToTime(string s);
 stackNode* newNode(ActionLTC data);
 bool isEmpty(stackNode* &root);
 void push(stackNode* &root,ActionLTC data);
@@ -47,6 +49,7 @@ int listToArray(PTRSV First, SinhVien arr[]);
 void sortSinhVien(SinhVien arr[], int n);
 void printDSSV_sorted(LopSV *lop);
 LopTinChi NhapLTC();
+void AutoCancelExpiredClasses(PTRLTC &l);
 void saveLopTinChi(PTRLTC &First, const string &fileLoptinchi, const string &fileSVDK);
 void loadLopTinChi(PTRLTC &First, const string &fileLop, const string &fileSVDK);
 int getNextMaLopTinChi(PTRLTC First);
