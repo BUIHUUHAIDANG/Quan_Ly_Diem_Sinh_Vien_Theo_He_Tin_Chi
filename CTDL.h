@@ -66,9 +66,15 @@ struct LopTinChi {
     int Hocky;
     int Nhom;
     int sosvmin, sosvmax;
-    bool huylop=false;
+    int currentsv;
+    time_t deadline;
+    bool huylop;
     PTRDK dssvdk;
-    LopTinChi();
+    LopTinChi() {
+        MALOPTC = 0; MAMH[0]=0; NienKhoa[0]=0;
+        Hocky = 0; Nhom = 0; sosvmin = 0; sosvmax = 0; currentsv = 0;
+        deadline = 0; huylop = false; dssvdk = nullptr;
+    }
 };
 
 struct nodeLTC {
