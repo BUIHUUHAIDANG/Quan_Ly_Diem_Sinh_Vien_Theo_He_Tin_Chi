@@ -51,7 +51,6 @@ struct DangKy {
     char MASV[16];
     float DIEM;
     bool HuyDK;
-    PTRSV sinhVien;
 };
 
 struct nodeDK {
