@@ -16,8 +16,8 @@ void initializeLTC(PTRLTC &First);
 void initializeSV(PTRSV & FirstSV);
 PTRLTC createNodeLopTinChi(LopTinChi data);
 void insertLopTinChi(PTRLTC &First, LopTinChi data);
-bool isEmpty(PTRLTC &First);
-int deleteFirst(PTRLTC &First);
+bool isEmpty(PTRLTC &First);//checked
+int deleteFirst(PTRLTC &First);//checked
 int deleteFirstDK(PTRDK &First);
 int deleteAfter(PTRLTC p);
 int deleteLopTinChi(PTRLTC &First,int MALTC);
