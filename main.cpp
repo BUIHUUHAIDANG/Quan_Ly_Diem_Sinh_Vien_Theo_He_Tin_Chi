@@ -7,6 +7,7 @@
 #include "MonHoc.h"
 #include "LopSinhVien.h"
 #include "CTDL.h"
+#include<limits>
 using namespace std;
 void drawMenu(const char *title, const char *role, const char *options[], int n, int highlight) {
     clrscr();
@@ -52,6 +53,7 @@ int menu(const char *title, const char *role, const char *options[], int n) {
 int main() {
     DS_LOPSV ds;
     ds.n=0;
+    for(int i=0;i<MAX_LOPSV;i++) ds.nodes[i] = nullptr;
     PTRLTC FirstLTC;
     stackNode* rootLTC;
    //initializeStack
@@ -62,20 +64,6 @@ int main() {
     loadLopSV(ds, "LopSinhVien.txt", "SinhVien.txt");
    // initializeSV(FirstSV);
    // loadSinhVienFromFile(FirstSV,"SinhVien.txt");
-   for(int i=0;i<ds.n;i++){
-       cout<<ds.nodes[i]->MALOP<<endl;
-       PTRSV p=ds.nodes[i]->FirstSV;
-       while(!p){
-            cout<<p->sv.TEN<<endl;
-            p=p->next;
-       }
-   }
-    PTRLTC p=FirstLTC;
-    while(!p){
-    showLopTinChi(p);
-    showDanhSachSinhVienDangKy(p->ltc.dssvdk);
-    p=p->next;
-   }
     const char *roles[] = {"Sinh vien", "Giang vien", "Admin", "Thoat"};
     const char *features_sinhvien[] = {
         "Xem danh sach mon hoc",
@@ -208,32 +196,46 @@ int main() {
                 }
                 if(n==1){
                     clrscr();
-                    cout << "=== SUA LOP TIN CHI ===\n";
+                   cout << "=== SUA LOP TIN CHI ===\n";
 
-                    int malop;
-                    cout << "Nhap Ma Lop TC muon sua: ";
-                    cin >> malop;
-                    cin.ignore();
-                    PTRLTC tmp=searchLopTinChi(FirstLTC,malop);
+                   int malop;
+                   cout << "Nhap Ma Lop TC muon sua: ";
+                   cin >> malop;
+                   cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-                    if (editLopTinChi(FirstLTC, malop)) {
-                        saveLopTinChi(FirstLTC, "LopTinChi.txt","DSSVDK.txt");
-                        cout << "\n>>> Sua thong tin lop tin chi thanh cong!";
-                        } else {
-                        cout << "\n>>> Khong tim thay lop tin chi!";
-                        }
-                     ActionLTC act;
-                     act.type=3;
-                     act.ltc=tmp->ltc;
-                     push(rootLTC,act);                 
-                     cout << "\nNhan phim bat ky de quay lai...";
-                    getch();
+                PTRLTC tmp = searchLopTinChi(FirstLTC, malop);
+                if(tmp == nullptr){
+                   cout << "Khong tim thay Lop Tin Chi\n";
+                   getch();
+                   clrscr();
+                   continue;
+                }
+
+               LopTinChi oldLTC = tmp->ltc;
+
+                if(editLopTinChi(FirstLTC, malop)){
+                saveLopTinChi(FirstLTC, "LopTinChi.txt","DSSVDK.txt");
+                cout << "\n>>> Sua thong tin lop tin chi thanh cong!";
+
+    
+                ActionLTC act;
+                act.type = 3;
+                act.ltc = oldLTC;   
+                push(rootLTC, act);
+                }
+               else {
+               cout << "\n>>> Khong tim thay lop tin chi!";
+            }
+
+               cout << "\nNhan phim bat ky de quay lai...";
+               getch();
                 }
                 if(n==2){
                     clrscr();
                     gotoxy(10, 10);
                     cout << "Ban da chon: " << features_admin_3[n];
                     undoLTC(FirstLTC,rootLTC);
+                    saveLopTinChi(FirstLTC, "LopTinChi.txt","DSSVDK.txt");
                     gotoxy(10, 12);
                     cout << "(Nhan phim bat ky de quay lai...)";
                     getch();
@@ -343,6 +345,7 @@ int main() {
     }
     // don dep LTC,SV truoc khi thoat ra ngoai
 
+    ClearLTC(FirstLTC);
     ClearDS_Lop(ds);
     clrscr();
     gotoxy(10, 10);

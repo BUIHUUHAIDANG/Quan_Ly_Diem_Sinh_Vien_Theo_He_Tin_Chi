@@ -5,21 +5,22 @@
 #include <algorithm>
 #include <fstream>      
 #include <sstream>      
-#include <string>      
+#include <string> 
+#include <limits>     
 using namespace std;
 
 
-// nodeSV::nodeSV() { next = nullptr; }
-// LopSV::LopSV() { FirstSV = nullptr; MALOP[0]=0; TENLOP[0]=0; }
-// DS_LOPSV::DS_LOPSV() { n = 0; for(int i=0;i<MAX_LOPSV;i++) nodes[i]=nullptr; }
-// nodeDK::nodeDK() { next = nullptr; }
-// LopTinChi::LopTinChi() {
-//     MALOPTC = 0; MAMH[0]=0; NienKhoa[0]=0;
-//     Hocky = 0; Nhom = 0; sosvmin = 0; sosvmax = 0;
-//     huylop = false; dssvdk = nullptr;
-// }
-// nodeLTC::nodeLTC() { next = nullptr; }
-// nodeLTC::nodeLTC(LopTinChi data) { this->ltc = data; this->next = nullptr; }
+nodeSV::nodeSV() { next = nullptr; }
+LopSV::LopSV() { FirstSV = nullptr; MALOP[0]=0; TENLOP[0]=0; }
+DS_LOPSV::DS_LOPSV() { n = 0; for(int i=0;i<MAX_LOPSV;i++) nodes[i]=nullptr; }
+nodeDK::nodeDK() { next = nullptr; }
+LopTinChi::LopTinChi() {
+    MALOPTC = 0; MAMH[0]=0; NienKhoa[0]=0;
+    Hocky = 0; Nhom = 0; sosvmin = 0; sosvmax = 0;
+    huylop = false; dssvdk = nullptr;
+}
+nodeLTC::nodeLTC() { next = nullptr; }
+nodeLTC::nodeLTC(LopTinChi data) { this->ltc = data; this->next = nullptr; }
 stackNode* newNode(ActionLTC Data){
     stackNode* p= new stackNode();
     p->data=Data;
@@ -81,7 +82,7 @@ void undoLTC(PTRLTC &First,stackNode* &root){
     }
     return;
 }
-void initializeStackNode(stackNode* root){root=nullptr;}
+void initializeStackNode(stackNode* &root){root=nullptr;}
 void initializeLTC(PTRLTC & First) { First = nullptr; }
 void initializeSV(PTRSV &FirstSV){FirstSV=nullptr;}
 PTRLTC createNodeLopTinChi(LopTinChi data) { return new nodeLTC(data); }
@@ -131,7 +132,6 @@ void ClearLTC(PTRLTC &First){
      while(First!=nullptr){
           ClearlistDSSVDK(First->ltc.dssvdk);
           deleteFirst(First);
-          First=First->next;
      }
 }
 void ClearlistSV(PTRSV &First){ while(First!=nullptr) deleteFirstSinhVien(First);}
@@ -198,9 +198,10 @@ void showLopTinChi(PTRLTC &l){
         <<"\nSo sinh vien toi thieu: "<<l->ltc.sosvmin<<endl;
 }
 void showDanhSachSinhVienDangKy(PTRDK &l){
-     while(!l){
-        cout<<l->dk.MASV<<"|"<<l->dk.DIEM<<"|"<<l->dk.HuyDK<<endl;
-        l=l->next;
+    PTRDK p=l;
+     while(p){
+        cout<<p->dk.MASV<<"|"<<p->dk.DIEM<<"|"<<p->dk.HuyDK<<endl;
+        p=p->next;
      }
 }
 
@@ -313,18 +314,19 @@ void printDSSV_sorted(LopSV *lop) {
 
 LopTinChi NhapLTC(){
      LopTinChi ltc;
+    cout << "\n=== THEM LOP TIN CHI ===\n";
+    ltc.MALOPTC = -1; 
 
-        cout << "\n=== THEM LOP TIN CHI ===\n";
-        ltc.MALOPTC = -1; // sẽ gán tự động sau
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-        cout << "Nhap Ma Mon Hoc: "; cin.getline(ltc.MAMH, 11);
-        cout << "Nhap Nien Khoa: "; cin.getline(ltc.NienKhoa, 10);
-        cout << "Nhap Hoc Ky: "; cin >> ltc.Hocky;
-        cout << "Nhap Nhom: "; cin >> ltc.Nhom;
-        cout << "Nhap SV Min va Max: "; cin >> ltc.sosvmin >> ltc.sosvmax;
-        cin.ignore();
+    cout << "Nhap Ma Mon Hoc: "; cin.getline(ltc.MAMH, 11);
+    cout << "Nhap Nien Khoa: "; cin.getline(ltc.NienKhoa, 10);
+    cout << "Nhap Hoc Ky: "; cin >> ltc.Hocky;
+    cout << "Nhap Nhom: "; cin >> ltc.Nhom;
+    cout << "Nhap SV Min va Max: "; cin >> ltc.sosvmin >> ltc.sosvmax;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
 
-        return ltc;
+    return ltc;
 }
 void saveLopTinChi(PTRLTC &First, const string &fileLoptinchi, const string &fileSVDK){
      ofstream fLTC(fileLoptinchi);
@@ -333,24 +335,26 @@ void saveLopTinChi(PTRLTC &First, const string &fileLoptinchi, const string &fil
         cout<<"Khong the mo file!"<<endl;
         return;
      }
-     while(!First){
-        fLTC << First->ltc.MALOPTC<<"|"
-             <<First->ltc.MAMH<<"|"
-             <<First->ltc.NienKhoa<<"|"
-             <<First->ltc.Hocky<<"|"
-             <<First->ltc.Nhom<<"|"
-             <<First->ltc.sosvmin<<"|"
-             <<First->ltc.sosvmax<<"|"
-             <<First->ltc.huylop<<endl;
-        PTRDK p=First->ltc.dssvdk;
-        while(!p){
-         fSVDK <<First->ltc.MALOPTC<<"|"
-               <<p->dk.MASV<<"|"
-               <<p->dk.DIEM<<"|"
-               <<p->dk.HuyDK<<"|"<<endl;
-               p=p->next; 
+     PTRLTC p=First;
+     while(p!=nullptr){
+        fLTC << p->ltc.MALOPTC<<"|"
+             <<p->ltc.MAMH<<"|"
+             <<p->ltc.NienKhoa<<"|"
+             <<p->ltc.Hocky<<"|"
+             <<p->ltc.Nhom<<"|"
+             <<p->ltc.sosvmin<<"|"
+             <<p->ltc.sosvmax<<"|"
+             <<p->ltc.huylop<<endl;
+        PTRDK dk=p->ltc.dssvdk;
+        while(dk != nullptr){
+            fSVDK << p->ltc.MALOPTC << "|"
+                  << dk->dk.MASV << "|"
+                  << dk->dk.DIEM << "|"
+                  << dk->dk.HuyDK << "\n";
+            dk = dk->next;
         }
-        First=First->next;
+
+        p = p->next;
      }
      fLTC.close();
      fSVDK.close();
@@ -389,8 +393,8 @@ void loadLopTinChi(PTRLTC &First, const string &fileLopTinChi, const string &fil
            strcpy(ltc.NienKhoa, nienkhoa.c_str());
            ltc.Hocky = stoi(hk);
            ltc.Nhom = stoi(nhom);
-           ltc.sosvmin = stoi(svmax);
-           ltc.sosvmax = stoi(svmin);
+           ltc.sosvmin = stoi(svmin);
+           ltc.sosvmax = stoi(svmax);
            ltc.huylop = (huylop == "1");
            ltc.dssvdk=nullptr;
            insertLopTinChi(First, ltc);

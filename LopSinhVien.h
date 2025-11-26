@@ -11,7 +11,7 @@ void pop(stackNode* &root);
 ActionLTC top(stackNode* &root);
 void undoSuaLTC(PTRLTC &First,LopTinChi ltc);
 void undoLTC(PTRLTC &First,stackNode* &root);
-void initializeStackNode(stackNode* root);
+void initializeStackNode(stackNode* &root);
 void initializeLTC(PTRLTC &First);
 void initializeSV(PTRSV & FirstSV);
 PTRLTC createNodeLopTinChi(LopTinChi data);
