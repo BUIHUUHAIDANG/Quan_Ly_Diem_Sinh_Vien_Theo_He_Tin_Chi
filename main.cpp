@@ -3,6 +3,8 @@
 #include <windows.h>    
 #include <cstdio>
 #include <cstring>
+#include <limits>
+#include <iomanip>
 #include "mylib.h"    
 #include "CTDL.h"
 #include "monhoc.h"
@@ -66,12 +68,17 @@ int menu(const char *title, const char *role, const char *options[], int n) {
 }
 
 int main() {
+    PTRLTC FirstLTC = nullptr;
+    PTRSV FirstSV = nullptr;
+    DS_LOPSV dslop;
+    treeMH dsmh; 
+    treeMH t;
     SetConsoleOutputCP(CP_UTF8);
     const char *roles[] = {"Sinh vien", "Giang vien", "Admin", "Thoat"};
     const char *features_sinhvien[] = {
         "Xem danh sach mon hoc", // 0
         "Dang ki/Huy dang ki lop tin chi", // 1
-        "Xem danh sach lop tin chi da dang ky", // 2
+        "Xem danh sach lop tin chi", // 2
         "Xem diem trung binh", // m + // 3
         "Xem diem tong ket", // m + // 4
         "← Quay lai"
@@ -79,7 +86,7 @@ int main() {
     const char *features_giangVien[] = {
         "Xem danh sach mon hoc", // 0
         "Xem danh sach sinh vien", // 1
-        "Xem danh sach lop tin chi phu trach", // 2
+        "Xem danh sach lop tin chi", // 2
         "Xem danh sach sinh vien da dang ki lop tin chi phu trach", // 3 
         "Nhap diem/ Sua diem cua sinh vien", // m + // 4
         "Xem bang diem cua mot lop tin chi", // m // 5
@@ -90,7 +97,7 @@ int main() {
     const char *features_admin[] = {
         "Xem danh sach mon hoc", // 0
         "Xem danh sach lop tin chi", // 1
-        "Xem danh sach lop sinh vien", //2
+        "Xem danh sach lop sinh vien", // 2
         "Them/cap nhat/xoa mon hoc", // 3
         "Them/cap nhat/huy lop tin chi", // 4
         "Xem danh sach sinh vien da dang ki lop tin chi", // 5
@@ -104,6 +111,8 @@ int main() {
     };
     const char *featuresthemcapnhatxoa[] = {"Them", "Cap nhat", "Xoa", "← Quay lai"};
     const char *featuresthemcapnhathuy[] = {"Them", "Cap nhat", "Huy", "← Quay lai"};
+    const char *featuresdangkyhuy[] = {"Dang ky LTC", "Huy LTC", "← Quay lai"};
+
 
 
     int n_roles = sizeof(roles) / sizeof(roles[0]);
@@ -112,13 +121,14 @@ int main() {
     int n_features_admin = sizeof(features_admin) / sizeof(features_admin[0]);
     int n_featuresthemcapnhatxoa = sizeof(featuresthemcapnhatxoa) / sizeof(featuresthemcapnhatxoa[0]);
     int n_featuresthemcapnhathuy = sizeof(featuresthemcapnhathuy) / sizeof(featuresthemcapnhathuy[0]);
+    int n_featuresdangkyhuy = sizeof(featuresdangkyhuy) / sizeof(featuresdangkyhuy[0]);
 
     while (1) {
         int r = menu("CHON VAI TRO DANG NHAP", "", roles, n_roles);
         if (r == 3) break;
 
         const char *role = roles[r];
-        if (r == 0) {
+        if (r == 0) { // SINH VIEN
             while (1) {
                 int f = menu("🏫 QUAN LY HE TIN CHI 🏫", role, features_sinhvien, n_features_sinhvien);
                 if (f == n_features_sinhvien - 1) break;
@@ -127,20 +137,41 @@ int main() {
                 gotoxy(10, 10);
                 //cout << "Ban da chon: " << features_sinhvien[f];
                 switch(f) {
-                    case 3: {
-                        PTRLTC FirstLTC;
-                        DS_LOPSV dslop;
-                        treeMH dsmh;
+                    case 1: { // Sinh vien dang ky/huy LTC
+                        int g = menu("SINH VIEN DANG KY HUY LOP TIN CHI", role, featuresdangkyhuy, n_featuresdangkyhuy);
+                        switch(g) {
+                            case 0: {// Dang ki
+                                LoadFile_LopSV("LopSinhVien.txt",dslop);
+                                LoadFile_LTC("LopTinChi.txt",FirstLTC);
+                                dangkyLTC(FirstLTC,dslop);
+                                break;
+                            }
+                            case 1: {// Huy
+                                break;
+                            }
+                            default:
+                            break;
+                        }
+                        break;
+                    }
+                    case 2:{ // Xem danh sach ltc
                         LoadFile_LTC("LopTinChi.txt",FirstLTC);
+                        InDSLTC(FirstLTC);
+                        cout << "\n(Nhan phim bat ky de quay lai...)";
+                        _getch();
+                        break;
+                    }
+
+                    case 3: {
+                        
                         LoadFile_LopSV("LopSinhVien.txt", dslop);
+                        LoadFile_LTC("LopTinChi.txt",FirstLTC);
+                       
                         dsmh = DocMonHoc("MonHoc.txt");
                         IndiemtbSinhvien(FirstLTC, dslop, dsmh);
                     }
                     break;
                     case 4: {
-                        PTRLTC FirstLTC;
-                        DS_LOPSV dslop;
-                        treeMH dsmh;
                         LoadFile_LTC("LopTinChi.txt",FirstLTC);
                         LoadFile_LopSV("LopSinhVien.txt", dslop);
                         dsmh = DocMonHoc("MonHoc.txt");
@@ -150,9 +181,9 @@ int main() {
                     default:
                     break;
                 }   
-                gotoxy(10, 12);
-                cout << "(Nhan phim bat ky de quay lai...)";
-                _getch();
+                //gotoxy(10, 12);
+                //cout << "(Nhan phim bat ky de quay lai...)";
+                //_getch();
             }
         } else if (r == 1) {
             while (1) {
@@ -167,8 +198,9 @@ int main() {
                     case 4: {
                         PTRLTC FirstLTC;
                         DS_LOPSV dslop;
-                        LoadFile_LTC("LopTinChi.txt", FirstLTC);
                         LoadFile_LopSV("LopSinhVien.txt", dslop);
+                        LoadFile_LTC("LopTinChi.txt", FirstLTC);
+                        
                         NhapDiem(FirstLTC, dslop);
                         SaveFile_LTC("LopTinChi.txt", FirstLTC);
                     }
@@ -212,7 +244,6 @@ int main() {
                         break;
                     }
                     case 1: { // Xem danh sach LTC
-                        PTRLTC FirstLTC = nullptr;
                         LoadFile_LTC("LopTinChi.txt",FirstLTC);
                         InDSLTC(FirstLTC);
                         cout << "\n(Nhan phim bat ky de quay lai...)";
@@ -220,7 +251,6 @@ int main() {
                         break;
                     }
                     case 2: { // Xem danh sach lopsv
-                        DS_LOPSV dslop;
                         LoadFile_LopSV("LopSinhVien.txt",dslop);
                         InDSLSV(dslop);
                         cout << "\n(Nhan phim bat ky de quay lai...)";
@@ -231,7 +261,6 @@ int main() {
                         int g = menu("   QUAN LY MON HOC",role, featuresthemcapnhatxoa, n_featuresthemcapnhatxoa);
                         switch(g) {
                             case 0: { // them
-                                treeMH t;
                                 NhapMonHoc(t);
                                 LuuMonHoc(t, "MonHocdata.txt");
                                 break;
@@ -247,7 +276,6 @@ int main() {
                         int g = menu("  QUAN LY LOP TIN CHI",role, featuresthemcapnhathuy, n_featuresthemcapnhathuy);
                         switch(g) {
                             case 0: { // them
-                                PTRLTC FirstLTC = nullptr;
                                 NhapLTC(FirstLTC);
                                 SaveFile_LTC("LopTinChi.txt",FirstLTC);
                                 break;
@@ -259,14 +287,25 @@ int main() {
                         }
                         break;
                     }
+                    case 5: { // Xem sinh vien da dang ki lop tin chi
+                        int maloptc;
+                        cout << "\nNhap ma lop tin chi: "; 
+                        cin >> maloptc;
+                        cin.ignore();
+                        LoadFile_LTC("LopTinChi.txt",FirstLTC);
+                        LoadFile_LopSV("LopSinhVien.txt",dslop);
+                        InDSSVDK(FirstLTC,maloptc,dslop);
+                        cout << "\n(Nhan phim bat ky de quay lai...)";
+                        _getch();
+                        break;
+                    }
                     case 6:
                         //InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV dslop);
-                    break;
+                        break;
                     case 7: { //Them/cap nhat/huy lop sinh vien
                         int g = menu("  QUAN LY LOP SINH VIEN",role, featuresthemcapnhathuy, n_featuresthemcapnhathuy);
                         switch(g) {
                             case 0: { // them
-                                DS_LOPSV dslop;
                                 NhapLopSV(dslop);
                                 SaveFile_LopSV("LopSinhVien.txt",dslop);
                                 break;
@@ -277,6 +316,33 @@ int main() {
                             break;
                             
                         }
+                        break;
+                    }
+                    case 8: {// Them/edit/xoa sinh vien
+                        int g = menu("   QUAN LI SINH VIEN",role, featuresthemcapnhatxoa, n_featuresthemcapnhatxoa);
+                        switch(g) {
+                            case 0: { // them
+                                NhapSV(dslop);
+                                SaveFile_LopSV("LopSinhVien.txt",dslop);
+                                break;
+                            }
+                            case 1: 
+                            break;
+                            case 2: 
+                            break;
+                            
+                        }
+                        break;
+                    }
+                    case 9: { // Xem danh sach sinh vien
+                        char malop[16];
+                        cout << "\nNhap ma lop: "; 
+                        cin.getline(malop,16); 
+                        
+                        LoadFile_LopSV("LopSinhVien.txt",dslop);
+                        InDSSV(dslop,malop);
+                        cout << "\n(Nhan phim bat ky de quay lai...)";
+                        _getch();
                         break;
                     }
                     case 10:
