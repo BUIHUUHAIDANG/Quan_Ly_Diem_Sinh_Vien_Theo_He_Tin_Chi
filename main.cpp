@@ -199,8 +199,11 @@ int main() {
                    cout << "=== SUA LOP TIN CHI ===\n";
 
                    int malop;
+                   cin.clear();
+                   cin.ignore(numeric_limits<streamsize>::max(), '\n');
                    cout << "Nhap Ma Lop TC muon sua: ";
                    cin >> malop;
+                   //check
                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                 PTRLTC tmp = searchLopTinChi(FirstLTC, malop);
