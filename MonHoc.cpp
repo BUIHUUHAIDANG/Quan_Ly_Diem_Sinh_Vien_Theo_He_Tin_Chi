@@ -84,27 +84,32 @@ treeMH Insert(treeMH t, MonHoc mh) {
 
     return CheckandRotation(t);
 }
-
-treeMH XoaMH(treeMH &t, char MAMH[]) {
-    if (!t) return nullptr;
-
-    if (strcmp(MAMH, t->mh.MAMH) < 0)
-        t->left = XoaMH(t->left, MAMH);
-    else if (strcmp(MAMH, t->mh.MAMH) > 0)
-        t->right = XoaMH(t->right, MAMH);
-    else {
-        if (!t->left && !t->right) { delete t; return nullptr; }
-        else if (!t->left) { treeMH temp = t->right; delete t; return temp; }
-        else if (!t->right) { treeMH temp = t->left; delete t; return temp; }
-        else {
-            treeMH minRight = t->right;
-            while (minRight->left) minRight = minRight->left;
-            t->mh = minRight->mh;
-            t->right = XoaMH(t->right, minRight->mh.MAMH);
-        }
-    }
-    return CheckandRotation(t);
+void init(stack &s) {
+    s.top = nullptr;
 }
+
+bool empty(stack s) {
+    return s.top == nullptr;
+}
+
+void push(stack &s, ActionMH action) {
+    PTRNode newNode = new node;
+    newNode->data = action;
+    newNode->next = s.top;
+    s.top = newNode;
+}
+
+void pop(stack &s) {
+    if (empty(s)) return;
+    PTRNode temp = s.top;
+    s.top = s.top->next;
+    delete temp;
+}
+
+ActionMH top(stack s) {
+    return s.top->data; 
+}
+
 
 // -------------------- HÀM FILE --------------------
 void LuuMonHoc(treeMH t, string filename) {
@@ -188,24 +193,166 @@ void NhapMonHoc(treeMH &t) {
         cout << "Luu thanh cong!\n\n";
     }
 }
-
-void SuaMH(treeMH &t, MonHoc mh) {
-    if (!t) { cout << "Khong tim thay mon hoc de sua\n"; return; }
-
-    if (strcmp(mh.MAMH, t->mh.MAMH) < 0) SuaMH(t->left, mh);
-    else if (strcmp(mh.MAMH, t->mh.MAMH) > 0) SuaMH(t->right, mh);
-    else {
+treeMH UndoThemMH (treeMH &t, char MAMH[]) {
+    MonHoc mh;
+    if (t == nullptr) {
+        cout <<  "Khong tim thay mon hoc de xoa" << endl;
+        return nullptr;
+    }
+    if (strcmp(MAMH, t->mh.MAMH) < 0) {
+        t->left = UndoThemMH(t->left, MAMH);
+    } else if (strcmp(MAMH, t->mh.MAMH) > 0) {
+        t->right = UndoThemMH(t->right, MAMH);
+    } else {
+        if (t->left == nullptr && t->right == nullptr) {
+            delete t;
+            return nullptr;
+        } else if (t->left == nullptr) {
+            treeMH temp = t->right;
+            delete t;
+            return temp;
+        } else if (t->right == nullptr) {
+            treeMH temp = t->left;
+            delete t;
+            return temp;
+        } else if (t->left != nullptr && t->right != nullptr) {
+            //Node có 2 cây con -> tìm node nhỏ nhất bên phải để xóa
+            treeMH minRight = t->right;
+            while (minRight->left != nullptr) {
+                minRight = minRight->left;
+            }
+            t->mh = minRight->mh;
+            t->right = UndoThemMH(t->right, minRight->mh.MAMH);
+        }
+    }
+    if (t == nullptr) return nullptr; //Nếu cây rồng thì không cần quay
+    return CheckandRotation(t);
+}
+treeMH XoaMH (treeMH &t, char MAMH[], stack &undostackMH) {
+    MonHoc mh;
+    if (t == nullptr) {
+        cout <<  "Khong tim thay mon hoc de xoa" << endl;
+        return nullptr;
+    }
+    if (strcmp(MAMH, t->mh.MAMH) < 0) {
+        t->left = XoaMH(t->left, MAMH, undostackMH);
+    } else if (strcmp(MAMH, t->mh.MAMH) > 0) {
+        t->right = XoaMH(t->right, MAMH, undostackMH);
+    } else {
+        if (t->left == nullptr && t->right == nullptr) {
+            delete t;
+            return nullptr;
+        } else if (t->left == nullptr) {
+            treeMH temp = t->right;
+            delete t;
+            return temp;
+        } else if (t->right == nullptr) {
+            treeMH temp = t->left;
+            delete t;
+            return temp;
+        } else if (t->left != nullptr && t->right != nullptr) {
+            //Node có 2 cây con -> tìm node nhỏ nhất bên phải để xóa
+            treeMH minRight = t->right;
+            while (minRight->left != nullptr) {
+                minRight = minRight->left;
+            }
+            t->mh = minRight->mh;
+            t->right = XoaMH(t->right, minRight->mh.MAMH, undostackMH);
+        }
+    }
+    if (t == nullptr) return nullptr; //Nếu cây rồng thì không cần quay
+    return CheckandRotation(t);
+    ActionMH act;
+    act.type = 2;
+    act.mh = t->mh;
+    push(undostackMH, act);
+}
+void SuaMH (treeMH &t, MonHoc mh, stack &undostackMH) {
+    if (t == nullptr) {
+        cout <<  "Khong tim thay mon hoc de sua" << endl;
+        return;
+    }
+    if (strcmp(mh.MAMH, t->mh.MAMH) < 0) {
+        SuaMH(t->left, mh, undostackMH);
+    } else if (strcmp (mh.MAMH, t->mh.MAMH) > 0) {
+        SuaMH(t->right, mh, undostackMH);
+    } else {
         while (true) {
-            cout << "1.Ten MH 2.STCLT 3.STCTH 4.Thoat\nLua chon: ";
-            int choice; cin >> choice;
-            if (choice < 1 || choice > 4) { cout << "Lua chon khong hop le\n"; continue; }
-            if (choice == 1) { cin.ignore(); cout << "Nhap ten moi: "; cin.getline(t->mh.TENMH,51); }
-            else if (choice == 2) { cout << "Nhap STCLT moi: "; cin >> t->mh.STCLT; }
-            else if (choice == 3) { cout << "Nhap STCTH moi: "; cin >> t->mh.STCTH; }
-            else return;
+            cout << "Ban muon sua thong tin gi:" << endl;
+            cout << "1. Ten mon hoc" << endl;
+            cout << "2. So tin chi ly thuyet" << endl;
+            cout << "3. So tin chi thuc hanh" << endl;
+            cout << "4. Thoat" << endl;
+            int choice;
+            cout << "Nhap lua chon cua ban: ";
+            cin >> choice;
+            if (choice < 1 || choice > 3) {
+                cout << "Lua chon khong hop le" << endl;
+                continue;
+            } else if (choice == 1) {
+                ActionMH act;
+                act.type = 3;
+                act.mh = t->mh;
+                cout << "Nhap ten mon hoc moi: ";
+                cin.ignore();
+                cin.getline(t->mh.TENMH, 51);
+                cout << "Sua ten mon hoc thanh cong" << endl;
+                push(undostackMH, act);
+                continue;
+            } else if (choice == 2) {
+                ActionMH act;
+                act.type = 3;
+                act.mh = t->mh;
+                cout << "Nhap so tin chi ly thuyet moi: ";
+                cin >> t->mh.STCLT;
+                cout << "Sua so tin chi ly thuyet thanh cong" << endl;
+                push(undostackMH, act);
+                continue;
+            } else if (choice == 3) {
+                ActionMH act;
+                act.type = 3;
+                act.mh = t->mh;
+                cout << "Nhap so tin chi thuc hanh moi: ";
+                cin >> t->mh.STCTH;
+                cout << "Sua so tin chi thuc hanh thanh cong" << endl;
+                push(undostackMH, act);
+                continue;
+            } else return;
         }
     }
 }
+void UndoSuaMH (treeMH &t, MonHoc mh) {
+    if (strcmp(mh.MAMH, t->mh.MAMH) < 0) {
+        UndoSuaMH(t->left, mh);
+    } else if (strcmp(mh.MAMH, t->mh.MAMH) > 0) {
+        UndoSuaMH(t->right, mh);
+    } else {
+        t->mh = mh;
+        return;
+    }
+}
+void UndoMH (treeMH &t, stack &undostackMH) {
+    MonHoc mh;
+    if (empty(undostackMH)) {
+        cout << "Khong co thao tac de hoan tac." << endl;
+        return;
+    }
+
+    ActionMH act = top(undostackMH);
+    pop(undostackMH);
+
+    if (act.type == 1) {
+        t = UndoThemMH(t, act.mh.MAMH);
+        cout << "Hoan tac them mon hoc thanh cong." << endl;
+    } else if (act.type == 2) {
+        t = Insert(t, act.mh);
+        cout << "Hoan tac xoa mon hoc thanh cong." << endl;
+    } else if (act.type == 3) {
+        UndoSuaMH(t, act.mh);
+        cout << "Hoan tac sua mon hoc thanh cong." << endl;
+    }
+}
+
 
 void InDSMH(treeMH t) {
     if (!t) return;

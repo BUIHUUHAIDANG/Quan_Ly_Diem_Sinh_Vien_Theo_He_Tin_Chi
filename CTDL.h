@@ -87,6 +87,21 @@ struct stackNode
     ActionLTC data;
     stackNode* next;
 };
+struct ActionMH {
+    int type = 0; //1 = them, 2 = xoa, 3 = sua mh
+    MonHoc mh;
+};
+
+struct node {
+    ActionMH data;
+    node* next;
+};
+
+typedef node* PTRNode;
+
+struct stack {
+    node* top = nullptr; // đỉnh stack
+};
 
 
 

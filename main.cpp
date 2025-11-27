@@ -54,16 +54,10 @@ int main() {
     DS_LOPSV ds;
     ds.n=0;
     for(int i=0;i<MAX_LOPSV;i++) ds.nodes[i] = nullptr;
-    PTRLTC FirstLTC;
-    stackNode* rootLTC;
-   //initializeStack
-   initializeStackNode(rootLTC);
-   // PTRSV FirstSV;
-    initializeLTC(FirstLTC);
+    PTRLTC FirstLTC=nullptr;
+    stackNode* rootLTC=nullptr;
     loadLopTinChi(FirstLTC, "LopTinChi.txt","DSSVDK.txt");
     loadLopSV(ds, "LopSinhVien.txt", "SinhVien.txt");
-   // initializeSV(FirstSV);
-   // loadSinhVienFromFile(FirstSV,"SinhVien.txt");
     const char *roles[] = {"Sinh vien", "Giang vien", "Admin", "Thoat"};
     const char *features_sinhvien[] = {
         "Xem danh sach mon hoc",
@@ -87,6 +81,7 @@ int main() {
     const char *features_admin[] = {
         "Xem danh sach mon hoc",
         "Xem danh sach lop tin chi",
+        "xem danh sach lop sinh vien",
         "Them/cap nhat/xoa mon hoc",
         "Them/cap nhat/huy lop tin chi",
         "Xem danh sach sinh vien da dang ki lop tin chi",
@@ -99,23 +94,29 @@ int main() {
         "← Quay lai"
     };
     //function them/xoa/sua LTC
-    const char *features_admin_3[] = {
+    const char *features_admin_4[] = {
         "Them moi Lop Tin Chi",
         "Cap nhat xoa sua Lop Tin Chi",
         "Hieu chinh Lop Tin Chi",
         "← Quay lai"
     };
-    int n_features_admin_3=4;// num of func 6
+    int n_features_admin_4=4;// num of func 6
     //function xem danh sach sinh 
-    const char *features_admin_8[] ={
+    const char *features_admin_9[] ={
         "Xem danh sach sinh vien(dua vao ma lop) theo thu tu alphabet theo ten",
         "xem danh sach ....",
         "← Quay lai"
     };
-    int n_features_admin_8=3;
+    int n_features_admin_9=3;
 
+    const char *featuresdangkyhuy[]={
+          "Dang ky LTC",
+           "Huy LTC",
+            "← Quay lai"
+    };
+    int n_featuresdangkyhuy=3;
 
-    int n_roles = 4, n_features_sinhvien = 6,n_features_giangvien=9,n_features_admin=12;
+    int n_roles = 4, n_features_sinhvien = 6,n_features_giangvien=9,n_features_admin=13;
 
     while (1) {
         int r = menu("CHON VAI TRO DANG NHAP", "", roles, n_roles);
@@ -129,10 +130,23 @@ int main() {
             
             clrscr();
             gotoxy(10, 10);
-            cout << "Ban da chon: " << features_sinhvien[f];
-            gotoxy(10, 12);
-            cout << "(Nhan phim bat ky de quay lai...)";
-            getch();
+            // cout << "Ban da chon: " << features_sinhvien[f];
+            // gotoxy(10, 12);
+            // cout << "(Nhan phim bat ky de quay lai...)";
+            // getch();
+            if(f==0){
+              while(1){
+                int g= menu("SINH VIEN DANG KY HUY LOP TIN CHI", role, featuresdangkyhuy, n_featuresdangkyhuy);
+                if(g==n_featuresdangkyhuy-1) break;
+                if(g==0){
+                   clrscr();
+                   
+                }
+                if(g==1){
+
+                }
+              }
+            }
         }}
         if(r==1){
         while (1) {
@@ -174,10 +188,10 @@ int main() {
             cout << "(Nhan phim bat ky de quay lai...)";
             getch();
             }
-            if(f==3){
+            if(f==4){
               while(1){
-                int n = menu("=======THEM/XOA/SUA LOP TIN CHI=======","",features_admin_3,n_features_admin_3);
-                if(n==n_features_admin_3-1)break;
+                int n = menu("=======THEM/XOA/SUA LOP TIN CHI=======","",features_admin_4,n_features_admin_4);
+                if(n==n_features_admin_4-1)break;
                 if(n==0){
                     clrscr();
                     LopTinChi ltc = NhapLTC();
@@ -236,7 +250,7 @@ int main() {
                 if(n==2){
                     clrscr();
                     gotoxy(10, 10);
-                    cout << "Ban da chon: " << features_admin_3[n];
+                    cout << "Ban da chon: " << features_admin_4[n];
                     undoLTC(FirstLTC,rootLTC);
                     saveLopTinChi(FirstLTC, "LopTinChi.txt","DSSVDK.txt");
                     gotoxy(10, 12);
@@ -245,7 +259,7 @@ int main() {
                 }
             }
             }
-            if(f==4){
+            if(f==5){
                 clrscr();
                 cout << "=== DANH SACH SINH VIEN DA DANG KY LOP TIN CHI ===\n";
                 PTRLTC pLTC = findLTCByParams(FirstLTC);
@@ -258,7 +272,7 @@ int main() {
                 getch();
 }
             
-            if(f==5){
+            if(f==6){
                 clrscr();
             gotoxy(10, 10);
             cout << "Ban da chon: " << features_admin[f];
@@ -266,10 +280,10 @@ int main() {
             cout << "(Nhan phim bat ky de quay lai...)";
             getch();
             }
-            if(f==6){
+            if(f==7){
            
             }
-            if(f==7){
+            if(f==8){
                 clrscr();
                 gotoxy(10, 10);
                 cout << "=== NHAP SINH VIEN VAO LOP ===\n";
@@ -310,10 +324,10 @@ int main() {
             getch();
              
             }
-            if(f==8){
+            if(f==9){
                while(1){
-                int n = menu("======= XEM DANH SACH SINH VIEN =======","",features_admin_8,n_features_admin_8);
-                if(n==n_features_admin_8-1)break;
+                int n = menu("======= XEM DANH SACH SINH VIEN =======","",features_admin_9,n_features_admin_9);
+                if(n==n_features_admin_9-1)break;
                 if(n==0){
                   
                  clrscr();
