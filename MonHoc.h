@@ -87,8 +87,10 @@ void UndoSuaMH (treeMH &t, MonHoc mh);
 void SuaMH(treeMH &t, MonHoc mh, stack &undostackMH);
 void UndoMH (treeMH &t, stack &undostackMH);
 void InDSMH(treeMH t);
-bool timMonHoc(treeMH t, char mamh[]);
-void InLTC (PTRLTC &loptinchi, char nienkhoa[], int hocky, treeMH &t);
-void DangKyLTC (PTRLTC loptinchi, LopTinChi lop, PTRSV &dssv, treeMH &t);
+treeMH timMonHoc(treeMH t, char mamh[]);
+void InLTC (PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t);
+void SVDangKy(PTRDK &dssvdk, PTRSV sv);
+PTRLTC checkmamh(PTRLTC loptinchi, char nienkhoa[], int hocky);
+void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, PTRSV dssv);
 
 #endif
