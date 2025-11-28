@@ -92,6 +92,7 @@ ActionMH top(stack s) {
     return s.top->data; 
 }
 
+//tim sinh vien trong danh sach sinh vien toan truong
 PTRSV findSinhVien(PTRSV First, char MASV[], PTRSV dssv) {
     First = dssv;
     while (First != nullptr) {
@@ -417,6 +418,7 @@ void InLTC(PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t) {
     }
 }
 
+//luu sinh vien dang ky vao danh sach dang ky cua lop tin chi
 void SVDangKy(PTRDK &dssvdk, PTRSV sv) {
     PTRDK p = new nodeDK;
     strcpy(p->dk.MASV, sv->sv.MASV);
@@ -433,6 +435,7 @@ void SVDangKy(PTRDK &dssvdk, PTRSV sv) {
     }
 }
 
+//kiem tra ma mon hoc co ton tai khong
 PTRLTC checkmamh(PTRLTC loptinchi, char nienkhoa[], int hocky) {
     LopTinChi ltc;
     cout << "Nhap ma mon hoc (Nhap 0 de thoat): ";
@@ -479,7 +482,7 @@ void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, PTRSV dssv) {
     if (c == nullptr) {
         return;
     }
-    SVDangKy(c->ltc.dssvdk, p); //luu sinh vien dang ky vao danh sach dang ky cua lop tin chi
+    SVDangKy(c->ltc.dssvdk, p); 
     c->ltc.currentsv++; //tang so luong sinh vien da dang ky len 1
     cout << "Dang ky thanh cong!" << endl;
 }
