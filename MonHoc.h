@@ -41,6 +41,46 @@ struct nodeMH // cây AVL
 
 typedef nodeMH* treeMH;
 
+struct DangKy {
+    char MASV[16];
+    float DIEM;
+    bool HuyDK=false;
+};
+
+struct nodeDK {
+    DangKy dk;
+    nodeDK *next;
+    nodeDK();
+};
+typedef nodeDK* PTRDK;
+
+struct LopTinChi {
+    int MALOPTC;
+    char MAMH[11];
+    char NienKhoa[10];
+    int Hocky;
+    int Nhom;
+    int sosvmin, sosvmax;
+    bool huylop;
+    PTRDK dssvdk;
+    int currentsv;
+    time_t deadline;
+    LopTinChi() {
+        MALOPTC = 0; MAMH[0]=0; NienKhoa[0]=0;
+        Hocky = 0; Nhom = 0; sosvmin = 0; sosvmax = 0; currentsv = 0;
+        deadline = 0; huylop = false; dssvdk = nullptr;
+    }
+};
+
+struct nodeLTC {
+    LopTinChi ltc;
+    nodeLTC *next;
+    nodeLTC() { next = nullptr; }
+    nodeLTC(LopTinChi data) { this->ltc = data; this->next = nullptr; }
+};
+    
+typedef nodeLTC* PTRLTC;
+
 struct ActionMH {
     int type = 0; //1 = them, 2 = xoa, 3 = sua mh
     MonHoc mh;
@@ -78,7 +118,7 @@ treeMH DocMonHoc(string filename);
 
 // -------------------- HÀM HỖ TRỢ --------------------
 PTRLTC FilterLTC(PTRLTC First, char nienkhoa[], int hocky);
-PTRSV findSinhVien(PTRSV First, char MASV[]);
+PTRSV findSinhVien(PTRSV First, char MASV[], PTRSV dssv);
 bool checkMH(treeMH t, MonHoc mh);
 void NhapMonHoc(treeMH &t, stack &undostackMH);
 treeMH UndoThemMH (treeMH &t, char MAMH[]);
