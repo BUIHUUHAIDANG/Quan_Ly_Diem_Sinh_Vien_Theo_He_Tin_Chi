@@ -80,13 +80,13 @@ int SaveFile_LTC(const char* tenfile, PTRLTC &FirstLTC);
 int LoadFile_LTC(const char* tenfile, PTRLTC &FirstLTC);
 
 // -- DIEM --
-float Tinhdiemtb(SinhVien sv, PTRLTC dsltc, treeMH dsmh);
-void IndiemtbLop(const PTRLTC &dsltc, const DS_LOPSV &dslop, const treeMH &dsmh);
-void IndiemtbSinhvien(const PTRLTC &dsltc, const DS_LOPSV &dslop, const treeMH &dsmh);
+float Tinhdiemtb(SinhVien &sv, PTRLTC &dsltc, treeMH &dsmh);
+void IndiemtbLop(PTRLTC &dsltc,DS_LOPSV &dslop, treeMH &dsmh);
+void IndiemtbSinhvien( PTRLTC &dsltc,  DS_LOPSV &dslop,  treeMH &dsmh);
 void NhapDiem(nodeLTC* dsltc, DS_LOPSV &dslop);
 void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV &dslop);
-void InbangdiemtongketLop(const PTRLTC &dsltc, const DS_LOPSV &dslop, const treeMH &dsmh);
-void InbangdiemtongketSinhvien(const PTRLTC &dsltc, const DS_LOPSV &dslop, const treeMH &dsmh);
+void InbangdiemtongketLop( PTRLTC &dsltc,  DS_LOPSV &dslop,  treeMH &dsmh);
+void InbangdiemtongketSinhvien( PTRLTC &dsltc,  DS_LOPSV &dslop, treeMH &dsmh);
 
 
 #endif

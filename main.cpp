@@ -72,7 +72,6 @@ int main() {
     PTRSV FirstSV = nullptr;
     DS_LOPSV dslop;
     treeMH dsmh; 
-    treeMH t;
     SetConsoleOutputCP(CP_UTF8);
     const char *roles[] = {"Sinh vien", "Giang vien", "Admin", "Thoat"};
     const char *features_sinhvien[] = {
@@ -170,8 +169,8 @@ int main() {
                         IndiemtbSinhvien(FirstLTC, dslop, dsmh);
                         cout << "\n(Nhan phim bat ky de quay lai...)";
                         _getch();
+                        break;
                     }
-                    break;
                     case 4: {
                         LoadFile_LTC("LopTinChi.txt",FirstLTC);
                         LoadFile_LopSV("LopSinhVien.txt", dslop);
@@ -179,8 +178,8 @@ int main() {
                         InbangdiemtongketSinhvien(FirstLTC, dslop, dsmh);
                         cout << "\n(Nhan phim bat ky de quay lai...)";
                         _getch();
+                        break;
                     }
-                    break;
                     default:
                     break;
                 }   
@@ -215,13 +214,25 @@ int main() {
                         _getch();
                         break;
                     }
-                    break;
-                    case 6:
-                        //IndiemtbLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
-                    break;
-                    case 7:
-                        //InbangdiemtongketLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
-                    break;
+                    case 6:{
+                        LoadFile_LopSV("LopSinhVien.txt", dslop);
+                        LoadFile_LTC("LopTinChi.txt",FirstLTC);
+                        DocMonHoc("MonHocdata.txt", dsmh);
+                        IndiemtbLop(FirstLTC, dslop, dsmh);
+                        cout << "\n(Nhan phim bat ky de quay lai...)";
+                        _getch();
+                        break;
+                    }
+                    
+                    case 7: {
+                        LoadFile_LopSV("LopSinhVien.txt", dslop);
+                        LoadFile_LTC("LopTinChi.txt",FirstLTC);
+                        DocMonHoc("MonHocdata.txt", dsmh);
+                        InbangdiemtongketLop(FirstLTC, dslop, dsmh);
+                        cout << "\n(Nhan phim bat ky de quay lai...)";
+                        _getch();
+                        break;
+                    }
                     default:
                     break;
                 }   
@@ -242,7 +253,7 @@ int main() {
                 switch(f) {
                     case 0:{ // Xem danh sach mon hoc
                         DocMonHoc("MonHocdata.txt", dsmh);
-                        InDSMH(t);
+                        InDSMH(dsmh);
                        cout << "\n(Nhan phim bat ky de quay lai...)";
                         _getch();
                         //return 0;
@@ -266,8 +277,8 @@ int main() {
                         int g = menu("   QUAN LY MON HOC",role, featuresthemcapnhatxoa, n_featuresthemcapnhatxoa);
                         switch(g) {
                             case 0: { // them
-                                NhapMonHoc(t);
-                                LuuMonHoc(t, "MonHocdata.txt");
+                                NhapMonHoc(dsmh);
+                                LuuMonHoc(dsmh, "MonHocdata.txt");
                                 break;
                             }
                             case 1: 
