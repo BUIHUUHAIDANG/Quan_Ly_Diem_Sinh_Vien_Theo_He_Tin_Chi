@@ -92,12 +92,13 @@ ActionMH top(stack s) {
     return s.top->data; 
 }
 
-PTRLTC FilterLTC(PTRLTC First, char nienkhoa[], int hocky) {
-       while(First!=nullptr){
-        if(strcmp(First->ltc.NienKhoa, nienkhoa) == 0 && First->ltc.Hocky == hocky)return First;
-        First=First->next;
-       }
-       return nullptr;
+PTRSV findSinhVien(PTRSV First, char MASV[], PTRSV dssv) {
+    First = dssv;
+    while (First != nullptr) {
+        if (strcmp(First->sv.MASV, MASV) == 0) return First;
+        else First = First->next;
+    }
+    return nullptr;
 }
 
 PTRSV findSinhVien(PTRSV First, char MASV[]) {
