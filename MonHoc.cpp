@@ -101,16 +101,6 @@ PTRSV findSinhVien(PTRSV First, char MASV[], PTRSV dssv) {
     return nullptr;
 }
 
-PTRSV findSinhVien(PTRSV First, char MASV[]) {
-    SinhVien sv;
-    while (First != nullptr) {
-        if (strcmp(First->sv.MASV, MASV) == 0)
-            return First;
-        First = First->next;
-    }
-    return nullptr;
-}
-
 treeMH Insert(treeMH t, MonHoc mh) {
     if (!t) {
         t = new nodeMH;
@@ -430,7 +420,6 @@ void InLTC(PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t) {
 void SVDangKy(PTRDK &dssvdk, PTRSV sv) {
     PTRDK p = new nodeDK;
     strcpy(p->dk.MASV, sv->sv.MASV);
-    p->dk.SinhVien = sv;
     p->dk.DIEM = 0;
     p->dk.HuyDK = false;
     p->next = nullptr;
