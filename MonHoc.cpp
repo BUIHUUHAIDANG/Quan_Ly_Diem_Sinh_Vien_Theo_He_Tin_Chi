@@ -388,39 +388,87 @@ void InDSMH(treeMH t) {
     InDSMH(t->right);
 }
 
-bool timMonHoc(treeMH t, char mamh[]) {
-    if (!t) return false;
-    if (strcmp(t->mh.MAMH, mamh) == 0) return true;
-    return strcmp(mamh, t->mh.MAMH) < 0 ? timMonHoc(t->left,mamh) : timMonHoc(t->right,mamh);
+treeMH timMonHoc(treeMH t, char mamh[]) {
+    MonHoc mh;
+    if (t == nullptr) {
+        return nullptr;
+    }
+    
+    if (strcmp(mamh, t->mh.MAMH) < 0) {
+        return timMonHoc(t->left, mamh);
+    } else if (strcmp(mamh, t->mh.MAMH) > 0) {
+        return timMonHoc(t->right, mamh);
+    } else return t;
 }
 
-void InLTC (PTRLTC &loptinchi, char nienkhoa[], int hocky, treeMH &t) {
+void InLTC(PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t) {
     LopTinChi ltc;
     MonHoc mh;
     if (loptinchi == nullptr) {
         cout << "Danh sach lop tin chi rong" << endl;
         return;
-    } else {
-        if (FilterLTC(loptinchi, nienkhoa, hocky) != nullptr) {
-            if (timMonHoc(t, loptinchi->ltc.MAMH)) {
-                cout << "Ma mon hoc: " << loptinchi->ltc.MAMH << endl <<
-                    "Ten mon hoc: " << t->mh.TENMH << endl <<
-                    "Nhom: " << loptinchi->ltc.Nhom << endl <<
-                    "So sinh vien da dang ky: " <<  endl << 
-                    "So slot con trong: ";
+    } 
+    
+    PTRLTC p = loptinchi;
+    while (p != nullptr) {
+        if (strcmp(p->ltc.NienKhoa, nienkhoa) == 0 && p->ltc.Hocky == hocky) {
+            treeMH found = timMonHoc(t, p->ltc.MAMH);
+            if (found != nullptr) {
+                cout << "Ma mon hoc: " << p->ltc.MAMH << endl;
+                cout << "Ten mon hoc: " << found->mh.TENMH << endl;
+                cout << "Nhom: " << p->ltc.Nhom << endl;
+                cout << "So sinh vien da dang ky: " << p->ltc.currentsv << endl;
+                cout << "So slot con trong: " << (p->ltc.sosvmax - p->ltc.currentsv) << endl;
+                cout << "------------------------------\n";
             }
         }
+        p = p->next;
     }
 }
 
-void DangKyLTC (PTRLTC loptinchi, LopTinChi lop, PTRSV &dssv, treeMH &t) {
+void SVDangKy(PTRDK &dssvdk, PTRSV sv) {
+    PTRDK p = new nodeDK;
+    strcpy(p->dk.MASV, sv->sv.MASV);
+    p->dk.SinhVien = sv;
+    p->dk.DIEM = 0;
+    p->dk.HuyDK = false;
+    p->next = nullptr;
+
+    if (dssvdk == nullptr) {
+        dssvdk = p;
+    } else {
+        PTRDK tmp = dssvdk;
+        while(tmp->next != nullptr) tmp = tmp->next;
+        tmp->next = p;
+    }
+}
+
+PTRLTC checkmamh(PTRLTC loptinchi, char nienkhoa[], int hocky) {
+    LopTinChi ltc;
+    cout << "Nhap ma mon hoc (Nhap 0 de thoat): ";
+    char mamh[11];
+    cin >> mamh;
+    if (strcmp(mamh, "0") == 0) return nullptr;
+    PTRLTC p = loptinchi;
+    while (p != nullptr) {
+        if (strcmp(p->ltc.MAMH, mamh) == 0 && strcmp(p->ltc.NienKhoa, nienkhoa) == 0 && p->ltc.Hocky == hocky) {
+            return p;
+        }
+        p = p->next;
+    }
+    cout << "Khong tim thay ma mon hoc vua nhap, vui long kiem tra lai!" << endl;
+    return checkmamh(loptinchi, nienkhoa, hocky);
+}
+
+void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, PTRSV dssv) {
     PTRSV p = nullptr;
+    PTRSV First = nullptr;
     char masv[16];
     cout << "Nhap ma so sinh vien: ";
     cin.ignore();
     cin.getline(masv, 16);
     
-    if ((p = findSinhVien(dssv, masv)) != nullptr) {
+    if ((p = findSinhVien(First, masv, dssv)) != nullptr) {
         cout << "Ho:" << p->sv.HO << endl <<
             "Ten: " << p->sv.TEN << endl << 
             "Phai:" << p->sv.PHAI << endl <<
@@ -436,4 +484,12 @@ void DangKyLTC (PTRLTC loptinchi, LopTinChi lop, PTRSV &dssv, treeMH &t) {
     cout << "Nhap hoc ky: ";
     cin >> lop.Hocky;
     InLTC(loptinchi, lop.NienKhoa, lop.Hocky, t);
+    PTRLTC c = nullptr;
+    c = checkmamh(loptinchi, lop.NienKhoa, lop.Hocky);
+    if (c == nullptr) {
+        return;
+    }
+    SVDangKy(c->ltc.dssvdk, p); //luu sinh vien dang ky vao danh sach dang ky cua lop tin chi
+    c->ltc.currentsv++; //tang so luong sinh vien da dang ky len 1
+    cout << "Dang ky thanh cong!" << endl;
 }
