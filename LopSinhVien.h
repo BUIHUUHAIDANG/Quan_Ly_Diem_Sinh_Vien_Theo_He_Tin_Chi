@@ -59,11 +59,10 @@ int getNextMaLopTinChi(PTRLTC First);
 // ========================================================================================
 // -- SINH VIEN --
 
-bool CheckDK(PTRDK dssvdk, const char* masv);
 PTRDK taonodeSVDK(const char* masv);
 void insertSVDK(PTRDK &First, PTRDK node);
 void InsertSV(PTRSV &FirstSV, SinhVien sv);
-void dangkyLTC(PTRLTC FirstLTC, DS_LOPSV dslop);
+void dangkyLTC(PTRLTC &FirstLTC, DS_LOPSV dslop);
 
 // -- HAM HO TRO --
 void DeleteDSSV(PTRSV &FirstSV);
@@ -77,18 +76,17 @@ void duyettreeMH(treeMH t, char dsMAMH[][11], int &soMH);
 // -- SAVE LOAD --
 int SaveFile_LopSV(const char* tenfile, DS_LOPSV &dslop);
 int LoadFile_LopSV(const char* tenfile, DS_LOPSV &dslop);
-int SaveFile_LTC(const char* tenfile, PTRLTC FirstLTC);
+int SaveFile_LTC(const char* tenfile, PTRLTC &FirstLTC);
 int LoadFile_LTC(const char* tenfile, PTRLTC &FirstLTC);
-int SaveFile_DSSVDK(const char* tenfile, PTRLTC FirstLTC);
-int LoadFile_DSSVDK(const char* tenfile, PTRLTC FirstLTC, int maloptc);
 
 // -- DIEM --
 float Tinhdiemtb(SinhVien sv, PTRLTC dsltc, treeMH dsmh);
-void IndiemtbLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
-void IndiemtbSinhvien(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
-void InbangdiemtongketLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
-void InbangdiemtongketSinhvien(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
-void NhapDiem(nodeLTC* dsltc, DS_LOPSV dslop);
-void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV dslop);
+void IndiemtbLop(const PTRLTC &dsltc, const DS_LOPSV &dslop, const treeMH &dsmh);
+void IndiemtbSinhvien(const PTRLTC &dsltc, const DS_LOPSV &dslop, const treeMH &dsmh);
+void NhapDiem(nodeLTC* dsltc, DS_LOPSV &dslop);
+void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV &dslop);
+void InbangdiemtongketLop(const PTRLTC &dsltc, const DS_LOPSV &dslop, const treeMH &dsmh);
+void InbangdiemtongketSinhvien(const PTRLTC &dsltc, const DS_LOPSV &dslop, const treeMH &dsmh);
+
 
 #endif

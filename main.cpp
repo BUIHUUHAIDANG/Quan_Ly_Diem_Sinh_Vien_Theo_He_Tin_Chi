@@ -144,6 +144,7 @@ int main() {
                                 LoadFile_LopSV("LopSinhVien.txt",dslop);
                                 LoadFile_LTC("LopTinChi.txt",FirstLTC);
                                 dangkyLTC(FirstLTC,dslop);
+                                SaveFile_LTC("LopTinChi.txt",FirstLTC);
                                 break;
                             }
                             case 1: {// Huy
@@ -162,20 +163,22 @@ int main() {
                         break;
                     }
 
-                    case 3: {
-                        
+                    case 3: { // In diem tb ca nhan sinh vien
                         LoadFile_LopSV("LopSinhVien.txt", dslop);
                         LoadFile_LTC("LopTinChi.txt",FirstLTC);
-                       
-                        dsmh = DocMonHoc("MonHoc.txt");
+                        DocMonHoc("MonHocdata.txt", dsmh);
                         IndiemtbSinhvien(FirstLTC, dslop, dsmh);
+                        cout << "\n(Nhan phim bat ky de quay lai...)";
+                        _getch();
                     }
                     break;
                     case 4: {
                         LoadFile_LTC("LopTinChi.txt",FirstLTC);
                         LoadFile_LopSV("LopSinhVien.txt", dslop);
-                        dsmh = DocMonHoc("MonHoc.txt");
+                        DocMonHoc("MonHocdata.txt", dsmh);
                         InbangdiemtongketSinhvien(FirstLTC, dslop, dsmh);
+                        cout << "\n(Nhan phim bat ky de quay lai...)";
+                        _getch();
                     }
                     break;
                     default:
@@ -185,7 +188,7 @@ int main() {
                 //cout << "(Nhan phim bat ky de quay lai...)";
                 //_getch();
             }
-        } else if (r == 1) {
+        } else if (r == 1) { // GIANG VIEN
             while (1) {
                 int f = menu("🏫 QUAN LY HE TIN CHI 🏫", role, features_giangVien, n_features_giangvien);
                 if (f == n_features_giangvien - 1) break;
@@ -196,17 +199,22 @@ int main() {
                 switch(f) {
                     
                     case 4: {
-                        PTRLTC FirstLTC;
-                        DS_LOPSV dslop;
                         LoadFile_LopSV("LopSinhVien.txt", dslop);
                         LoadFile_LTC("LopTinChi.txt", FirstLTC);
-                        
                         NhapDiem(FirstLTC, dslop);
                         SaveFile_LTC("LopTinChi.txt", FirstLTC);
+                        
+                        break;
                     }
                     break;
-                    case 5:
-                        //InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV dslop);
+                    case 5:{ // In bang diem cua ltc
+                        LoadFile_LopSV("LopSinhVien.txt", dslop);
+                        LoadFile_LTC("LopTinChi.txt", FirstLTC);
+                        InbangDiemLTC(FirstLTC, dslop);
+                        cout << "\n\n\n(Nhan phim bat ky de quay lai...)";
+                        _getch();
+                        break;
+                    }
                     break;
                     case 6:
                         //IndiemtbLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
@@ -217,9 +225,6 @@ int main() {
                     default:
                     break;
                 }   
-                gotoxy(10, 12);
-                cout << "(Nhan phim bat ky de quay lai...)";
-                _getch();
             }
         } else if (r == 2) { // ADMIN
             while (1) {
@@ -236,7 +241,7 @@ int main() {
                 //cout << "Ban da chon: " << features_admin[f] << "\n";
                 switch(f) {
                     case 0:{ // Xem danh sach mon hoc
-                        treeMH t = DocMonHoc("MonHocdata.txt");
+                        DocMonHoc("MonHocdata.txt", dsmh);
                         InDSMH(t);
                        cout << "\n(Nhan phim bat ky de quay lai...)";
                         _getch();

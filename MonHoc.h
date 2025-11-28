@@ -23,8 +23,8 @@ treeMH XoaMH(treeMH &t, char MAMH[]);
 //treeMH DocMonHoc(string filename);
                 // Save load theo binary
 void GhiNode(FILE* f, treeMH t);
-void LuuMonHoc(treeMH t, const char* tenfile);
-treeMH DocMonHoc(const char* tenfile);
+void LuuMonHoc(treeMH &t, const char* tenfile);
+void DocMonHoc(const char* tenfile, treeMH &t);
 
 // -------------------- HÀM HỖ TRỢ --------------------
 bool checkMH(treeMH t, MonHoc mh);

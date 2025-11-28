@@ -164,7 +164,7 @@ void GhiNode(FILE* f, treeMH t) {
     GhiNode(f,t->left);
     GhiNode(f,t->right);
 }
-void LuuMonHoc(treeMH t, const char* tenfile) {
+void LuuMonHoc(treeMH &t, const char* tenfile) {
     
     FILE* f = fopen(tenfile, "wb");
     if(f == nullptr) {
@@ -176,19 +176,18 @@ void LuuMonHoc(treeMH t, const char* tenfile) {
 
     cout << "Da luu danh sach mon hoc vao file thanh cong!";
 }
-treeMH DocMonHoc(const char* tenfile) {
+void DocMonHoc(const char* tenfile, treeMH &t) {
     FILE* f = fopen(tenfile, "rb");
     if(f == nullptr) {
         cout << "Khong the mo file de doc!\n";
-        return nullptr;
+        return;
     }
-    treeMH t = nullptr;
+    t = nullptr;
     MonHoc mh;
     while(fread(&mh, sizeof(MonHoc),1,f) ==1) {
         t = Insert(t, mh);
     }
     fclose(f);
-    return t;
 }
     
 
@@ -231,7 +230,7 @@ bool checkMH(treeMH t, MonHoc mh) {
 
 
 void NhapMonHoc(treeMH &t) {
-    t = DocMonHoc("MonHocdata.txt");
+    DocMonHoc("MonHocdata.txt", t);
 
     while (true) {
         MonHoc mh;
@@ -286,7 +285,6 @@ void SuaMH(treeMH &t, MonHoc mh) {
 
 void InDSMH(treeMH t) {
     if (!t) {
-        
         return;
     }
     InDSMH(t->left);
