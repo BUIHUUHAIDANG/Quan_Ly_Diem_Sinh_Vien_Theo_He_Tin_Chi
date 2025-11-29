@@ -68,18 +68,16 @@ int main() {
     // Khoi tao DSLTC
     PTRLTC FirstLTC = nullptr;
     stackNode *rootLTC = nullptr;
-
     // Load data (file name theo file binary/text tu ham cua ban)
     loadLopTinChi_Binary(FirstLTC, "LopTinChi.txt", "DSSVDK.txt");
-    loadLopSV_Binary(ds, "LopSinhVien.txt", "SinhVien.txt");
-
+    loadLopSV_Binary(ds, "LopSV.txt", "SinhVien.txt");
     // Menu options (khai bao como const char* arrays)
     const char *roles[] = { "Sinh vien", "Giang vien", "Admin", "Thoat" };
 
     const char *features_sinhvien[] = {
         "Xem danh sach mon hoc",
         "Dang ki/Huy dang ki lop tin chi",
-        "Xem danh sach lop tin chi da dang ky",
+        "Xem danh sach lop tin chi",
         "Xem diem trung binh",
         "Xem diem tong ket",
         "← Quay lai"
@@ -178,6 +176,8 @@ int main() {
                         if (g == 0) {
                             clrscr();
                             // TODO: goi ham dang ky
+                            dangkyLTC(FirstLTC,ds);
+                            saveLopTinChi_Binary(FirstLTC, "LopTinChi.txt", "DSSVDK.txt");
                             cout << "Thuc hien dang ky...\n";
                             getch();
                         } else if (g == 1) {
@@ -191,6 +191,7 @@ int main() {
                     clrscr();
                     gotoxy(10, 10);
                     cout << "Chuc nang (chua cài): " << features_sinhvien[f];
+                    InDSLTC(FirstLTC);
                     gotoxy(10, 12);
                     cout << "(Nhan phim bat ky de quay lai...)";
                     getch();
@@ -232,8 +233,8 @@ int main() {
                     clrscr();
                     gotoxy(10, 10);
                     cout << "Ban da chon: " << features_admin[f];
-                    gotoxy(10, 12);
                     InDSLTC(FirstLTC); // ham hien thi tu header
+                    gotoxy(10, 12);
                     cout << "(Nhan phim bat ky de quay lai...)";
                     getch();
                 }
@@ -437,7 +438,7 @@ int main() {
     // Giai phong bo nho truoc khi thoat
     ClearLTC(FirstLTC);
     ClearDS_Lop(ds);
-
+    ClearStackLTC(rootLTC);
     clrscr();
     gotoxy(10, 10);
     cout << "Tam biet!\n";

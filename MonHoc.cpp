@@ -477,7 +477,7 @@ void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, PTRSV dssv) {
     cin >> lop.NienKhoa;
     cout << "Nhap hoc ky: ";
     cin >> lop.Hocky;
-    InLTC(loptinchi, lop.NienKhoa, lop.Hocky, t);
+    // InLTC(loptinchi, lop.NienKhoa, lop.Hocky, t);
     PTRLTC c = nullptr;
     c = checkmamh(loptinchi, lop.NienKhoa, lop.Hocky);
     if (c == nullptr) {

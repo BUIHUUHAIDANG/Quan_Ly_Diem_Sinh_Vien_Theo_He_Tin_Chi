@@ -5,7 +5,7 @@
 #include "CTDL.h"
 using namespace std;
 
-//stack Hieu Chinh
+//stack Hieu Chinh LTC
 stackNode* newNode(ActionLTC data);
 bool isEmpty(stackNode* &root);
 void push(stackNode* &root, ActionLTC data);
@@ -14,6 +14,7 @@ ActionLTC top(stackNode* &root);
 void undoSuaLTC(PTRLTC &First, LopTinChi ltc);
 void undoLTC(PTRLTC &First, stackNode* &root);
 void initializeStackNode(stackNode* &root);
+bool deleteFirstStackLTC(stackNode* &root);
 
 
 //Lop Tin Chi
@@ -107,5 +108,7 @@ void xoaLopByPos(DS_LOPSV &ds, int pos);
 void ClearlistSV(PTRSV &First);
 void ClearLTC(PTRLTC &First);
 void ClearDS_Lop(DS_LOPSV &ds);
+void ClearStackLTC(stackNode* &dsnode);
+
 
 #endif

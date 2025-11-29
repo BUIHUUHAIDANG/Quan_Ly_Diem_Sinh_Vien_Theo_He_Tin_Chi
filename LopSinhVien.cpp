@@ -10,17 +10,6 @@
 using namespace std;
 
 
-nodeSV::nodeSV() { next = nullptr; }
-LopSV::LopSV() { FirstSV = nullptr; MALOP[0]=0; TENLOP[0]=0; }
-DS_LOPSV::DS_LOPSV() { n = 0; for(int i=0;i<MAX_LOPSV;i++) nodes[i]=nullptr; }
-nodeDK::nodeDK() { next = nullptr; }
-LopTinChi::LopTinChi() {
-    MALOPTC = 0; MAMH[0]=0; NienKhoa[0]=0;
-    Hocky = 0; Nhom = 0; sosvmin = 0; sosvmax = 0;
-    huylop = false; dssvdk = nullptr;
-}
-nodeLTC::nodeLTC() { next = nullptr; }
-nodeLTC::nodeLTC(LopTinChi data) { this->ltc = data; this->next = nullptr; }
 stackNode* newNode(ActionLTC Data){
     stackNode* p= new stackNode();
     p->data=Data;
@@ -447,7 +436,7 @@ void dangkyLTC(PTRLTC &FirstLTC, DS_LOPSV dslop) { // Sinh vien dang ki ltc
             return;
         }
         PTRDK pnode = taonodeSVDK(masv);
-        // insertSVDK(pltc->ltc.dssvdk, pnode);
+        insertSinhVienDangKy(FirstLTC->ltc.dssvdk, pnode->dk);
         cout << " Dang ky thanh cong!\n";
     }
 }
@@ -574,6 +563,29 @@ PTRLTC findLTCByParams(PTRLTC FirstLTC) {
     cout << "Nhap Ma Mon Hoc: "; cin.getline(MAMH, 11);
 
     return searchLTC(FirstLTC, nienkhoa, hocky, nhom, MAMH);
+}
+void saveLopSV_Binary(DS_LOPSV &ds, const char *fileLop, const char *fileSV) {
+    FILE *fLop = fopen(fileLop, "wb");
+    FILE *fSV  = fopen(fileSV, "wb");
+    if(!fLop || !fSV){ 
+        cout << "Khong mo duoc file!\n"; 
+        return; 
+    }
+    fwrite(&ds.n, sizeof(int), 1, fLop);
+    for(int i=0; i<ds.n; i++){
+        LopSV* lop = ds.nodes[i];
+        fwrite(lop->MALOP, sizeof(lop->MALOP), 1, fLop);
+        fwrite(lop->TENLOP, sizeof(lop->TENLOP), 1, fLop);
+        int countSV = 0;
+        for(PTRSV p = lop->FirstSV; p != nullptr; p = p->next) countSV++;
+        fwrite(&countSV, sizeof(int), 1, fLop);
+        for(PTRSV p = lop->FirstSV; p != nullptr; p = p->next){
+            fwrite(lop->MALOP, sizeof(lop->MALOP), 1, fSV);
+            fwrite(&p->sv, sizeof(SinhVien), 1, fSV);
+        }
+    }
+    fclose(fLop);
+    fclose(fSV);
 }
 void loadLopSV_Binary(DS_LOPSV &ds, const char *fileLop, const char *fileSV) {
     FILE *fLop = fopen(fileLop, "rb");
@@ -1060,6 +1072,19 @@ void xoaLopByPos(DS_LOPSV &ds,int pos){
     }
     ds.n--;
 }
+bool deleteFirstStackLTC(stackNode* &root){
+    if(root==nullptr)return 0;
+    stackNode* p=root;
+    root=root->next;
+    delete p;
+    return 1;
+}
+void ClearStackLTC(stackNode* &dsnode){
+    while(dsnode!=nullptr){
+         deleteFirstStackLTC(dsnode);
+    }
+}
+
 
 
 
