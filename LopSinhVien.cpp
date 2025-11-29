@@ -33,6 +33,21 @@ void pop(stackNode* &root){
 ActionLTC top(stackNode* &root){
      return root->data;
 }
+stackNode* newNode(ActionSV data){
+    
+}
+bool isEmpty(stackNodeSV* &root){
+
+}
+void push(stackNodeSV* &root, ActionSV data){
+
+}
+void pop(stackNodeSV* &root){
+
+}
+ActionSV top(stackNodeSV* &root){
+
+}
 void undoSuaLTC(PTRLTC &First,LopTinChi ltc){
      PTRLTC p=searchLopTinChi(First,ltc.MALOPTC);
      if(!p){
@@ -71,9 +86,6 @@ void undoLTC(PTRLTC &First,stackNode* &root){
     }
     return;
 }
-void initializeStackNode(stackNode* &root){root=nullptr;}
-void initializeLTC(PTRLTC & First) { First = nullptr; }
-void initializeSV(PTRSV &FirstSV){FirstSV=nullptr;}
 PTRLTC createNodeLopTinChi(LopTinChi data) { return new nodeLTC(data); }
 void insertLopTinChi(PTRLTC &First, LopTinChi data){
     PTRLTC p = createNodeLopTinChi(data);
@@ -1083,6 +1095,24 @@ void ClearStackLTC(stackNode* &dsnode){
     while(dsnode!=nullptr){
          deleteFirstStackLTC(dsnode);
     }
+}
+int editLopSinhVien(DS_LOPSV &ds,int pos){
+    char malop[16];
+    char tenlop[51];
+     cout<<"[Ma Lop Sinh Vien]"<<"["<<ds.nodes[pos]->MALOP<<"] :";
+     cin.getline(malop,16);
+     cout<<"[Ten Lop Sinh Vien]"<<"["<<ds.nodes[pos]->TENLOP<<"] :";
+     cin.getline(tenlop,51);
+     if(strcmp(malop,"0")!=0){
+        strcpy(ds.nodes[pos]->MALOP,malop);
+     }
+     else if(strcmp(ds.nodes[pos]->TENLOP,"0")!=0){
+        strcpy(ds.nodes[pos]->TENLOP,tenlop);
+     }
+     else if(strcmp(malop,"0")==0&&strcmp(ds.nodes[pos]->TENLOP,"0")==0){
+        return 0;
+     }
+     return 1;
 }
 
 

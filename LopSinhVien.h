@@ -13,9 +13,17 @@ void pop(stackNode* &root);
 ActionLTC top(stackNode* &root);
 void undoSuaLTC(PTRLTC &First, LopTinChi ltc);
 void undoLTC(PTRLTC &First, stackNode* &root);
-void initializeStackNode(stackNode* &root);
 bool deleteFirstStackLTC(stackNode* &root);
-
+//stack Hieu Chinh Sinh Vien
+stackNode* newNode(ActionSV data);
+bool isEmpty(stackNodeSV* &root);
+void push(stackNodeSV* &root, ActionSV data);
+void pop(stackNodeSV* &root);
+ActionSV top(stackNodeSV* &root);
+// void undoSuaLTC(PTRLTC &First, LopTinChi ltc);
+// void undoLTC(PTRLTC &First, stackNode* &root);
+// void initializeStackNode(stackNode* &root);
+// bool deleteFirstStackLTC(stackNode* &root);
 
 //Lop Tin Chi
 PTRLTC createNodeLopTinChi(LopTinChi data);
@@ -100,15 +108,17 @@ void InbangdiemtongketSinhvien(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
 void NhapDiem(nodeLTC* dsltc, DS_LOPSV &dslop);
 void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV &dslop);
 
-//Tim/Xoa/CapNhap Sinh Vien 
+//Tim/Xoa/CapNhap lop Sinh Vien 
 int posLop(DS_LOPSV &ds, char MALOP[16]);
 void xoaLopByPos(DS_LOPSV &ds, int pos);
+int editLopSinhVien(DS_LOPSV &ds,int pos);
 
 //don dep sau khi thoat chuong trinh 
 void ClearlistSV(PTRSV &First);
 void ClearLTC(PTRLTC &First);
 void ClearDS_Lop(DS_LOPSV &ds);
 void ClearStackLTC(stackNode* &dsnode);
+
 
 
 #endif

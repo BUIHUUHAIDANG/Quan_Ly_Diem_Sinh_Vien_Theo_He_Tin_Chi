@@ -78,6 +78,7 @@ struct nodeLTC {
     nodeLTC(LopTinChi data);
 };
 typedef nodeLTC* PTRLTC;
+// stack Lop Tin Chi
 struct ActionLTC {
     int type;
     LopTinChi ltc;
@@ -87,6 +88,17 @@ struct stackNode
     ActionLTC data;
     stackNode* next;
 };
+// stack Sinh Vien
+struct ActionSV {
+    int type;
+    SinhVien sv;
+};
+struct stackNodeSV{
+    ActionSV data;
+    stackNodeSV* next;   
+};
+
+// stack MH
 struct ActionMH {
     int type = 0; //1 = them, 2 = xoa, 3 = sua mh
     MonHoc mh;
@@ -102,6 +114,7 @@ typedef node* PTRNode;
 struct stack {
     node* top = nullptr; // đỉnh stack
 };
+
 
 
 

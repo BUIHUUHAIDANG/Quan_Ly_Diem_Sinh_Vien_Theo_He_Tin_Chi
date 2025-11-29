@@ -336,7 +336,15 @@ int main() {
                                 getch();
                             } else {
                                 // TODO: goi ham sua
-                                cout << "Chuc nang sua (chua implement)\n";
+                                cout << "[Du Lieu]====[Du Lieu Cu]====[Du Lieu Moi]\n";
+                                cout << "Neu muon giu lai du lieu chi can nhap {0}\n";
+                                int a=editLopSinhVien(ds,pos);
+                                if(a==1){
+                                    cout<<"Du lieu duoc cap nhat thanh cong!"<<endl;
+                                }
+                                else{
+                                    cout<<"Du lieu duoc giu nguyen nhu cu!"<<endl;
+                                }
                                 getch();
                             }
                         }
