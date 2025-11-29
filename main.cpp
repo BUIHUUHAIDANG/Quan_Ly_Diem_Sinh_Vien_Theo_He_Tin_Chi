@@ -56,8 +56,8 @@ int main() {
     for(int i=0;i<MAX_LOPSV;i++) ds.nodes[i] = nullptr;
     PTRLTC FirstLTC=nullptr;
     stackNode* rootLTC=nullptr;
-    loadLopTinChi(FirstLTC, "LopTinChi.txt","DSSVDK.txt");
-    loadLopSV(ds, "LopSinhVien.txt", "SinhVien.txt");
+    loadLopTinChi_Binary(FirstLTC,"LopTinChi.txt","DSSVDK.txt");
+    loadLopSV_Binary(ds,"LopSinhVien.txt","SinhVien.txt");
     const char *roles[] = {"Sinh vien", "Giang vien", "Admin", "Thoat"};
     const char *features_sinhvien[] = {
         "Xem danh sach mon hoc",
@@ -101,6 +101,14 @@ int main() {
         "← Quay lai"
     };
     int n_features_admin_4=4;// num of func 6
+    //function them/xoa/sua lop sinh vien
+    const char *features_admin_7[] = {
+        "them lop sinh vien",
+        "sua lop sinh vien",
+        "xoa lop sinh vien",
+        "Quay lai"
+    }; 
+    int n_features_admin_7=4;
     //function xem danh sach sinh 
     const char *features_admin_9[] ={
         "Xem danh sach sinh vien(dua vao ma lop) theo thu tu alphabet theo ten",
@@ -127,19 +135,13 @@ int main() {
         while (1) {
             int f = menu(" QUAN LY HE TIN CHI ", role, features_sinhvien, n_features_sinhvien);
             if (f == n_features_sinhvien - 1) break;
-            
-            clrscr();
-            gotoxy(10, 10);
-            // cout << "Ban da chon: " << features_sinhvien[f];
-            // gotoxy(10, 12);
-            // cout << "(Nhan phim bat ky de quay lai...)";
-            // getch();
             if(f==0){
               while(1){
                 int g= menu("SINH VIEN DANG KY HUY LOP TIN CHI", role, featuresdangkyhuy, n_featuresdangkyhuy);
                 if(g==n_featuresdangkyhuy-1) break;
                 if(g==0){
                    clrscr();
+                   
                    
                 }
                 if(g==1){
@@ -173,20 +175,25 @@ int main() {
             getch();
             }
             if(f==1){
-                clrscr();
+            clrscr();
             gotoxy(10, 10);
             cout << "Ban da chon: " << features_admin[f];
             gotoxy(10, 12);
+            InDSLTC(FirstLTC);
             cout << "(Nhan phim bat ky de quay lai...)";
             getch();
             }
             if(f==2){
-              clrscr();
+            clrscr();
             gotoxy(10, 10);
             cout << "Ban da chon: " << features_admin[f];
             gotoxy(10, 12);
+            InDSLSV(ds);
             cout << "(Nhan phim bat ky de quay lai...)";
             getch();
+            }
+            if(f==3){
+
             }
             if(f==4){
               while(1){
@@ -198,7 +205,7 @@ int main() {
                     ltc.MALOPTC = getNextMaLopTinChi(FirstLTC);
 
                     insertLopTinChi(FirstLTC, ltc);
-                    saveLopTinChi(FirstLTC, "LopTinChi.txt","DSSVDK.txt");
+                    saveLopTinChi_Binary(FirstLTC, "LopTinChi.txt","DSSVDK.txt");
 
                     cout << "\n>>> Da them lop tin chi thanh cong! MA MOI: "<< ltc.MALOPTC;
                     ActionLTC act;
@@ -231,7 +238,7 @@ int main() {
                LopTinChi oldLTC = tmp->ltc;
 
                 if(editLopTinChi(FirstLTC, malop)){
-                saveLopTinChi(FirstLTC, "LopTinChi.txt","DSSVDK.txt");
+                saveLopTinChi_Binary(FirstLTC, "LopTinChi.txt","DSSVDK.txt");
                 cout << "\n>>> Sua thong tin lop tin chi thanh cong!";
 
     
@@ -252,7 +259,7 @@ int main() {
                     gotoxy(10, 10);
                     cout << "Ban da chon: " << features_admin_4[n];
                     undoLTC(FirstLTC,rootLTC);
-                    saveLopTinChi(FirstLTC, "LopTinChi.txt","DSSVDK.txt");
+                    saveLopTinChi_Binary(FirstLTC, "LopTinChi.txt","DSSVDK.txt");
                     gotoxy(10, 12);
                     cout << "(Nhan phim bat ky de quay lai...)";
                     getch();
@@ -270,18 +277,63 @@ int main() {
                 }
                 cout << "\nNhan phim bat ky de quay lai...";
                 getch();
-}
-            
+            }
+            //In Bang Diem
             if(f==6){
                 clrscr();
             gotoxy(10, 10);
             cout << "Ban da chon: " << features_admin[f];
+
             gotoxy(10, 12);
             cout << "(Nhan phim bat ky de quay lai...)";
             getch();
             }
+            //Them/Xoa/Sua LopSinhVien
             if(f==7){
-           
+               while (1)
+               {
+               int n=menu("Quan Ly Lop Sinh Vien","",features_admin_7,n_features_admin_7);
+               if(n==n_features_admin_7-1)break;
+               if(n==0){
+                 clrscr();
+                 gotoxy(10, 10);
+                 cout << "Ban da chon: " << features_admin[f];
+                 NhapLopSV(ds);
+                 //task: save data.
+                 gotoxy(10, 12);
+                 cout << "(Nhan phim bat ky de quay lai...)";
+                 getch();
+               }
+               if(n==1){
+                 clrscr();
+                 gotoxy(10, 10);
+                 cout << "Ban da chon: " << features_admin[f];
+                 char malop[16];
+                 cin.getline(malop,16);
+                 int pos=posLop(ds,malop);
+                 if(pos==-1){
+                    cout<<"khong tim thay lop"<<endl;
+                    gotoxy(10, 12);
+                    cout << "(Nhan phim bat ky de quay lai...)";
+                    getch();
+                 }
+                 else{
+                     xoaLopByPos(ds,pos);
+                     cout<<"Xoa Lop Thanh Cong"<<endl;
+                     gotoxy(10, 12);
+                     cout << "(Nhan phim bat ky de quay lai...)";
+                     getch();
+                 }
+               }
+               if(n==2){
+                 clrscr();
+                 gotoxy(10, 10);
+                 cout << "Ban da chon: " << features_admin[f];
+                 gotoxy(10, 12);
+                 cout << "(Nhan phim bat ky de quay lai...)";
+                 getch();
+               }
+               }   
             }
             if(f==8){
                 clrscr();
@@ -317,7 +369,7 @@ int main() {
                     }
 
     
-            saveLopSV(ds, "LopSV.txt", "SinhVien.txt");
+            saveLopSV_Binary(ds, "LopSV.txt", "SinhVien.txt");
 
             cout << "\n>>> Da cap nhat danh sach sinh vien vao lop!\n";
             cout << "(Nhan phim bat ky de quay lai...)";

@@ -297,7 +297,6 @@ PTRSV GetLop(DS_LOPSV &dslop, char malop[]) {
             break;
         }
     }
-    if(!FirstSV) cout << "HELLLLLLLLLLLLLO";
     return FirstSV;
 }
 void InDSLSV(DS_LOPSV &dslop) {
@@ -324,7 +323,7 @@ SinhVien getSinhVien(DS_LOPSV dslop, char MASV[16]) {
     SinhVien empty = {};
     return empty;
 }
-bool checkSV(DS_LOPSV dslop, SinhVien sv) {
+bool checkSV(DS_LOPSV &dslop, SinhVien sv) {
     if (dslop.n == 0) return false;
 
     for (int i = 0; i < dslop.n; i++) {
@@ -410,11 +409,10 @@ PTRDK taonodeSVDK(const char* masv) {
     p->next = nullptr;
     return p;
 }
-void dangkyLTC(PTRLTC FirstLTC, DS_LOPSV dslop) { // Sinh vien dang ki ltc
+void dangkyLTC(PTRLTC &FirstLTC, DS_LOPSV dslop) { // Sinh vien dang ki ltc
     char masv[16];
     cout << "\nNhap ma sinh vien: ";
     cin.getline(masv, 16);
-    //you had function check it
     bool found = false;
     for(int i=0 ; i < dslop.n; i++) { // Kiem tra xem sinh vien co ton tai hay khong
         PTRSV p = dslop.nodes[i]->FirstSV;
@@ -430,30 +428,29 @@ void dangkyLTC(PTRLTC FirstLTC, DS_LOPSV dslop) { // Sinh vien dang ki ltc
         cout << "Ma sinh vien khong tim thay!";
         return;
     }
-    int maloptc;
-    cout << "Nhap ma lop tin chi ban muon dang ky:";
-    cin >> maloptc;
-    cin.ignore();
-    PTRLTC pltc = FirstLTC;
-    //you had function check it
-    while (pltc != NULL && pltc->ltc.MALOPTC != maloptc)
+    while (true) {
+        int maloptc;
+        cout << "Nhap ma lop tin chi ban muon dang ky (nhap 0 de thoat):";
+        cin >> maloptc;
+        cin.ignore();
+        if (maloptc == 0) break;
+        
+        PTRLTC pltc = FirstLTC;
+        while (pltc != NULL && pltc->ltc.MALOPTC != maloptc)
         pltc = pltc->next;
-
-    if (!pltc) {
-        cout << "Lop tin chi khong ton tai!\n";
-        return;
+        if (!pltc) {
+            cout << "Lop tin chi khong ton tai!\n";
+            return;
+        }
+        if(CheckDK(pltc->ltc.dssvdk,masv)) {
+            cout << "Sinh vien da dang ky lop nay roi!\n";
+            return;
+        }
+        PTRDK pnode = taonodeSVDK(masv);
+        // insertSVDK(pltc->ltc.dssvdk, pnode);
+        cout << " Dang ky thanh cong!\n";
     }
-    if(CheckDK(pltc->ltc.dssvdk,masv)) {
-        cout << "Sinh vien da dang ky lop nay roi!\n";
-        return;
-    }
-    PTRDK pnode = taonodeSVDK(masv);
-    //fix it
-    // insertSVDK(pltc->ltc.dssvdk, pnode);
-    // SaveFile_LTC("LopTinChi.txt",FirstLTC);
-    cout << " Dang ky thanh cong!\n";
 }
-
 
 void InDSSV_TheoTen(PTRSV first){
     if(!first){ cout<<"Danh sach rong!\n"; return; }
@@ -541,99 +538,6 @@ LopTinChi NhapLTC(){
 
     return ltc;
 }
-void saveLopTinChi(PTRLTC &First, const string &fileLoptinchi, const string &fileSVDK){
-     ofstream fLTC(fileLoptinchi);
-     ofstream fSVDK(fileSVDK);
-     if(!fLTC||!fSVDK){
-        cout<<"Khong the mo file!"<<endl;
-        return;
-     }
-     PTRLTC p=First;
-     while(p!=nullptr){
-        fLTC << p->ltc.MALOPTC<<"|"
-             <<p->ltc.MAMH<<"|"
-             <<p->ltc.NienKhoa<<"|"
-             <<p->ltc.Hocky<<"|"
-             <<p->ltc.Nhom<<"|"
-             <<p->ltc.sosvmin<<"|"
-             <<p->ltc.sosvmax<<"|"
-             <<p->ltc.huylop<<endl;
-        PTRDK dk=p->ltc.dssvdk;
-        while(dk != nullptr){
-            fSVDK << p->ltc.MALOPTC << "|"
-                  << dk->dk.MASV << "|"
-                  << dk->dk.DIEM << "|"
-                  << dk->dk.HuyDK << "\n";
-            dk = dk->next;
-        }
-
-        p = p->next;
-     }
-     fLTC.close();
-     fSVDK.close();
-}
-void loadLopTinChi(PTRLTC &First, const string &fileLopTinChi, const string &fileSVDK){
-     ifstream fLTC(fileLopTinChi);
-     if(!fLTC){
-        cout<<"Khong mo duoc file"<<endl;
-        return;
-     }
-     string line;
-     while(getline(fLTC,line)){
-           if(line.empty()){
-            continue;
-           }
-           stringstream ss(line);
-           string maloptc;
-           string mamh;
-           string nienkhoa;
-           string hk;
-           string nhom;
-           string svmax;
-           string svmin;
-           string huylop;
-           getline(ss, maloptc, '|');
-           getline(ss, mamh, '|');
-           getline(ss, nienkhoa, '|');
-           getline(ss, hk, '|');
-           getline(ss, nhom, '|');
-           getline(ss, svmax, '|');
-           getline(ss, svmin, '|');
-           getline(ss, huylop, '|');
-           LopTinChi ltc;
-           ltc.MALOPTC = stoi(maloptc);
-           strcpy(ltc.MAMH, mamh.c_str());
-           strcpy(ltc.NienKhoa, nienkhoa.c_str());
-           ltc.Hocky = stoi(hk);
-           ltc.Nhom = stoi(nhom);
-           ltc.sosvmin = stoi(svmin);
-           ltc.sosvmax = stoi(svmax);
-           ltc.huylop = (huylop == "1");
-           ltc.dssvdk=nullptr;
-           insertLopTinChi(First, ltc);
-     }
-     fLTC.close();
-     ifstream fSVDK(fileSVDK);
-     if(!fSVDK){
-        cout<<"khong mo duoc file!"<<endl;
-        return;
-     }
-     while(getline(fSVDK,line)){
-        if(line.empty())continue;
-        stringstream ss(line);
-        int maloptc;
-        DangKy svdk;
-        string temp;
-        getline(ss, temp, '|'); maloptc=stoi(temp);
-        getline(ss, temp, '|'); strcpy(svdk.MASV, temp.c_str());
-        getline(ss, temp, '|'); svdk.DIEM=stof(temp);
-        getline(ss, temp, '|'); svdk.HuyDK = (temp == "1");
-        PTRLTC p=searchLopTinChi(First,maloptc);
-        if(p)insertSinhVienDangKy(p->ltc.dssvdk,svdk);
-     }
-     fSVDK.close();
-
-}
 int getNextMaLopTinChi(PTRLTC First) {
     int maxID = 0;
     PTRLTC p = First;
@@ -671,100 +575,8 @@ PTRLTC findLTCByParams(PTRLTC FirstLTC) {
 
     return searchLTC(FirstLTC, nienkhoa, hocky, nhom, MAMH);
 }
-void saveLopSV(DS_LOPSV &ds, const string &fileLop, const string &fileSV) {
-    ofstream fLop(fileLop);
-    ofstream fSV(fileSV);
-    if(!fLop || !fSV) { cout << "Khong mo duoc file!\n"; return; }
-
-    for(int i=0;i<ds.n;i++){
-        fLop << ds.nodes[i]->MALOP << "|" << ds.nodes[i]->TENLOP << "\n";
-        PTRSV p = ds.nodes[i]->FirstSV;
-        while(p){
-            fSV << ds.nodes[i]->MALOP << "|"
-                << p->sv.MASV << "|"
-                << p->sv.HO << "|"
-                << p->sv.TEN << "|"
-                << p->sv.PHAI << "|"
-                << p->sv.SODT << "|"
-                << p->sv.Email << "\n";
-            p = p->next;
-        }
-    }
-
-    fLop.close();
-    fSV.close();
-}
-void loadLopSV(DS_LOPSV &ds, const string &fileLop, const string &fileSV) {
-    ds.n = 0;
-    ifstream fLop(fileLop);
-    if(!fLop){ cout << "Khong tim thay file LopSV\n"; return; }
-
-    string line;
-    while(getline(fLop,line)){
-        if(line.empty()) continue;
-        stringstream ss(line);
-        string malop, tenlop;
-        getline(ss, malop, '|');
-        getline(ss, tenlop, '|');
-
-        LopSV* lop = new LopSV;
-        strcpy(lop->MALOP, malop.c_str());
-        strcpy(lop->TENLOP, tenlop.c_str());
-        lop->FirstSV = nullptr;
-
-        ds.nodes[ds.n++] = lop;
-    }
-    fLop.close();
-
-    ifstream fSV(fileSV);
-    if(!fSV){ cout << "Khong tim thay file SinhVien\n"; return; }
-
-    while(getline(fSV,line)){
-        if(line.empty()) continue;
-        stringstream ss(line);
-        string malop;
-        SinhVien sv;
-        string temp;
-        getline(ss, malop, '|');
-        getline(ss, temp, '|'); strcpy(sv.MASV, temp.c_str());
-        getline(ss, temp, '|'); strcpy(sv.HO, temp.c_str());
-        getline(ss, temp, '|'); strcpy(sv.TEN, temp.c_str());
-        getline(ss, temp, '|'); strcpy(sv.PHAI, temp.c_str());
-        getline(ss, temp, '|'); strcpy(sv.SODT, temp.c_str());
-        getline(ss, temp, '|'); strcpy(sv.Email, temp.c_str());
-
-        LopSV* lop = searchLopSV(ds, malop.c_str());
-        if(lop) insertSinhVien(lop->FirstSV, sv);
-    }
-    fSV.close();
-}
-void saveLopSV_Binary(DS_LOPSV &ds, const string &fileLop, const string &fileSV) {
-    FILE *fLop = fopen(fileLop.c_str(), "wb");
-    FILE *fSV  = fopen(fileSV.c_str(), "wb");
-    if(!fLop || !fSV){ 
-        cout << "Khong mo duoc file!\n"; 
-        return; 
-    }
-    fwrite(&ds.n, sizeof(int), 1, fLop);
-
-    for(int i=0; i<ds.n; i++){
-        LopSV* lop = ds.nodes[i];
-        fwrite(lop->MALOP, sizeof(lop->MALOP), 1, fLop);
-        fwrite(lop->TENLOP, sizeof(lop->TENLOP), 1, fLop);
-        int countSV = 0;
-        for(PTRSV p = lop->FirstSV; p != nullptr; p = p->next) countSV++;
-        fwrite(&countSV, sizeof(int), 1, fLop);
-        for(PTRSV p = lop->FirstSV; p != nullptr; p = p->next){
-            fwrite(lop->MALOP, sizeof(lop->MALOP), 1, fSV);
-            fwrite(&p->sv, sizeof(SinhVien), 1, fSV);
-        }
-    }
-
-    fclose(fLop);
-    fclose(fSV);
-}
-void loadLopSV_Binary(DS_LOPSV &ds, const string &fileLop, const string &fileSV) {
-    FILE *fLop = fopen(fileLop.c_str(), "rb");
+void loadLopSV_Binary(DS_LOPSV &ds, const char *fileLop, const char *fileSV) {
+    FILE *fLop = fopen(fileLop, "rb");
     if(!fLop){ 
         cout << "Khong mo duoc file LopSV!\n"; 
         return; 
@@ -784,7 +596,7 @@ void loadLopSV_Binary(DS_LOPSV &ds, const string &fileLop, const string &fileSV)
         ds.nodes[i] = lop;
     }
     fclose(fLop);
-    FILE *fSV = fopen(fileSV.c_str(), "rb");
+    FILE *fSV = fopen(fileSV, "rb");
     if(!fSV){ 
         cout << "Khong mo duoc file SinhVien!\n"; 
         return; 
@@ -803,9 +615,9 @@ void loadLopSV_Binary(DS_LOPSV &ds, const string &fileLop, const string &fileSV)
 
     fclose(fSV);
 }
-void saveLopTinChi_Binary(PTRLTC &First, const string &fileLoptinchi, const string &fileSVDK) {
-    FILE *fLTC = fopen(fileLoptinchi.c_str(), "wb");
-    FILE *fSVDK = fopen(fileSVDK.c_str(), "wb");
+void saveLopTinChi_Binary(PTRLTC &First, const char *fileLoptinchi, const char *fileSVDK) {
+    FILE *fLTC = fopen(fileLoptinchi, "wb");
+    FILE *fSVDK = fopen(fileSVDK, "wb");
     if(!fLTC || !fSVDK){
         cout << "Khong the mo duoc file!" << endl;
         return;
@@ -835,8 +647,8 @@ void saveLopTinChi_Binary(PTRLTC &First, const string &fileLoptinchi, const stri
     fclose(fLTC);
     fclose(fSVDK);
 }
-void loadLopTinChi_Binary(PTRLTC &First, const string &fileLoptinchi, const string &fileSVDK) {
-    FILE *fLTC = fopen(fileLoptinchi.c_str(), "rb");
+void loadLopTinChi_Binary(PTRLTC &First, const char *fileLoptinchi, const char *fileSVDK) {
+    FILE *fLTC = fopen(fileLoptinchi, "rb");
     if(!fLTC){
         cout << "Khong mo duoc file!" << endl;
         return;
@@ -861,7 +673,7 @@ void loadLopTinChi_Binary(PTRLTC &First, const string &fileLoptinchi, const stri
     }
     fclose(fLTC);
 
-    FILE *fSVDK = fopen(fileSVDK.c_str(), "rb");
+    FILE *fSVDK = fopen(fileSVDK, "rb");
     if(!fSVDK){
         cout << "Khong mo duoc file SVDK!" << endl;
         return;
@@ -906,7 +718,7 @@ float Tinhdiemtb(SinhVien sv, PTRLTC dsltc, treeMH dsmh) {
     }
     return (tongTinChi > 0) ? (tongDiem / tongTinChi) : -1; 
 }
-void IndiemtbLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh) { // In diem tb cho ca lop
+void IndiemtbLop(PTRLTC &dsltc, DS_LOPSV &dslop, treeMH &dsmh) { // In diem tb cho ca lop
     char malop[16];
     cout << "Nhap ma lop: ";
     cin.getline(malop, 16);
@@ -941,7 +753,7 @@ void IndiemtbLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh) { // In diem tb cho 
         }
     }
 }
-void IndiemtbSinhvien(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh) { // In diem tb cho ca nhan
+void IndiemtbSinhvien(const PTRLTC &dsltc, const DS_LOPSV &dslop, const treeMH &dsmh) { // In diem tb cho ca nhan
     char MASV[16];
     cout << "Nhap ma so sinh vien: ";
     cin.getline(MASV, 16);
@@ -1100,7 +912,7 @@ void InbangdiemtongketSinhvien(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh) {
         if (flag) break;
     }
 }
-void NhapDiem(nodeLTC* dsltc, DS_LOPSV dslop) {
+void NhapDiem(nodeLTC* dsltc, DS_LOPSV &dslop) {
     char nienkhoa[10], mamh[11];
     int hocky, nhom;
     cout << "Nhap nien khoa: ";
@@ -1166,7 +978,7 @@ void NhapDiem(nodeLTC* dsltc, DS_LOPSV dslop) {
     }
     cout << "\n==> Da nhap / cap nhat diem thanh cong! <==\n";
 }
-void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV dslop) {
+void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV &dslop){
     char nienkhoa[10], mamh[11];
     int hocky, nhom;
     cout << "Nhap nien khoa: ";
@@ -1231,6 +1043,22 @@ void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV dslop) {
         p = p->next;
     }
     cout << "\n==> Da nhap / cap nhat diem thanh cong! <==\n";
+}
+int posLop(DS_LOPSV &ds,char MALOP[16]){
+    for(int i=0;i<ds.n;i++){
+        if(strcmp(ds.nodes[i]->MALOP,MALOP)==0)return i;
+    }
+    return -1;
+}
+void xoaLopByPos(DS_LOPSV &ds,int pos){
+    if(pos<0||pos>=ds.n)return;
+    PTRSV p=ds.nodes[pos]->FirstSV;
+    ClearlistSV(p);
+    delete ds.nodes[pos];
+    for(int i=pos;i<ds.n-1;i++){//-1 because the end of array
+        ds.nodes[pos]=ds.nodes[pos+1];
+    }
+    ds.n--;
 }
 
 

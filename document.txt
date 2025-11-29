@@ -1,0 +1,27 @@
+FILE* fopen(const char* filename, const char* mode);
+filename is the path or name of the file
+mode:
+there are some common file mode:
+"r": Opens the file for reading. The file must exist.
+"w": Opens the file for writing. If the file exists, its contents are erased. If the file does not exist, it is created.
+"a": Opens the file for appending. Data is written at the end of the file. If the file does not exist, it is created.
+"r+": Opens the file for both reading and writing. The file must exist.
+"w+": Opens the file for both reading and writing. If the file exists, its contents are erased. If it doesn’t exist, a new file is created.
+"a+": Opens the file for both reading and appending. If the file does not exist, it is created.
+size_t fwrite(const void* ptr, size_t size, size_t nmemb, FILE* stream);
+ptr : a pointer to the array or the memory block where the data 
+size: the size of each element to write
+nmemb: number of object are saved
+steam: a pointer to the file;
+return number of element if(ans<nmemb)retun false;
+why write number of elemnt first because it make we know how many element need to read;
+struct{
+    int x;
+    char c;
+}
+ x x x x c padding padding padding =>12 byte; luu du 8 byte;
+struct{
+    char c;
+    int x;
+}
+c padding padding padding x x x x

@@ -46,13 +46,13 @@ bool editSinhVien(PTRSV &sv);
 PTRSV GetLop(DS_LOPSV &dslop, char malop[16]);//take it from Minh and it look same with searchLopSV of Dang
 void InDSLSV(DS_LOPSV &dslop);//take it from Minh 
 SinhVien getSinhVien(DS_LOPSV dslop, char MASV[16]);//take it from Minh
-bool checkSV(DS_LOPSV dslop, SinhVien sv);//take it from Minh
+bool checkSV(DS_LOPSV &dslop, SinhVien sv);//take it from Minh
 bool CheckLopSV(DS_LOPSV dslop, LopSV lop);//take it from Minh 
 void NhapSV(DS_LOPSV &dslop);//take it from Minh
 void NhapLopSV(DS_LOPSV &dslop);//take it from Minh
 bool CheckDK(PTRDK dssvdk, const char* masv);//take it from Minh
 PTRDK taonodeSVDK(const char* masv);//take it from Minh
-void dangkyLTC(PTRLTC FirstLTC, DS_LOPSV dslop);//take it from Minh
+void dangkyLTC(PTRLTC &FirstLTC, DS_LOPSV dslop);//take it from Minh
 
 
 
@@ -62,28 +62,27 @@ int listToArray(PTRSV First, SinhVien arr[]);
 void sortSinhVien(SinhVien arr[], int n);
 void printDSSV_sorted(LopSV *lop);
 LopTinChi NhapLTC();// Make it look like nhapLTC of Minh
-void saveLopTinChi(PTRLTC &First, const string &fileLoptinchi, const string &fileSVDK);
-void loadLopTinChi(PTRLTC &First, const string &fileLop, const string &fileSVDK);
 int getNextMaLopTinChi(PTRLTC First);//checked
 string inputOrKeep(const string &oldValue, const string &label);
 int inputIntOrKeep(int oldValue, const string &label);
 PTRLTC findLTCByParams(PTRLTC FirstLTC);
-void saveLopSV(DS_LOPSV &ds, const string &fileLop, const string &fileSV);
-void loadLopSV(DS_LOPSV &ds, const string &fileLop, const string &fileSV);
-void saveLopSV_Binary(DS_LOPSV &ds, const string &fileLop, const string &fileSV);
-void loadLopSV_Binary(DS_LOPSV &ds, const string &fileLop, const string &fileSV);
-void saveLopTinChi_Binary(PTRLTC &First,const string &fileloptinchi,const string &fileSVDK);
-void loadLopTinChi_Binary(PTRLTC &First, const string &fileLop, const string &fileSVDK);
+void saveLopSV_Binary(DS_LOPSV &ds, const char *fileLop, const char *fileSV);
+void loadLopSV_Binary(DS_LOPSV &ds, const char *fileLop, const char *fileSV);
+void saveLopTinChi_Binary(PTRLTC &First,const char *fileloptinchi,const char *fileSVDK);
+void loadLopTinChi_Binary(PTRLTC &First, const char *fileLop, const char *fileSVDK);
 
 // take it from Minh
 float Tinhdiemtb(SinhVien sv, PTRLTC dsltc, treeMH dsmh); 
-void IndiemtbLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
-void IndiemtbSinhvien(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
+void IndiemtbLop(PTRLTC &dsltc, DS_LOPSV &dslop, treeMH &dsmh);
+void IndiemtbSinhvien(const PTRLTC &dsltc, const DS_LOPSV &dslop, const treeMH &dsmh);
 void duyettreeMH(treeMH t, char dsMAMH[][11], int &soMH);
 void InbangdiemtongketLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
 void InbangdiemtongketSinhvien(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
-void NhapDiem(nodeLTC* dsltc, DS_LOPSV dslop);
-void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV dslop);
+void NhapDiem(nodeLTC* dsltc, DS_LOPSV &dslop);
+void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV &dslop);
+//tim lop 
+int posLop(DS_LOPSV &ds,char MALOP[16]);
+void xoaLopByPos(DS_LOPSV &ds,int pos);
 
 
 #endif

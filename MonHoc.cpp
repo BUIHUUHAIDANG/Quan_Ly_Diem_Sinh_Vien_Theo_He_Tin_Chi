@@ -67,23 +67,6 @@ treeMH CheckandRotation(treeMH t) {
     return t;
 }
 
-treeMH Insert(treeMH t, MonHoc mh) {
-    if (!t) {
-        t = new nodeMH;
-        t->mh = mh;
-        t->left = t->right = nullptr;
-        t->height = 1;
-        return t;
-    }
-
-    if (strcmp(mh.MAMH, t->mh.MAMH) < 0)
-        t->left = Insert(t->left, mh);
-    else if (strcmp(mh.MAMH, t->mh.MAMH) > 0)
-        t->right = Insert(t->right, mh);
-    else return t;
-
-    return CheckandRotation(t);
-}
 void init(stack &s) {
     s.top = nullptr;
 }
@@ -110,7 +93,33 @@ ActionMH top(stack s) {
     return s.top->data; 
 }
 
+//tim sinh vien trong danh sach sinh vien toan truong
+PTRSV findSinhVien(PTRSV First, char MASV[], PTRSV dssv) {
+    First = dssv;
+    while (First != nullptr) {
+        if (strcmp(First->sv.MASV, MASV) == 0) return First;
+        else First = First->next;
+    }
+    return nullptr;
+}
 
+treeMH Insert(treeMH t, MonHoc mh) {
+    if (!t) {
+        t = new nodeMH;
+        t->mh = mh;
+        t->left = t->right = nullptr;
+        t->height = 1;
+        return t;
+    }
+
+    if (strcmp(mh.MAMH, t->mh.MAMH) < 0)
+        t->left = Insert(t->left, mh);
+    else if (strcmp(mh.MAMH, t->mh.MAMH) > 0)
+        t->right = Insert(t->right, mh);
+    else return t;
+
+    return CheckandRotation(t);
+}
 // -------------------- HÀM FILE --------------------
 void LuuMonHoc(treeMH t, string filename) {
     ofstream f(filename, ios::app);
@@ -166,8 +175,8 @@ bool checkMH(treeMH t, MonHoc mh) {
     return checkMH(t->right, mh);
 }
 
-void NhapMonHoc(treeMH &t) {
-    t = DocMonHoc("D:\\MonHocdata.txt");
+void NhapMonHoc(treeMH &t, stack &undostackMH) {
+    // t = DocMonHocFromFile("D:\\MonHocdata.txt");
 
     while (true) {
         MonHoc mh;
@@ -189,10 +198,18 @@ void NhapMonHoc(treeMH &t) {
         cin >> mh.STCTH;
 
         t = Insert(t, mh);
-        LuuMonHoc(t, "D:\\MonHocdata.txt");
+
+        // LuuMonHocToFile(t, "D:\\MonHocdata.txt");
+
         cout << "Luu thanh cong!\n\n";
+
+        ActionMH act;
+        act.type = 1;
+        act.mh = mh;
+        push(undostackMH, act);
     }
 }
+
 treeMH UndoThemMH (treeMH &t, char MAMH[]) {
     MonHoc mh;
     if (t == nullptr) {
@@ -228,6 +245,7 @@ treeMH UndoThemMH (treeMH &t, char MAMH[]) {
     if (t == nullptr) return nullptr; //Nếu cây rồng thì không cần quay
     return CheckandRotation(t);
 }
+
 treeMH XoaMH (treeMH &t, char MAMH[], stack &undostackMH) {
     MonHoc mh;
     if (t == nullptr) {
@@ -267,6 +285,18 @@ treeMH XoaMH (treeMH &t, char MAMH[], stack &undostackMH) {
     act.mh = t->mh;
     push(undostackMH, act);
 }
+
+void UndoSuaMH (treeMH &t, MonHoc mh) {
+    if (strcmp(mh.MAMH, t->mh.MAMH) < 0) {
+        UndoSuaMH(t->left, mh);
+    } else if (strcmp(mh.MAMH, t->mh.MAMH) > 0) {
+        UndoSuaMH(t->right, mh);
+    } else {
+        t->mh = mh;
+        return;
+    }
+}
+
 void SuaMH (treeMH &t, MonHoc mh, stack &undostackMH) {
     if (t == nullptr) {
         cout <<  "Khong tim thay mon hoc de sua" << endl;
@@ -321,16 +351,7 @@ void SuaMH (treeMH &t, MonHoc mh, stack &undostackMH) {
         }
     }
 }
-void UndoSuaMH (treeMH &t, MonHoc mh) {
-    if (strcmp(mh.MAMH, t->mh.MAMH) < 0) {
-        UndoSuaMH(t->left, mh);
-    } else if (strcmp(mh.MAMH, t->mh.MAMH) > 0) {
-        UndoSuaMH(t->right, mh);
-    } else {
-        t->mh = mh;
-        return;
-    }
-}
+
 void UndoMH (treeMH &t, stack &undostackMH) {
     MonHoc mh;
     if (empty(undostackMH)) {
@@ -353,7 +374,6 @@ void UndoMH (treeMH &t, stack &undostackMH) {
     }
 }
 
-
 void InDSMH(treeMH t) {
     if (!t) return;
     InDSMH(t->left);
@@ -361,8 +381,109 @@ void InDSMH(treeMH t) {
     InDSMH(t->right);
 }
 
-bool timMonHoc(treeMH t, char mamh[]) {
-    if (!t) return false;
-    if (strcmp(t->mh.MAMH, mamh) == 0) return true;
-    return strcmp(mamh, t->mh.MAMH) < 0 ? timMonHoc(t->left,mamh) : timMonHoc(t->right,mamh);
+treeMH timMonHoc(treeMH t, char mamh[]) {
+    MonHoc mh;
+    if (t == nullptr) {
+        return nullptr;
+    }
+    
+    if (strcmp(mamh, t->mh.MAMH) < 0) {
+        return timMonHoc(t->left, mamh);
+    } else if (strcmp(mamh, t->mh.MAMH) > 0) {
+        return timMonHoc(t->right, mamh);
+    } else return t;
+}
+
+// void InLTC(PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t) {
+//     LopTinChi ltc;
+//     MonHoc mh;
+//     if (loptinchi == nullptr) {
+//         cout << "Danh sach lop tin chi rong" << endl;
+//         return;
+//     } 
+    
+//     PTRLTC p = loptinchi;
+//     while (p != nullptr) {
+//         if (strcmp(p->ltc.NienKhoa, nienkhoa) == 0 && p->ltc.Hocky == hocky) {
+//             treeMH found = timMonHoc(t, p->ltc.MAMH);
+//             if (found != nullptr) {
+//                 cout << "Ma mon hoc: " << p->ltc.MAMH << endl;
+//                 cout << "Ten mon hoc: " << found->mh.TENMH << endl;
+//                 cout << "Nhom: " << p->ltc.Nhom << endl;
+//                 cout << "So sinh vien da dang ky: " << p->ltc.currentsv << endl;
+//                 cout << "So slot con trong: " << (p->ltc.sosvmax - p->ltc.currentsv) << endl;
+//                 cout << "------------------------------\n";
+//             }
+//         }
+//         p = p->next;
+//     }
+// }
+
+//luu sinh vien dang ky vao danh sach dang ky cua lop tin chi
+void SVDangKy(PTRDK &dssvdk, PTRSV sv) {
+    PTRDK p = new nodeDK;
+    strcpy(p->dk.MASV, sv->sv.MASV);
+    p->dk.DIEM = 0;
+    p->dk.HuyDK = false;
+    p->next = nullptr;
+
+    if (dssvdk == nullptr) {
+        dssvdk = p;
+    } else {
+        PTRDK tmp = dssvdk;
+        while(tmp->next != nullptr) tmp = tmp->next;
+        tmp->next = p;
+    }
+}
+
+//kiem tra ma mon hoc co ton tai khong
+PTRLTC checkmamh(PTRLTC loptinchi, char nienkhoa[], int hocky) {
+    LopTinChi ltc;
+    cout << "Nhap ma mon hoc (Nhap 0 de thoat): ";
+    char mamh[11];
+    cin >> mamh;
+    if (strcmp(mamh, "0") == 0) return nullptr;
+    PTRLTC p = loptinchi;
+    while (p != nullptr) {
+        if (strcmp(p->ltc.MAMH, mamh) == 0 && strcmp(p->ltc.NienKhoa, nienkhoa) == 0 && p->ltc.Hocky == hocky) {
+            return p;
+        }
+        p = p->next;
+    }
+    cout << "Khong tim thay ma mon hoc vua nhap, vui long kiem tra lai!" << endl;
+    return checkmamh(loptinchi, nienkhoa, hocky);
+}
+
+void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, PTRSV dssv) {
+    PTRSV p = nullptr;
+    PTRSV First = nullptr;
+    char masv[16];
+    cout << "Nhap ma so sinh vien: ";
+    cin.ignore();
+    cin.getline(masv, 16);
+    
+    if ((p = findSinhVien(First, masv, dssv)) != nullptr) {
+        cout << "Ho:" << p->sv.HO << endl <<
+            "Ten: " << p->sv.TEN << endl << 
+            "Phai:" << p->sv.PHAI << endl <<
+            "So dien thoai: " << p->sv.SODT << endl <<
+            "Email: " << p->sv.Email << endl;
+    } else {
+        cout << "Khong tim thay sinh vien" << endl;
+        return;
+    }
+    
+    cout << "Nhap nien khoa: ";
+    cin >> lop.NienKhoa;
+    cout << "Nhap hoc ky: ";
+    cin >> lop.Hocky;
+    InLTC(loptinchi, lop.NienKhoa, lop.Hocky, t);
+    PTRLTC c = nullptr;
+    c = checkmamh(loptinchi, lop.NienKhoa, lop.Hocky);
+    if (c == nullptr) {
+        return;
+    }
+    SVDangKy(c->ltc.dssvdk, p); 
+    // c->ltc.currentsv++; //tang so luong sinh vien da dang ky len 1
+    cout << "Dang ky thanh cong!" << endl;
 }
