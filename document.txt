@@ -25,3 +25,31 @@ struct{
     int x;
 }
 c padding padding padding x x x x
+
+ stack test implement by array and linked list 
+ different between linklist and array 
+ push() of array best case O(1) 
+ but worst case is O(n) because if the array allowcated a small space so if the array have no more capacity so it neet to 
+ create a array with double capacity and copy data of old array to new array 
+ pop() worst case is O(1)
+ push() and pop() when implement by linked list is O(1)
+
+//TasK Todo:
+| Ten chuc nang                                         | Code/Tien do   | Bug/Notes                  |
+|-------------------------------------------------------|----------------|----------------------------|
+| Xem danh sach mon hoc                                 | In progress    |                            |
+| Xem danh sach lop tin chi                             | Done           |                            |
+| xem danh sach lop sinh vien                           | Done           |                            |
+| Them/cap nhat/xoa mon hoc                             | In progress    |                            |
+| Them/cap nhat/huy lop tin chi                         | Done           |                            |
+| Xem danh sach sinh vien da dang ky lop tin chi        | Done           |                            |
+| Xem bang diem cua lop tin chi                         | In progress    |                            |
+| Them/cap nhat/huy lop sinh vien                       | lack update    |                            |
+| Them sinh vien vao 1 lop                              | Done           |                            |
+| Xem danh sach sinh vien                               | Done           |                            |
+| Xem bang diem trung binh                              | In progress    |                            |
+| Xem bang diem tong ket                                | In progress    |                            |
+
+Bug/note:
+todo1: do update of lop sinh vien: Done nhung chua test
+todo2: menu of Them sinh vien vao 1 lop Nhap MaLop-> show Malop("khong ton tai")->show menu Them/Xoa/Hieu Chinh

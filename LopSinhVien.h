@@ -16,6 +16,18 @@ void undoLTC(PTRLTC &First, stackNode* &root);
 void initializeStackNode(stackNode* &root);
 bool deleteFirstStackLTC(stackNode* &root);
 
+//stack Hieu Chinh Sinh Vien
+stackNodeSV* newNode(ActionSV data);
+bool isEmpty(stackNodeSV* &root);
+void push(stackNodeSV* &root, ActionSV data);
+void pop(stackNodeSV* &root);
+ActionSV top(stackNodeSV* &root);
+void undoSuaSV(PTRSV &First,SinhVien sv);
+void undoSV(PTRSV &First, stackNodeSV* &root);
+// void undoSuaLTC(PTRLTC &First, LopTinChi ltc);
+// void undoLTC(PTRLTC &First, stackNode* &root);
+// void initializeStackNode(stackNode* &root);
+// bool deleteFirstStackLTC(stackNode* &root);
 
 //Lop Tin Chi
 PTRLTC createNodeLopTinChi(LopTinChi data);
@@ -56,6 +68,7 @@ bool editSinhVien(PTRSV &sv);
 PTRSV GetLop(DS_LOPSV &dslop, char malop[16]);
 void InDSLSV(DS_LOPSV &dslop);
 SinhVien getSinhVien(DS_LOPSV dslop, char MASV[16]);
+PTRSV getSinhVienv2(PTRSV &First, char masv[16]);
 bool checkSV(DS_LOPSV &dslop, SinhVien sv);
 bool CheckLopSV(DS_LOPSV dslop, LopSV lop);
 

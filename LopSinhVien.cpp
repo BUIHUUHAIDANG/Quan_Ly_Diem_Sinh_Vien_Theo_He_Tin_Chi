@@ -31,7 +31,65 @@ void pop(stackNode* &root){
     delete(tmp);
 }
 ActionLTC top(stackNode* &root){
+     if(isEmpty(root))return {};
      return root->data;
+}
+stackNodeSV* newNode(ActionSV Data){
+     stackNodeSV* p= new stackNodeSV();
+     p->data=Data;
+     p->next=nullptr;
+     return p;
+}
+bool isEmpty(stackNodeSV* &root){
+     return !root;
+}
+void push(stackNodeSV* &root, ActionSV data){
+     stackNodeSV* p=newNode(data);
+     p->next=root;
+     root=p;
+}
+void pop(stackNodeSV* &root){
+     if(isEmpty(root))return;
+     stackNodeSV* tmp=root;
+     root=root->next;
+     delete(tmp);
+}
+ActionSV top(stackNodeSV* &root){
+     return root->data;
+}
+void undoSuaSV(PTRSV &First,SinhVien sv){
+     PTRSV p=getSinhVienv2(First,sv.MASV);
+     if(p==nullptr){
+        cout<<"Sinh vien khong co ton tai"<<endl;
+        return;
+     }
+     strcpy(p->sv.HO,sv.HO);
+     strcpy(p->sv.TEN,sv.TEN);
+     strcpy(p->sv.PHAI,sv.PHAI);
+     strcpy(p->sv.SODT,sv.SODT);
+     strcpy(p->sv.Email,sv.Email);
+}
+void undoSV(PTRSV &First, stackNodeSV* &root){
+     if(isEmpty(root)){
+        cout<<"Khong co gi de hieu chinh"<<endl;
+     }
+     ActionSV p=root->data;
+     pop(root);
+     //them
+     if(p.type==1){
+       //function xoa
+       
+     }
+     //xoa
+     else if(p.type==2){
+       //function them
+       insertSinhVien(First,p.sv);
+     }
+     //sua
+     else if(p.type==3){
+       //function Hoan Tac
+       undoSuaSV(First,p.sv);
+     }
 }
 void undoSuaLTC(PTRLTC &First,LopTinChi ltc){
      PTRLTC p=searchLopTinChi(First,ltc.MALOPTC);
@@ -71,9 +129,6 @@ void undoLTC(PTRLTC &First,stackNode* &root){
     }
     return;
 }
-void initializeStackNode(stackNode* &root){root=nullptr;}
-void initializeLTC(PTRLTC & First) { First = nullptr; }
-void initializeSV(PTRSV &FirstSV){FirstSV=nullptr;}
 PTRLTC createNodeLopTinChi(LopTinChi data) { return new nodeLTC(data); }
 void insertLopTinChi(PTRLTC &First, LopTinChi data){
     PTRLTC p = createNodeLopTinChi(data);
@@ -278,7 +333,7 @@ bool editSinhVien(PTRSV &sv){
     cout<<"email moi: "; cin.getline(email,50); if(strlen(email)>0) strcpy(sv->sv.Email,email);
     return true;
 }
-PTRSV GetLop(DS_LOPSV &dslop, char malop[]) {
+PTRSV GetLop(DS_LOPSV &dslop, char malop[16]) {
     PTRSV FirstSV = nullptr;
     for(int i=0; i<dslop.n; i++) {
         if(strcmp(malop,dslop.nodes[i]->MALOP) == 0) {
@@ -311,6 +366,13 @@ SinhVien getSinhVien(DS_LOPSV dslop, char MASV[16]) {
     }
     SinhVien empty = {};
     return empty;
+}
+PTRSV getSinhVienv2(PTRSV &First, char masv[16]){
+      if(First==nullptr)return nullptr;
+      for(PTRSV p=First;p!=nullptr;p=p->next){
+         if(strcmp(p->sv.MASV,masv)==0)return p;
+      }
+      return nullptr;
 }
 bool checkSV(DS_LOPSV &dslop, SinhVien sv) {
     if (dslop.n == 0) return false;
@@ -1083,6 +1145,24 @@ void ClearStackLTC(stackNode* &dsnode){
     while(dsnode!=nullptr){
          deleteFirstStackLTC(dsnode);
     }
+}
+int editLopSinhVien(DS_LOPSV &ds,int pos){
+    char malop[16];
+    char tenlop[51];
+     cout<<"[Ma Lop Sinh Vien]"<<"["<<ds.nodes[pos]->MALOP<<"] :";
+     cin.getline(malop,16);
+     cout<<"[Ten Lop Sinh Vien]"<<"["<<ds.nodes[pos]->TENLOP<<"] :";
+     cin.getline(tenlop,51);
+     if(strcmp(malop,"0")!=0){
+        strcpy(ds.nodes[pos]->MALOP,malop);
+     }
+     else if(strcmp(ds.nodes[pos]->TENLOP,"0")!=0){
+        strcpy(ds.nodes[pos]->TENLOP,tenlop);
+     }
+     else if(strcmp(malop,"0")==0&&strcmp(ds.nodes[pos]->TENLOP,"0")==0){
+        return 0;
+     }
+     return 1;
 }
 
 

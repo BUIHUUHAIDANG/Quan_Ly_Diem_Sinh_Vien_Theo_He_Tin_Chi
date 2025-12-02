@@ -1,20 +1,6 @@
-#include <iostream>
-#include <conio.h>      
-#include <windows.h>    
+#include <iostream>    
 #include <cstdio>
 #include <cstring>
-<<<<<<< HEAD
-#include "mylib.h"    
-#include "MonHoc.h"
-#include "LopSinhVien.h"
-
-using namespace std;
-// === Draw Menu ===
-void drawMenu(const char *title, const char *role, const char *options[], int n, int highlight) {
-    clrscr();
-    SetBGColor(0);  // black background
-    SetColor(7);    // white text
-=======
 #include <limits>
 
 #include "console.h"
@@ -28,29 +14,8 @@ void drawMenu(const char *title, const char *role, const char *options[], int n,
     clrscr();
     textcolor(7);
 
->>>>>>> a21d178e19af713955bb738e5fe7a0b7c1f62e28
     gotoxy(20, 2);
-    SetBold(true);
-    SetColor(4);
     cout << title;
-<<<<<<< HEAD
-    drawLine(5, 3, 53);
-    ResetColor();
-    SetBold(false);
-    gotoxy(5, 4);
-    cout << "Vai tro: ";
-    SetBold(true);
-    SetColor(10);
-    cout << role;
-    ResetColor();
-    SetBold(false);
-    for (int i = 0; i < n; i++) {
-        gotoxy(8, 6 + i * 2);
-        if (i == highlight) {
-            SetBGColor(7); SetColor(0);
-            cout << "> " << options[i] << " <";
-            ResetColor();
-=======
 
     gotoxy(5, 4);
     cout << "Vai tro: " << role;
@@ -64,7 +29,6 @@ void drawMenu(const char *title, const char *role, const char *options[], int n,
             cout << "> " << options[i] << " <";
             printf("\033[0m");    // reset
             textcolor(7);
->>>>>>> a21d178e19af713955bb738e5fe7a0b7c1f62e28
         } else {
             cout << "  " << options[i];
         }
@@ -74,31 +38,13 @@ void drawMenu(const char *title, const char *role, const char *options[], int n,
     cout << "(Dung phim ↑ ↓ hoac W/S de di chuyen, Enter de chon)";
 }
 
-<<<<<<< HEAD
 // === Menu Logic ===
-=======
 // Nhận phím (getch đã có trong console.h giả sử)
 // Trả về ký tự thường hoá cho W/w, S/s; phát hiện Enter = '\n' hoặc 10
->>>>>>> a21d178e19af713955bb738e5fe7a0b7c1f62e28
 int menu(const char *title, const char *role, const char *options[], int n) {
     int highlight = 0;
     while (true) {
         drawMenu(title, role, options, n, highlight);
-<<<<<<< HEAD
-        int ch = _getch();
-
-        // support both arrow keys and WASD
-        if (ch == 224) {
-            int arrow = _getch();
-            if (arrow == 72) highlight = (highlight - 1 + n) % n; // up
-            if (arrow == 80) highlight = (highlight + 1) % n;     // down
-        } else if (ch == 'w' || ch == 'W') {
-            highlight = (highlight - 1 + n) % n;
-        } else if (ch == 's' || ch == 'S') {
-            highlight = (highlight + 1) % n;
-        } else if (ch == 13) { // Enter
-            return highlight;
-=======
         int ch = getch();
         if (ch == 'w' || ch == 'W') {
             highlight = (highlight - 1 + n) % n;
@@ -108,23 +54,11 @@ int menu(const char *title, const char *role, const char *options[], int n) {
             return highlight;
         } else if (ch == 27) { // Esc -> trả về -1 (nếu cần xử lý)
             return -1;
->>>>>>> a21d178e19af713955bb738e5fe7a0b7c1f62e28
         }
     }
 }
 
 int main() {
-<<<<<<< HEAD
-    SetConsoleOutputCP(CP_UTF8);
-    const char *roles[] = {"Sinh vien", "Giang vien", "Admin", "Thoat"};
-    const char *features_sinhvien[] = {
-        "Xem danh sach mon hoc",
-        "In danh sach sinh vien",
-        "In bang diem trung binh",
-        "In bang diem tong ket",
-        "In danh sach sinh vien da dang ki",
-        "In bang diem cua lop tin chi",
-=======
     // Khoi tao DS LopSV
     DS_LOPSV ds;
     ds.n = 0;
@@ -145,19 +79,11 @@ int main() {
         "Xem danh sach lop tin chi",
         "Xem diem trung binh",
         "Xem diem tong ket",
->>>>>>> a21d178e19af713955bb738e5fe7a0b7c1f62e28
         "← Quay lai"
     };
 
     const char *features_giangVien[] = {
         "Xem danh sach mon hoc",
-<<<<<<< HEAD
-        "In danh sach sinh vien",
-        "In bang diem trung binh",
-        "In bang diem tong ket",
-        "In danh sach sinh vien da dang ki",
-        "In bang diem cua lop tin chi",
-=======
         "Xem danh sach sinh vien",
         "Xem danh sach lop tin chi phu trach",
         "Xem danh sach sinh vien da dang ki lop tin chi phu trach",
@@ -165,7 +91,6 @@ int main() {
         "Xem bang diem cua mot lop tin chi",
         "Xem bang diem trung binh",
         "Xem bang diem tong ket",
->>>>>>> a21d178e19af713955bb738e5fe7a0b7c1f62e28
         "← Quay lai"
     };
 
@@ -174,19 +99,6 @@ int main() {
         "Xem danh sach lop tin chi",
         "xem danh sach lop sinh vien",
         "Them/cap nhat/xoa mon hoc",
-<<<<<<< HEAD
-        "Tao/cap nhat/huy lop sinh vien",
-        "In danh sach sinh vien",
-        "In bang diem trung binh",
-        "In bang diem tong ket",
-        "Tao/cap nhat/huy lop tin chi",
-        "In danh sach sinh vien da dang ki",
-        "In bang diem cua lop tin chi",
-        "← Quay lai"
-    };
-
-    int n_roles = 4, n_features_sinhvien = 7, n_features_giangvien = 7, n_features_admin = 10;
-=======
         "Them/cap nhat/huy lop tin chi",
         "Xem danh sach sinh vien da dang ky lop tin chi",
         "Xem bang diem cua lop tin chi",
@@ -211,7 +123,6 @@ int main() {
         "xoa lop sinh vien",
         "Quay lai"
     };
->>>>>>> a21d178e19af713955bb738e5fe7a0b7c1f62e28
 
     const char *features_admin_9[] = {
         "Xem danh sach sinh vien(dua vao ma lop) theo thu tu alphabet theo ten",
@@ -237,49 +148,6 @@ int main() {
     // Vong chinh
     while (true) {
         int r = menu("CHON VAI TRO DANG NHAP", "", roles, n_roles);
-<<<<<<< HEAD
-        if (r == 3) break;
-
-        const char *role = roles[r];
-        if (r == 0) {
-            while (1) {
-                int f = menu("🏫 QUAN LY HE TIN CHI 🏫", role, features_sinhvien, n_features_sinhvien);
-                if (f == n_features_sinhvien - 1) break;
-
-                clrscr();
-                gotoxy(10, 10);
-                cout << "Ban da chon: " << features_sinhvien[f];
-                gotoxy(10, 12);
-                cout << "(Nhan phim bat ky de quay lai...)";
-                _getch();
-            }
-        } else if (r == 1) {
-            while (1) {
-                int f = menu("🏫 QUAN LY HE TIN CHI 🏫", role, features_giangVien, n_features_giangvien);
-                if (f == n_features_giangvien - 1) break;
-
-                clrscr();
-                gotoxy(10, 10);
-                cout << "Ban da chon: " << features_giangVien[f];
-                gotoxy(10, 12);
-                cout << "(Nhan phim bat ky de quay lai...)";
-                _getch();
-            }
-        } else if (r == 2) {
-            while (1) {
-                int f = menu("🏫 QUAN LY HE TIN CHI 🏫", role, features_admin, n_features_admin);
-                if (f == n_features_admin - 1) break;
-
-                clrscr();
-                gotoxy(10, 10);
-                cout << "Ban da chon: " << features_admin[f];
-                gotoxy(10, 12);
-                cout << "(Nhan phim bat ky de quay lai...)";
-                _getch();
-            }
-        }
-    }
-=======
         if (r == -1) break; // neu nhan ESC o menu
         if (r == 3) break;  // Thoat
 
@@ -290,7 +158,6 @@ int main() {
             while (true) {
                 int f = menu("QUAN LY HE TIN CHI", role, features_sinhvien, n_features_sinhvien);
                 if (f == -1 || f == n_features_sinhvien - 1) break;
->>>>>>> a21d178e19af713955bb738e5fe7a0b7c1f62e28
 
                 if (f == 0) {
                     clrscr();
