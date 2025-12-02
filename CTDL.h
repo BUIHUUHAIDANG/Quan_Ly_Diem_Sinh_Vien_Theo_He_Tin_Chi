@@ -93,6 +93,15 @@ struct stackNode
     ActionLTC data;
     stackNode* next;
 };
+struct ActionSV {
+    int type;
+    SinhVien sv;
+};
+struct stackNodeSV
+{
+    ActionSV data;
+    stackNodeSV* next;
+};
 struct ActionMH {
     int type = 0; //1 = them, 2 = xoa, 3 = sua mh
     MonHoc mh;
