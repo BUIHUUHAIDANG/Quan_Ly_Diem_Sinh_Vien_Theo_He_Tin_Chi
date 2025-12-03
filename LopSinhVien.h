@@ -122,6 +122,13 @@ void ClearlistSV(PTRSV &First);
 void ClearLTC(PTRLTC &First);
 void ClearDS_Lop(DS_LOPSV &ds);
 void ClearStackLTC(stackNode* &dsnode);
+//recode function insert
+void insertSinhVienV2(PTRSV &First,SinhVien sv);
+void insertSinhVienDKV2(PTRDK &First,DangKy svdk);
+//get 3number at the end of MaSV
+int getNumOfSinhVien(char MaSV[]);
 
-
+//change time to int
+time_t stringToTime(string s);
+void AutoCancelExpiredClasses(PTRLTC &l);
 #endif

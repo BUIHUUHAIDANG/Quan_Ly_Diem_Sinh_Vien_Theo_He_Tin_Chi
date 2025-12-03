@@ -78,7 +78,7 @@ void undoSV(PTRSV &First, stackNodeSV* &root){
      //them
      if(p.type==1){
        //function xoa
-       
+       deleteSinhVien(First,p.sv.MASV);
      }
      //xoa
      else if(p.type==2){
@@ -586,7 +586,14 @@ LopTinChi NhapLTC(){
     cout << "Nhap Nhom: "; cin >> ltc.Nhom;
     cout << "Nhap SV Min va Max: "; cin >> ltc.sosvmin >> ltc.sosvmax;
     cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
-
+    cout << "Nhap Deadline (YYYY-MM-DD HH:MM): ";
+    string deadlinestr;
+    cin.ignore();
+    getline(cin, deadlinestr);
+    ltc.deadline = stringToTime(deadlinestr);
+    ltc.huylop = false;
+    ltc.dssvdk = nullptr;
+    cin.ignore();
     return ltc;
 }
 int getNextMaLopTinChi(PTRLTC First) {
@@ -1164,7 +1171,68 @@ int editLopSinhVien(DS_LOPSV &ds,int pos){
      }
      return 1;
 }
+//order
+void insertSinhVienV2(PTRSV &First,SinhVien sv){
+     PTRSV p,t,s;
+     p=new nodeSV();
+     p->sv=sv;
+     p->next=nullptr;
+     for(s=First;s!=nullptr&&(getNumOfSinhVien(s->sv.MASV)<getNumOfSinhVien(sv.MASV));t=s,s=s->next);
+     if(s==First){
+        p->next=First;
+        First=p;
+     }
+     else{
+        p->next=s;
+        t->next=p;
+     }
+}
+void insertSinhVienDKV2(PTRDK &First,DangKy svdk){
+     PTRDK p,t,s;
+     p= new nodeDK();
+     p->dk=svdk;
+     p->next=nullptr;
+     for(s=First;s!=nullptr&&(getNumOfSinhVien(s->dk.MASV)<getNumOfSinhVien(svdk.MASV));t=s,s=s=s->next);
+     if(s==First){
+        p->next=First;
+        First=p;
+     }
+     else{
+        p->next=s;
+        t->next=p;
+     }
+}
+int getNumOfSinhVien( char MaSV[]){
+    int length=strlen(MaSV);
+    int result=0;
+    for(int i=length-3;i<length;i++){
+        result=result*10+(MaSV[i]-'0');
+    }
+    return result;
+}
+time_t stringToTime(string s) {
+    tm t = {};
+    stringstream ss(s);
+    ss >> get_time(&t, "%Y-%m-%d %H:%M");
+    return mktime(&t);
+}
+void AutoCancelExpiredClasses(PTRLTC &l) {
+    time_t now = time(nullptr);
 
+    PTRLTC cur = nullptr;
+
+    while (cur != nullptr) {
+        bool hetHan = (now >= cur->ltc.deadline);
+        bool thieuSV = (cur->ltc.currentsv < cur->ltc.sosvmin);
+
+        if (hetHan && thieuSV) {
+            cur->ltc.huylop = true;
+        } 
+        else {
+            cur = cur->next;
+        }
+    }
+}
 
 
 

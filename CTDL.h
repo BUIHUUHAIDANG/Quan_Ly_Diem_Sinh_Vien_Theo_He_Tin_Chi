@@ -4,6 +4,7 @@
 #include<iostream>
 #include<iomanip>
 #include<cstring>
+#include<ctime>
 using namespace std;
 const int MAX_LOPSV = 10000;
 struct MonHoc {
