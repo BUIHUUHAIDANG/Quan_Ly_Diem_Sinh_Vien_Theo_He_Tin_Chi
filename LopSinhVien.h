@@ -24,6 +24,7 @@ void pop(stackNodeSV* &root);
 ActionSV top(stackNodeSV* &root);
 void undoSuaSV(PTRSV &First,SinhVien sv);
 void undoSV(PTRSV &First, stackNodeSV* &root);
+bool deleteFirstStackSV(stackNodeSV* &root);
 // void undoSuaLTC(PTRLTC &First, LopTinChi ltc);
 // void undoLTC(PTRLTC &First, stackNode* &root);
 // void initializeStackNode(stackNode* &root);
@@ -122,6 +123,7 @@ void ClearlistSV(PTRSV &First);
 void ClearLTC(PTRLTC &First);
 void ClearDS_Lop(DS_LOPSV &ds);
 void ClearStackLTC(stackNode* &dsnode);
+void ClearStackSV(stackNodeSV* &dsnode);
 //recode function insert
 void insertSinhVienV2(PTRSV &First,SinhVien sv);
 void insertSinhVienDKV2(PTRDK &First,DangKy svdk);

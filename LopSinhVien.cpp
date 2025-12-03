@@ -91,6 +91,18 @@ void undoSV(PTRSV &First, stackNodeSV* &root){
        undoSuaSV(First,p.sv);
      }
 }
+bool deleteFirstStackSV(stackNodeSV* &root){
+     if(root==nullptr)return 0;
+     stackNodeSV* p=root;
+     root=root->next;
+     delete p;
+     return 1; 
+}
+void ClearStackSV(stackNodeSV* &dsnode){
+    while(dsnode!=nullptr){
+         deleteFirstStackSV(dsnode);
+    }
+}
 void undoSuaLTC(PTRLTC &First,LopTinChi ltc){
      PTRLTC p=searchLopTinChi(First,ltc.MALOPTC);
      if(!p){
