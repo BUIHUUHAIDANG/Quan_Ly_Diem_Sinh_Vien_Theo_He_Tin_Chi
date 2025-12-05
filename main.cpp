@@ -2,18 +2,18 @@
 #include <cstdio>
 #include <cstring>
 #include <limits>
-
-#include "console.h"
-#include "MonHoc.h"
-#include "LopSinhVien.h"
+#include <iomanip>
+#include "mylib.h"    
 #include "CTDL.h"
+#include "monhoc.h"
+#include "lopsinhvien.h"
 
 using namespace std;
-// Vẽ menu
+// === Draw Menu ===
 void drawMenu(const char *title, const char *role, const char *options[], int n, int highlight) {
     clrscr();
-    textcolor(7);
-
+    SetBGColor(0);  // black background
+    SetColor(7);    // white text
     gotoxy(20, 2);
     cout << title;
 
@@ -135,7 +135,19 @@ int main() {
         "Huy LTC",
         "← Quay lai"
     };
-
+    const char *features_admin_4[] = {
+        "Them lop tin chi moi",
+        "Cap nhat/Sua lop tin chi",
+        "Undo them/xoa/sua lop tin chi",
+        "← Quay lai"
+    };
+    const char *features_admin_7[] = {
+        "Them lop sinh vien",
+        "Sua lop sinh vien",
+        "Xoa lop sinh vien",
+        "← Quay lai"
+    };
+    
     const int n_roles = sizeof(roles) / sizeof(roles[0]);
     const int n_features_sinhvien = sizeof(features_sinhvien) / sizeof(features_sinhvien[0]);
     const int n_features_giangvien = sizeof(features_giangVien) / sizeof(features_giangVien[0]);
@@ -443,3 +455,4 @@ int main() {
     cout << "Tam biet!\n";
     return 0;
 }
+
