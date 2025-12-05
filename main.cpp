@@ -59,6 +59,8 @@ int menu(const char *title, const char *role, const char *options[], int n) {
 }
 
 int main() {
+    //Khoi tao Tree
+    treeMH dsmh;
     // Khoi tao DS LopSV
     DS_LOPSV ds;
     ds.n = 0;
@@ -75,37 +77,37 @@ int main() {
 
     const char *features_sinhvien[] = {
         "Xem danh sach mon hoc",
-        "Dang ki/Huy dang ki lop tin chi",
-        "Xem danh sach lop tin chi",
-        "Xem diem trung binh",
-        "Xem diem tong ket",
+        "Dang ki/Huy dang ki lop tin chi",//done
+        "Xem danh sach lop tin chi",//done
+        "Xem diem trung binh",//->MASV->done
+        "Xem diem tong ket",//->MASV->done
         "← Quay lai"
     };
 
     const char *features_giangVien[] = {
         "Xem danh sach mon hoc",
         "Xem danh sach sinh vien",
-        "Xem danh sach lop tin chi phu trach",
-        "Xem danh sach sinh vien da dang ki lop tin chi phu trach",
-        "Nhap diem/ Sua diem cua sinh vien",
-        "Xem bang diem cua mot lop tin chi",
-        "Xem bang diem trung binh",
-        "Xem bang diem tong ket",
+        "Xem danh sach lop tin chi",
+        "Xem danh sach sinh vien da dang ki lop tin chi",
+        "Nhap diem/ Sua diem cua sinh vien",//done
+        "Xem bang diem cua mot lop tin chi",//done
+        "Xem bang diem trung binh",//done
+        "Xem bang diem tong ket",//done
         "← Quay lai"
     };
 
     const char *features_admin[] = {
-        "Xem danh sach mon hoc",
-        "Xem danh sach lop tin chi",
-        "xem danh sach lop sinh vien",
-        "Them/cap nhat/xoa mon hoc",
-        "Them/cap nhat/huy lop tin chi",
-        "Xem danh sach sinh vien da dang ky lop tin chi",
+        "Xem danh sach mon hoc",//done
+        "Xem danh sach lop tin chi",//done
+        "xem danh sach lop sinh vien",//done
+        "Them/cap nhat/xoa mon hoc",//done
+        "Them/cap nhat/huy lop tin chi",//done
+        "Xem danh sach sinh vien da dang ky lop tin chi",//done
         "Xem bang diem cua lop tin chi",
-        "Them/cap nhat/huy lop sinh vien",
-        "Them sinh vien vao 1 lop",
-        "Xem danh sach sinh vien",
-        "Xem bang diem trung binh",
+        "Them/cap nhat/huy lop sinh vien",//done
+        "Them sinh vien vao 1 lop",//done
+        "Xem danh sach sinh vien",//done
+        "Xem bang diem trung binh",//done
         "Xem bang diem tong ket",
         "← Quay lai"
     };
@@ -163,6 +165,7 @@ int main() {
                     clrscr();
                     gotoxy(10, 10);
                     cout << "Chuc nang: " << features_sinhvien[f];
+                    InDSMH(dsmh);
                     gotoxy(10, 12);
                     cout << "(Nhan phim bat ky de quay lai...)";
                     getch();
@@ -186,11 +189,27 @@ int main() {
                             getch();
                         }
                     }
-                } else {
+                } else if(f==2) {
                     clrscr();
                     gotoxy(10, 10);
-                    cout << "Chuc nang (chua cài): " << features_sinhvien[f];
+                    cout << "Chuc nang: " << features_sinhvien[f];
                     InDSLTC(FirstLTC);
+                    gotoxy(10, 12);
+                    cout << "(Nhan phim bat ky de quay lai...)";
+                    getch();
+                }
+                else if(f==3){
+                    gotoxy(10, 10);
+                    cout << "Chuc nang: " << features_sinhvien[f];
+                    IndiemtbSinhvien(FirstLTC,ds,dsmh);
+                    gotoxy(10, 12);
+                    cout << "(Nhan phim bat ky de quay lai...)";
+                    getch();
+                }
+                else if(f==4){
+                    gotoxy(10, 10);
+                    cout << "Chuc nang: " << features_sinhvien[f];
+                    InbangdiemtongketSinhvien(FirstLTC,ds,dsmh);
                     gotoxy(10, 12);
                     cout << "(Nhan phim bat ky de quay lai...)";
                     getch();
@@ -203,13 +222,84 @@ int main() {
             while (true) {
                 int f = menu("QUAN LY HE TIN CHI", role, features_giangVien, n_features_giangvien);
                 if (f == -1 || f == n_features_giangvien - 1) break;
-
-                clrscr();
-                gotoxy(10, 10);
-                cout << "Ban da chon: " << features_giangVien[f];
-                gotoxy(10, 12);
-                cout << "(Nhan phim bat ky de quay lai...)";
-                getch();
+                if(f==0){
+                   clrscr();
+                   gotoxy(10, 10);
+                   cout << "Ban da chon: " << features_giangVien[f];
+                   InDSMH(dsmh);
+                   gotoxy(10, 12);
+                   cout << "(Nhan phim bat ky de quay lai...)";
+                   getch();  
+                }
+                else if(f==1){
+                   clrscr();
+                   gotoxy(10, 10);
+                   cout << "Ban da chon: " << features_giangVien[f];
+                   InDSLSV(ds);
+                   gotoxy(10, 12);
+                   cout << "(Nhan phim bat ky de quay lai...)";
+                   getch();  
+                }
+                else if(f==2){
+                   clrscr();
+                   gotoxy(10, 10);
+                   cout << "Ban da chon: " << features_giangVien[f];
+                   InDSLTC(FirstLTC);
+                   gotoxy(10, 12);
+                   cout << "(Nhan phim bat ky de quay lai...)";
+                   getch();  
+                }
+                else if(f==3){
+                   clrscr();
+                   gotoxy(10, 10);
+                   cout << "Ban da chon: " << features_giangVien[f];
+                   int maloptc;
+                   cout<<"Nhap Ma Lop Tin Chi"<<endl;
+                   cin>>maloptc;
+                   InDSSVDK(FirstLTC,maloptc,ds);
+                   gotoxy(10, 12);
+                   cout << "(Nhan phim bat ky de quay lai...)";
+                   getch();  
+                }
+                else if(f==4){
+                   clrscr();
+                   gotoxy(10, 10);
+                   cout << "Ban da chon: " << features_giangVien[f];
+                   NhapDiem(FirstLTC,ds);
+                   saveLopSV_Binary(ds, "LopSV.txt", "SinhVien.txt");
+                   gotoxy(10, 12);
+                   cout << "(Nhan phim bat ky de quay lai...)";
+                   getch();  
+                }
+                else if(f==5){
+                   clrscr();
+                   gotoxy(10, 10);
+                   cout << "Ban da chon: " << features_giangVien[f];
+                   int maloptc;
+                   cin>>maloptc;
+                   InDSSVDK(FirstLTC,maloptc,ds);
+                   gotoxy(10, 12);
+                   cout << "(Nhan phim bat ky de quay lai...)";
+                   getch();  
+                }
+                else if(f==6){
+                   clrscr();
+                   gotoxy(10, 10);
+                   cout << "Ban da chon: " << features_giangVien[f];
+                   IndiemtbLop(FirstLTC,ds,dsmh);
+                   gotoxy(10, 12);
+                   cout << "(Nhan phim bat ky de quay lai...)";
+                   getch();  
+                }
+                else if(f==7){
+                   clrscr();
+                   gotoxy(10, 10);
+                   cout << "Ban da chon: " << features_giangVien[f];
+                   InbangdiemtongketLop(FirstLTC,ds,dsmh);
+                   gotoxy(10, 12);
+                   cout << "(Nhan phim bat ky de quay lai...)";
+                   getch();  
+                }
             }
         }
 

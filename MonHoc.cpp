@@ -121,50 +121,36 @@ treeMH Insert(treeMH t, MonHoc mh) {
     return CheckandRotation(t);
 }
 // -------------------- HÀM FILE --------------------
-void LuuMonHoc(treeMH t, string filename) {
-    ofstream f(filename, ios::app);
-    if (!t) {
-        f << "#\n";
+void GhiNode(FILE* f, treeMH t) {
+    if(t == nullptr) return;
+    fwrite(&t->mh, sizeof(MonHoc),1,f);
+    GhiNode(f,t->left);
+    GhiNode(f,t->right);
+}
+void LuuMonHoc(treeMH &t, const char* tenfile) {
+    
+    FILE* f = fopen(tenfile, "wb");
+    if(f == nullptr) {
+        cout << "Khong mo duoc file de ghi!\n";
         return;
     }
+    GhiNode(f,t);
+    fclose(f);
 
-    f << t->mh.MAMH << "|"
-      << t->mh.TENMH << "|"
-      << t->mh.STCLT << "|"
-      << t->mh.STCTH << "|"
-      << t->height << "\n";
-
-    LuuMonHoc(t->left, filename);
-    LuuMonHoc(t->right, filename);
-    f.close();
+    cout << "Da luu danh sach mon hoc vao file thanh cong!";
 }
-
-treeMH DocMonHoc(string filename) {
-    ifstream f(filename);
-    if (!f.is_open()) {
-        cout << "Khong mo duoc file!\n";
-        return nullptr;
+void DocMonHoc(const char* tenfile, treeMH &t) {
+    FILE* f = fopen(tenfile, "rb");
+    if(f == nullptr) {
+        cout << "Khong the mo file de doc!\n";
+        return;
     }
-
-    string line;
-    treeMH root = nullptr;
-    while (getline(f, line)) {
-        if (line == "#" || line.empty()) continue;
-
-        stringstream ss(line);
-        MonHoc mh;
-        string temp;
-
-        getline(ss, temp, '|'); strcpy(mh.MAMH, temp.c_str());
-        getline(ss, temp, '|'); strcpy(mh.TENMH, temp.c_str());
-        getline(ss, temp, '|'); mh.STCLT = stoi(temp);
-        getline(ss, temp, '|'); mh.STCTH = stoi(temp);
-
-        root = Insert(root, mh);
+    t = nullptr;
+    MonHoc mh;
+    while(fread(&mh, sizeof(MonHoc),1,f) ==1) {
+        t = Insert(t, mh);
     }
-
-    f.close();
-    return root;
+    fclose(f);
 }
 
 // -------------------- HÀM HỖ TRỢ --------------------

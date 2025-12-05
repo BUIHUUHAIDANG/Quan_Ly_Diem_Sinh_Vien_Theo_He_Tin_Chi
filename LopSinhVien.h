@@ -13,7 +13,6 @@ void pop(stackNode* &root);
 ActionLTC top(stackNode* &root);
 void undoSuaLTC(PTRLTC &First, LopTinChi ltc);
 void undoLTC(PTRLTC &First, stackNode* &root);
-void initializeStackNode(stackNode* &root);
 bool deleteFirstStackLTC(stackNode* &root);
 
 //stack Hieu Chinh Sinh Vien
@@ -103,15 +102,15 @@ void saveLopTinChi_Binary(PTRLTC &First, const char *fileloptinchi, const char *
 void loadLopTinChi_Binary(PTRLTC &First, const char *fileLop, const char *fileSVDK);
 
 //Tinh/In bang diem cua sinh vien 
-float Tinhdiemtb(SinhVien sv, PTRLTC dsltc, treeMH dsmh);
+float Tinhdiemtb(SinhVien &sv, PTRLTC &dsltc, treeMH &dsmh);
 void IndiemtbLop(PTRLTC &dsltc, DS_LOPSV &dslop, treeMH &dsmh);
 void IndiemtbSinhvien(const PTRLTC &dsltc, const DS_LOPSV &dslop, const treeMH &dsmh);
 
 void duyettreeMH(treeMH t, char dsMAMH[][11], int &soMH);
 void InbangdiemtongketLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
-void InbangdiemtongketSinhvien(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
+void InbangdiemtongketSinhvien( PTRLTC &dsltc,  DS_LOPSV &dslop,  treeMH &dsmh);
 
-void NhapDiem(nodeLTC* dsltc, DS_LOPSV &dslop);
+void NhapDiem(PTRLTC &dsltc, DS_LOPSV &dslop);
 void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV &dslop);
 
 //Tim/Xoa/CapNhap Sinh Vien 

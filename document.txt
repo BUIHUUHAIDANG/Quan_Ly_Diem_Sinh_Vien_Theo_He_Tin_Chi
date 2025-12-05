@@ -53,3 +53,8 @@ c padding padding padding x x x x
 Bug/note:
 todo1: do update of lop sinh vien: Done nhung chua test
 todo2: menu of Them sinh vien vao 1 lop Nhap MaLop-> show Malop("khong ton tai")->show menu Them/Xoa/Hieu Chinh
+todo3: recode function insertSinhVien->fix insertSinhVien in save/load Sinh vien
+todo4: recode function insertSinhVienDK->fix insertSinhVienDK in save/load LopTinChi
+todo5: attach MonHoc function into main.cpp 
+todo6: attach In/Tinh Diem into main.cpp
+
