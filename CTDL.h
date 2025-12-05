@@ -6,6 +6,7 @@
 #include<cstring>
 #include<ctime>
 using namespace std;
+/// @brief Cấu trúc dữ liệu và các hàm hỗ trợ cho quản lý điểm sinh viên theo hệ tín chỉ
 const int MAX_LOPSV = 10000;
 struct MonHoc {
     char MAMH[11] ; char TENMH[51]; 
