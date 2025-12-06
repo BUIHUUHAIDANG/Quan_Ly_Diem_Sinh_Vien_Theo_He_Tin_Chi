@@ -19,8 +19,10 @@ treeMH CheckandRotation(treeMH t);
 treeMH Insert(treeMH t, MonHoc mh);
 
 // -------------------- HÀM FILE --------------------
-void LuuMonHoc(treeMH t, string filename);
-treeMH DocMonHoc(string filename);
+void WriteNode(FILE* f, treeMH node);
+void LuuMonHoc(treeMH t, const string &filename);
+treeMH ReadNode(FILE* f);
+treeMH DocMonHoc(const string &filename);
 
 // -------------------- HÀM HỖ TRỢ --------------------
 PTRLTC FilterLTC(PTRLTC First, char nienkhoa[], int hocky);
