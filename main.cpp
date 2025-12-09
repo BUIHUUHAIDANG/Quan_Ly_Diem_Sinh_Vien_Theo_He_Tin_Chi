@@ -13,10 +13,10 @@
 
 using namespace std;
 // === Draw Menu ===
-void drawMenu(const char *title, const char *role, const char *options[], int n, int highlight) {
+void drawStaticMenu(const char *title, const char *role, int n)  {
     clrscr();
-    SetBGColor(0);  // black background
-    SetColor(7);    // white text
+    SetBGColor(0);
+    SetColor(7);
     gotoxy(20, 2);
     SetBold(true);
     SetColor(4);
@@ -31,41 +31,45 @@ void drawMenu(const char *title, const char *role, const char *options[], int n,
     cout << role;
     ResetColor();
     SetBold(false);
+    gotoxy(5, 6 + n * 2);
+    cout << "(Dung phim ↑ ↓ hoac W/S de di chuyen, Enter de chon)";
+}
+void drawOptions(const char *options[], int n, int highlight) {
     for (int i = 0; i < n; i++) {
+        gotoxy(8, 6 + i * 2);
+        cout << string(200, ' ');
         gotoxy(8, 6 + i * 2);
         if (i == highlight) {
             SetBGColor(7); SetColor(0);
             cout << "> " << options[i] << " <";
-            ResetColor();
         } else {
+            ResetColor();
             cout << "  " << options[i];
         }
+        ResetColor();
     }
-    gotoxy(5, 6 + n * 2);
-    cout << "(Dung phim ↑ ↓ hoac W/S de di chuyen, Enter de chon)";
 }
 
-// === Menu Logic ===
-int menu(const char *title, const char *role, const char *options[], int n) {
-    int highlight = 0;
-    while (true) {
-        drawMenu(title, role, options, n, highlight);
-        int ch = _getch();
 
+// === Menu Logic ===
+int menu(const char *title, const char *role, const char *options[], int n)  {
+    int highlight = 0;
+    drawStaticMenu(title, role, n);
+    while (true) {
+        drawOptions(options, n, highlight);
+        int ch = _getch();
         // support both arrow keys and WASD
         if (ch == 224) {
             int arrow = _getch();
             if (arrow == 72) highlight = (highlight - 1 + n) % n; // up
             if (arrow == 80) highlight = (highlight + 1) % n;     // down
-        } else if (ch == 'w' || ch == 'W') {
-            highlight = (highlight - 1 + n) % n;
-        } else if (ch == 's' || ch == 'S') {
-            highlight = (highlight + 1) % n;
-        } else if (ch == 13) { // Enter
-            return highlight;
         }
+        else if (ch == 'w' || ch == 'W') highlight = (highlight - 1 + n) % n;
+        else if (ch == 's' || ch == 'S') highlight = (highlight + 1) % n;
+        else if (ch == 13) return highlight; // Enter
     }
 }
+
 
 int main() {
     PTRLTC FirstLTC = nullptr;
@@ -136,13 +140,6 @@ int main() {
                 gotoxy(10, 10);
                 //cout << "Ban da chon: " << features_sinhvien[f];
                 switch(f) {
-                    case 0: { // Xem danh sach mon hoc
-                        DocMonHoc("MonHocdata.txt", dsmh);
-                        InDSMH(dsmh);
-                        cout << "\n(Nhan phim bat ky de quay lai...)";
-                        _getch();
-                        break;
-                    }
                     case 1: { // Sinh vien dang ky/huy LTC
                         int g = menu("SINH VIEN DANG KY HUY LOP TIN CHI", role, featuresdangkyhuy, n_featuresdangkyhuy);
                         switch(g) {
@@ -204,7 +201,7 @@ int main() {
                 //cout << "Ban da chon: " << features_giangVien[f];
                 switch(f) {
                     
-                    case 4: { // Nhap sua diem
+                    case 4: {
                         LoadFile_LopSV("LopSinhVien.txt", dslop);
                         LoadFile_LTC("LopTinChi.txt", FirstLTC);
                         NhapDiem(FirstLTC, dslop);
@@ -221,7 +218,7 @@ int main() {
                         _getch();
                         break;
                     }
-                    case 6:{ // In bang diem trung binh cua lop
+                    case 6:{
                         LoadFile_LopSV("LopSinhVien.txt", dslop);
                         LoadFile_LTC("LopTinChi.txt",FirstLTC);
                         DocMonHoc("MonHocdata.txt", dsmh);
@@ -231,7 +228,7 @@ int main() {
                         break;
                     }
                     
-                    case 7: { // In bang diem tong ket cua lop
+                    case 7: {
                         LoadFile_LopSV("LopSinhVien.txt", dslop);
                         LoadFile_LTC("LopTinChi.txt",FirstLTC);
                         DocMonHoc("MonHocdata.txt", dsmh);
@@ -248,9 +245,15 @@ int main() {
             while (1) {
                 int f = menu("🏫 QUAN LY HE TIN CHI 🏫", role, features_admin, n_features_admin);
                    
-                if (f == n_features_admin - 1) break;
-                clrscr();
-                gotoxy(10, 10);
+                if (f == n_features_admin - 1) {
+                     
+                    break;
+                }
+                    
+
+                //clrscr();
+                //gotoxy(10, 10);
+                //cout << "Ban da chon: " << features_admin[f] << "\n";
                 switch(f) {
                     case 0:{ // Xem danh sach mon hoc
                         DocMonHoc("MonHocdata.txt", dsmh);
@@ -316,14 +319,9 @@ int main() {
                         _getch();
                         break;
                     }
-                    case 6: {
-                        LoadFile_LopSV("LopSinhVien.txt", dslop);
-                        LoadFile_LTC("LopTinChi.txt", FirstLTC);
-                        InbangDiemLTC(FirstLTC, dslop);
-                        cout << "\n\n\n(Nhan phim bat ky de quay lai...)";
-                        _getch();
+                    case 6:
+                        //InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV dslop);
                         break;
-                    }
                     case 7: { //Them/cap nhat/huy lop sinh vien
                         int g = menu("  QUAN LY LOP SINH VIEN",role, featuresthemcapnhathuy, n_featuresthemcapnhathuy);
                         switch(g) {
@@ -368,22 +366,11 @@ int main() {
                         break;
                     }
                     case 10:
-                        LoadFile_LopSV("LopSinhVien.txt", dslop);
-                        LoadFile_LTC("LopTinChi.txt",FirstLTC);
-                        DocMonHoc("MonHocdata.txt", dsmh);
-                        IndiemtbLop(FirstLTC, dslop, dsmh);
-                        cout << "\n(Nhan phim bat ky de quay lai...)";
-                        _getch();
-                        break;
+                        //IndiemtbLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
                     break;
                     case 11:
-                        LoadFile_LopSV("LopSinhVien.txt", dslop);
-                        LoadFile_LTC("LopTinChi.txt",FirstLTC);
-                        DocMonHoc("MonHocdata.txt", dsmh);
-                        InbangdiemtongketLop(FirstLTC, dslop, dsmh);
-                        cout << "\n(Nhan phim bat ky de quay lai...)";
-                        _getch();
-                        break;
+                        //InbangdiemtongketLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
+                    break;
                     default:
                     break;
                     
