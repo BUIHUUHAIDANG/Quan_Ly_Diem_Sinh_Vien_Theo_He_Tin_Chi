@@ -745,8 +745,8 @@ void saveLopTinChi_Binary(PTRLTC &First, const char *fileLoptinchi, const char *
         fwrite(&p->ltc.sosvmin, sizeof(int), 1, fLTC);
         fwrite(&p->ltc.sosvmax, sizeof(int), 1, fLTC);
         fwrite(&p->ltc.huylop, sizeof(bool), 1, fLTC);
-        fwrite(&p->ltc.currentsv, sizeof(int), 1, fLTC);     // 🔥 thêm
-        fwrite(&p->ltc.deadline, sizeof(time_t), 1, fLTC);  // 🔥 thêm
+        fwrite(&p->ltc.currentsv, sizeof(int), 1, fLTC);     
+        fwrite(&p->ltc.deadline, sizeof(time_t), 1, fLTC); 
 
         int countDK = 0;
         for(PTRDK q = p->ltc.dssvdk; q != nullptr; q = q->next) countDK++;
