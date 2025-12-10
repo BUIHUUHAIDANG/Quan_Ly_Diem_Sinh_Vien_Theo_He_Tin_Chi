@@ -105,10 +105,10 @@ void loadLopTinChi_Binary(PTRLTC &First, const char *fileLop, const char *fileSV
 //Tinh/In bang diem cua sinh vien 
 float Tinhdiemtb(SinhVien &sv, PTRLTC &dsltc, treeMH &dsmh);
 void IndiemtbLop(PTRLTC &dsltc, DS_LOPSV &dslop, treeMH &dsmh);
-void IndiemtbSinhvien(const PTRLTC &dsltc, const DS_LOPSV &dslop, const treeMH &dsmh);
+void IndiemtbSinhvien(PTRLTC &dsltc, DS_LOPSV &dslop,treeMH &dsmh);
 
 void duyettreeMH(treeMH t, char dsMAMH[][11], int &soMH);
-void InbangdiemtongketLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh);
+void InbangdiemtongketLop(PTRLTC &dsltc, DS_LOPSV &dslop, treeMH &dsmh);
 void InbangdiemtongketSinhvien( PTRLTC &dsltc,  DS_LOPSV &dslop,  treeMH &dsmh);
 
 void NhapDiem(PTRLTC &dsltc, DS_LOPSV &dslop);

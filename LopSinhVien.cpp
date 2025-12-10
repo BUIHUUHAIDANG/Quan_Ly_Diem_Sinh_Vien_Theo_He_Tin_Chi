@@ -49,15 +49,8 @@ void push(stackNodeSV* &root, ActionSV data){
      stackNodeSV* p=newNode(data);
      p->next=root;
      root=p;
-     stackNodeSV* p=newNode(data);
-     p->next=root;
-     root=p;
 }
 void pop(stackNodeSV* &root){
-     if(isEmpty(root))return;
-     stackNodeSV* tmp=root;
-     root=root->next;
-     delete(tmp);
      if(isEmpty(root))return;
      stackNodeSV* tmp=root;
      root=root->next;
@@ -387,13 +380,6 @@ SinhVien getSinhVien(DS_LOPSV dslop, char MASV[16]) {
     }
     SinhVien empty = {};
     return empty;
-}
-PTRSV getSinhVienv2(PTRSV &First, char masv[16]){
-      if(First==nullptr)return nullptr;
-      for(PTRSV p=First;p!=nullptr;p=p->next){
-         if(strcmp(p->sv.MASV,masv)==0)return p;
-      }
-      return nullptr;
 }
 PTRSV getSinhVienv2(PTRSV &First, char masv[16]){
       if(First==nullptr)return nullptr;
@@ -970,7 +956,7 @@ void duyettreeMH(treeMH t, char dsMAMH[][11], int &soMH) {
     strcpy(dsMAMH[soMH++], t->mh.MAMH);
     duyettreeMH(t->right, dsMAMH, soMH);
 }
-void InbangdiemtongketLop(PTRLTC dsltc, DS_LOPSV dslop, treeMH dsmh) {
+void InbangdiemtongketLop(PTRLTC &dsltc, DS_LOPSV &dslop, treeMH &dsmh) {
     char dsMAMH[200][11];
     char malop[16];
     int soMH = 0;
