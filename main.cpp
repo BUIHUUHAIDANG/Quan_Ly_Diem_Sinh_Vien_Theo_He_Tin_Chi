@@ -9,52 +9,60 @@
 #include "CTDL.h"
 
 using namespace std;
-// Vẽ menu
-void drawMenu(const char *title, const char *role, const char *options[], int n, int highlight) {
+void drawStaticMenu(const char *title, const char *role, int n)  {
     clrscr();
-    textcolor(7);
-
+    SetBGColor(0);
+    SetColor(7);
     gotoxy(20, 2);
+    SetBold(true);
+    SetColor(4);
     cout << title;
-
+    drawLine(5, 3, 53);
+    ResetColor();
+    SetBold(false);
     gotoxy(5, 4);
-    cout << "Vai tro: " << role;
-
-    for (int i = 0; i < n; ++i) {
-        gotoxy(8, 6 + i * 2);
-        if (i == highlight) {
-            // in ngược để highlight
-            printf("\033[47m");   // background white
-            printf("\033[30m");   // text black
-            cout << "> " << options[i] << " <";
-            printf("\033[0m");    // reset
-            textcolor(7);
-        } else {
-            cout << "  " << options[i];
-        }
-    }
-
+    cout << "Vai tro: ";
+    SetBold(true);
+    SetColor(10);
+    cout << role;
+    ResetColor();
+    SetBold(false);
     gotoxy(5, 6 + n * 2);
     cout << "(Dung phim ↑ ↓ hoac W/S de di chuyen, Enter de chon)";
 }
+void drawOptions(const char *options[], int n, int highlight) {
+    for (int i = 0; i < n; i++) {
+        gotoxy(8, 6 + i * 2);
+        cout << string(200, ' ');
+        gotoxy(8, 6 + i * 2);
+        if (i == highlight) {
+            SetBGColor(7); SetColor(0);
+            cout << "> " << options[i] << " <";
+        } else {
+            ResetColor();
+            cout << "  " << options[i];
+        }
+        ResetColor();
+    }
+}
+
 
 // === Menu Logic ===
-// Nhận phím (getch đã có trong console.h giả sử)
-// Trả về ký tự thường hoá cho W/w, S/s; phát hiện Enter = '\n' hoặc 10
-int menu(const char *title, const char *role, const char *options[], int n) {
+int menu(const char *title, const char *role, const char *options[], int n)  {
     int highlight = 0;
+    drawStaticMenu(title, role, n);
     while (true) {
-        drawMenu(title, role, options, n, highlight);
+        drawOptions(options, n, highlight);
         int ch = getch();
-        if (ch == 'w' || ch == 'W') {
-            highlight = (highlight - 1 + n) % n;
-        } else if (ch == 's' || ch == 'S') {
-            highlight = (highlight + 1) % n;
-        } else if (ch == '\n' || ch == 10 || ch == 13) { // Enter
-            return highlight;
-        } else if (ch == 27) { // Esc -> trả về -1 (nếu cần xử lý)
-            return -1;
+        // support both arrow keys and WASD
+        if (ch == 224) {
+            int arrow = getch();
+            if (arrow == 72) highlight = (highlight - 1 + n) % n; // up
+            if (arrow == 80) highlight = (highlight + 1) % n;     // down
         }
+        else if (ch == 'w' || ch == 'W') highlight = (highlight - 1 + n) % n;
+        else if (ch == 's' || ch == 'S') highlight = (highlight + 1) % n;
+        else if (ch == 13) return highlight; // Enter
     }
 }
 

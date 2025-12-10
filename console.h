@@ -9,9 +9,12 @@
 
 void gotoxy(int x, int y);
 void clrscr();
-void textcolor(int color);
 int getch();
-
+void SetBGColor(int color);
+void ResetColor();
+void SetBold(bool enable);
+void drawLine(int x, int y, int len);
+void SetColor(int color);
 // ============================================
 
 #endif
