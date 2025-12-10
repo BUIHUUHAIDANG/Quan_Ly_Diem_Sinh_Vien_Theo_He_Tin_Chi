@@ -32,6 +32,7 @@ void pop(stackNode* &root){
 }
 ActionLTC top(stackNode* &root){
      if(isEmpty(root))return {};
+     if(isEmpty(root))return {};
      return root->data;
 }
 stackNodeSV* newNode(ActionSV Data){
@@ -42,13 +43,21 @@ stackNodeSV* newNode(ActionSV Data){
 }
 bool isEmpty(stackNodeSV* &root){
      return !root;
+     return !root;
 }
 void push(stackNodeSV* &root, ActionSV data){
      stackNodeSV* p=newNode(data);
      p->next=root;
      root=p;
+     stackNodeSV* p=newNode(data);
+     p->next=root;
+     root=p;
 }
 void pop(stackNodeSV* &root){
+     if(isEmpty(root))return;
+     stackNodeSV* tmp=root;
+     root=root->next;
+     delete(tmp);
      if(isEmpty(root))return;
      stackNodeSV* tmp=root;
      root=root->next;
@@ -378,6 +387,13 @@ SinhVien getSinhVien(DS_LOPSV dslop, char MASV[16]) {
     }
     SinhVien empty = {};
     return empty;
+}
+PTRSV getSinhVienv2(PTRSV &First, char masv[16]){
+      if(First==nullptr)return nullptr;
+      for(PTRSV p=First;p!=nullptr;p=p->next){
+         if(strcmp(p->sv.MASV,masv)==0)return p;
+      }
+      return nullptr;
 }
 PTRSV getSinhVienv2(PTRSV &First, char masv[16]){
       if(First==nullptr)return nullptr;

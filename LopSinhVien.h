@@ -17,6 +17,7 @@ bool deleteFirstStackLTC(stackNode* &root);
 
 //stack Hieu Chinh Sinh Vien
 stackNodeSV* newNode(ActionSV data);
+stackNodeSV* newNode(ActionSV data);
 bool isEmpty(stackNodeSV* &root);
 void push(stackNodeSV* &root, ActionSV data);
 void pop(stackNodeSV* &root);
