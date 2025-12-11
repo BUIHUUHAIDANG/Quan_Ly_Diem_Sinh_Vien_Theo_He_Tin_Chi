@@ -625,7 +625,6 @@ void InbangdiemtongketLop( PTRLTC &dsltc,  DS_LOPSV &dslop,  treeMH &dsmh) {
     cout << " -==== BANG DIEM TONG KET ====- ";
     cout << "Lop: " << lop->TENLOP << endl;
     cout << left << setw(5) << "STT" << setw(15) << "MASV" << setw(25) << "HO TEN";
-    cout << "----------------------------------------------------------------------------------------\n";
     for (int i = 0; i < soMH; i++) cout << setw(8) << dsMAMH[i];
     cout << endl;
 
@@ -664,6 +663,23 @@ void InbangdiemtongketLop( PTRLTC &dsltc,  DS_LOPSV &dslop,  treeMH &dsmh) {
         cout << endl;
     }
 }
+void getmonhocDK(bool MHdaDK[], int soMH, char dsMAMH[][11], const char MASV[], PTRLTC dsltc) {
+    for(int i=0; i<soMH; i++) MHdaDK[i] = false;
+    for (PTRLTC cur = dsltc; cur != nullptr; cur = cur->next) {
+        if (cur->ltc.huylop) continue;
+        for (PTRDK dk = cur->ltc.dssvdk; dk != nullptr; dk = dk->next) {
+            if(dk->dk.HuyDK) continue; 
+            if (strcmp(dk->dk.MASV, MASV) == 0) {
+                for (int j = 0; j < soMH; j++) {
+                    if (strcmp(dsMAMH[j], cur->ltc.MAMH) == 0) {
+                        MHdaDK[j] = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
 void InbangdiemtongketSinhvien( PTRLTC &dsltc,  DS_LOPSV &dslop,  treeMH &dsmh) {
     char dsMAMH[200][11];
     char MASV[16];
@@ -681,18 +697,21 @@ void InbangdiemtongketSinhvien( PTRLTC &dsltc,  DS_LOPSV &dslop,  treeMH &dsmh) 
         lop = dslop.nodes[i];
         for (PTRSV sv = lop->FirstSV; sv != nullptr; sv = sv->next) {
             if(strcmp(sv->sv.MASV,MASV)==0) {
+                bool MHdaDK[200];
+                getmonhocDK(MHdaDK,soMH,dsMAMH,MASV,dsltc);
                 cout << " -==== DIEM TONG KET ====- ";
                 cout << "\nLop: " << lop->TENLOP << endl;
                 cout << left <<setw(15) << "MASV" << setw(25) << "HO TEN";
-                for (int j = 0; j < soMH; j++) cout << setw(8) << dsMAMH[j];
+                for (int j = 0; j < soMH; j++) {
+                    if(MHdaDK[j]) cout << setw(8) << dsMAMH[j];
+                }
                 cout << endl;
-                cout << "----------------------------------------------------------------------------------------\n";
+                cout << "------------------------------------------------------------\n";
                 float diemMax[200];
                 for (int j = 0; j < soMH; j++) diemMax[j] = -1;
                 for (PTRLTC cur = dsltc; cur != nullptr; cur = cur->next) {
                     if (cur->ltc.huylop) continue;
-
-                    for (PTRDK dk = cur->ltc.dssvdk; dk != nullptr; dk = dk->next) {
+                        for (PTRDK dk = cur->ltc.dssvdk; dk != nullptr; dk = dk->next) {
                         if (strcmp(dk->dk.MASV, sv->sv.MASV) == 0) {
                             for (int j = 0; j < soMH; j++) {
                                 if (strcmp(dsMAMH[j], cur->ltc.MAMH) == 0) {
@@ -709,6 +728,7 @@ void InbangdiemtongketSinhvien( PTRLTC &dsltc,  DS_LOPSV &dslop,  treeMH &dsmh) 
                 strcat(hoten, sv->sv.TEN);
                 cout << left << setw(15) << sv->sv.MASV << setw(25) << hoten;
                 for(int j=0; j< soMH; j++) {
+                    if(!MHdaDK[j]) continue; // skip mon hoc khong dk
                     if(diemMax[j] >= 0) {
                         cout << setw(8) << fixed << setprecision(2) << diemMax[j];
                     } else {
