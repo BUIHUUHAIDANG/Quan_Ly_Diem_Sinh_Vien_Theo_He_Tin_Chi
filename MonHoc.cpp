@@ -121,36 +121,77 @@ treeMH Insert(treeMH t, MonHoc mh) {
     return CheckandRotation(t);
 }
 // -------------------- HÀM FILE --------------------
-void GhiNode(FILE* f, treeMH t) {
-    if(t == nullptr) return;
-    fwrite(&t->mh, sizeof(MonHoc),1,f);
-    GhiNode(f,t->left);
-    GhiNode(f,t->right);
+void WriteNode(FILE* f, treeMH node) {
+    if (node == nullptr) {
+        int flag = -1; // node rỗng
+        fwrite(&flag, sizeof(int), 1, f);
+        return;
+    }
+
+    int flag = 1; // node có dữ liệu
+    fwrite(&flag, sizeof(int), 1, f);
+
+    fwrite(&node->mh, sizeof(MonHoc), 1, f);
+    fwrite(&node->height, sizeof(int), 1, f);
+
+    WriteNode(f, node->left);
+    WriteNode(f, node->right);
 }
-void LuuMonHoc(treeMH &t, const char* tenfile) {
-    
-    FILE* f = fopen(tenfile, "wb");
-    if(f == nullptr) {
+
+
+void LuuMonHoc(treeMH t, const string &filename) {
+    FILE* f = fopen(filename.c_str(), "wb");
+    if (f == nullptr) {
         cout << "Khong mo duoc file de ghi!\n";
         return;
     }
-    GhiNode(f,t);
-    fclose(f);
 
-    cout << "Da luu danh sach mon hoc vao file thanh cong!";
-}
-void DocMonHoc(const char* tenfile, treeMH &t) {
-    FILE* f = fopen(tenfile, "rb");
-    if(f == nullptr) {
-        cout << "Khong the mo file de doc!\n";
-        return;
-    }
-    t = nullptr;
-    MonHoc mh;
-    while(fread(&mh, sizeof(MonHoc),1,f) ==1) {
-        t = Insert(t, mh);
-    }
+    WriteNode(f, t);
+
     fclose(f);
+}
+
+
+treeMH ReadNode(FILE* f) {
+    int flag;
+    size_t bytes = fread(&flag, sizeof(int), 1, f);
+
+    if (bytes == 0 || flag == -1) {  // hết file hoặc node rỗng
+        return nullptr;
+    }
+
+    // đọc dữ liệu node
+    MonHoc mh;
+    int height;
+
+    fread(&mh, sizeof(MonHoc), 1, f);
+    fread(&height, sizeof(int), 1, f);
+
+    // tạo node mới
+    treeMH node = new nodeMH;
+    node->mh = mh;
+    node->height = height;
+    node->left = nullptr;
+    node->right = nullptr;
+
+    // đọc tiếp cây con trái/phải
+    node->left = ReadNode(f);
+    node->right = ReadNode(f);
+
+    return node;
+}
+
+treeMH DocMonHoc(const string &filename) {
+    FILE* f = fopen(filename.c_str(), "rb");
+    if (f == nullptr) {
+        cout << "Khong mo duoc file de doc!\n";
+        return nullptr;
+    }
+
+    treeMH root = ReadNode(f);
+
+    fclose(f);
+    return root;
 }
 
 // -------------------- HÀM HỖ TRỢ --------------------
@@ -185,7 +226,7 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
 
         t = Insert(t, mh);
 
-        // LuuMonHocToFile(t, "D:\\MonHocdata.txt");
+        LuuMonHoc(t, "MonHocdata.txt");
 
         cout << "Luu thanh cong!\n\n";
 
@@ -380,30 +421,30 @@ treeMH timMonHoc(treeMH t, char mamh[]) {
     } else return t;
 }
 
-// void InLTC(PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t) {
-//     LopTinChi ltc;
-//     MonHoc mh;
-//     if (loptinchi == nullptr) {
-//         cout << "Danh sach lop tin chi rong" << endl;
-//         return;
-//     } 
+void InLTC(PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t) {
+    LopTinChi ltc;
+    MonHoc mh;
+    if (loptinchi == nullptr) {
+        cout << "Danh sach lop tin chi rong" << endl;
+        return;
+    } 
     
-//     PTRLTC p = loptinchi;
-//     while (p != nullptr) {
-//         if (strcmp(p->ltc.NienKhoa, nienkhoa) == 0 && p->ltc.Hocky == hocky) {
-//             treeMH found = timMonHoc(t, p->ltc.MAMH);
-//             if (found != nullptr) {
-//                 cout << "Ma mon hoc: " << p->ltc.MAMH << endl;
-//                 cout << "Ten mon hoc: " << found->mh.TENMH << endl;
-//                 cout << "Nhom: " << p->ltc.Nhom << endl;
-//                 cout << "So sinh vien da dang ky: " << p->ltc.currentsv << endl;
-//                 cout << "So slot con trong: " << (p->ltc.sosvmax - p->ltc.currentsv) << endl;
-//                 cout << "------------------------------\n";
-//             }
-//         }
-//         p = p->next;
-//     }
-// }
+    PTRLTC p = loptinchi;
+    while (p != nullptr) {
+        if (strcmp(p->ltc.NienKhoa, nienkhoa) == 0 && p->ltc.Hocky == hocky) {
+            treeMH found = timMonHoc(t, p->ltc.MAMH);
+            if (found != nullptr) {
+                cout << "Ma mon hoc: " << p->ltc.MAMH << endl;
+                cout << "Ten mon hoc: " << found->mh.TENMH << endl;
+                cout << "Nhom: " << p->ltc.Nhom << endl;
+                cout << "So sinh vien da dang ky: " << p->ltc.currentsv << endl;
+                cout << "So slot con trong: " << (p->ltc.sosvmax - p->ltc.currentsv) << endl;
+                cout << "------------------------------\n";
+            }
+        }
+        p = p->next;
+    }
+}
 
 //luu sinh vien dang ky vao danh sach dang ky cua lop tin chi
 void SVDangKy(PTRDK &dssvdk, PTRSV sv) {
@@ -463,13 +504,13 @@ void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, PTRSV dssv) {
     cin >> lop.NienKhoa;
     cout << "Nhap hoc ky: ";
     cin >> lop.Hocky;
-    // InLTC(loptinchi, lop.NienKhoa, lop.Hocky, t);
+    InLTC(loptinchi, lop.NienKhoa, lop.Hocky, t);
     PTRLTC c = nullptr;
     c = checkmamh(loptinchi, lop.NienKhoa, lop.Hocky);
     if (c == nullptr) {
         return;
     }
     SVDangKy(c->ltc.dssvdk, p); 
-    // c->ltc.currentsv++; //tang so luong sinh vien da dang ky len 1
+    c->ltc.currentsv++; //tang so luong sinh vien da dang ky len 1
     cout << "Dang ky thanh cong!" << endl;
 }

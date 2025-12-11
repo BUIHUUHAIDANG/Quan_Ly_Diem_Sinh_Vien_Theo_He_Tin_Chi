@@ -251,8 +251,8 @@ void InDSLTC(PTRLTC &FirstLTC) {
         cout << "\n\nDanh sach LTC rong!";
         return;
     }
+    cout << "Chi Tiet Cua Lop Tin Chi"<<endl;
     for(PTRLTC p = FirstLTC; p != nullptr; p=p->next) {
-        cout << "Chi Tiet Cua Lop Tin Chi";
         cout<<"\n\nMa lop tin chi: "<<p->ltc.MALOPTC
             <<"\nMa mon hoc: "<<p->ltc.MAMH
             <<"\nNien Khoa: "<<p->ltc.NienKhoa
@@ -276,6 +276,7 @@ bool checkLTC(PTRLTC FirstLTC, LopTinChi ltc) { // Kiem tra xem lop tin chi co t
 }
 void showDanhSachSinhVienDangKy(PTRDK &l){
     PTRDK p=l;
+    if(p==nullptr)cout<<"Khong Co Sinh Vien Dang Ki"<<endl;
      while(p){
         cout<<p->dk.MASV<<"|"<<p->dk.DIEM<<"|"<<p->dk.HuyDK<<endl;
         p=p->next;
@@ -362,9 +363,8 @@ void InDSLSV(DS_LOPSV &dslop) {
         cout << "\n\nDanh sach LopSV rong!";
         return;
     }
-    
+     cout << "Chi tiet lop SV";
     for(int i = 0; i < dslop.n; i++) {
-        cout << "Chi tiet lop SV";
         cout<<"\nMa lop: "<<dslop.nodes[i]->MALOP
             <<"\nTen lop: "<<dslop.nodes[i]->TENLOP<<endl;
     }
@@ -512,7 +512,7 @@ void dangkyLTC(PTRLTC &FirstLTC, DS_LOPSV dslop) { // Sinh vien dang ki ltc
             return;
         }
         PTRDK pnode = taonodeSVDK(masv);
-        insertSinhVienDangKy(FirstLTC->ltc.dssvdk, pnode->dk);
+        insertSinhVienDangKy(pltc->ltc.dssvdk, pnode->dk);
         cout << " Dang ky thanh cong!\n";
     }
 }
@@ -737,9 +737,14 @@ void saveLopTinChi_Binary(PTRLTC &First, const char *fileLoptinchi, const char *
         int countDK = 0;
         for(PTRDK q = p->ltc.dssvdk; q != nullptr; q = q->next) countDK++;
 
+        // Ghi mã lớp trước
+        fwrite(&p->ltc.MALOPTC, sizeof(int), 1, fSVDK);
+        
+        // Ghi số lượng sinh viên đăng ký của lớp đó
         fwrite(&countDK, sizeof(int), 1, fSVDK);
-        for(PTRDK q = p->ltc.dssvdk; q != nullptr; q = q->next){
-            fwrite(&p->ltc.MALOPTC, sizeof(int), 1, fSVDK);
+        
+        // Ghi toàn bộ DK
+        for(PTRDK q = p->ltc.dssvdk; q != nullptr; q = q->next) {
             fwrite(&q->dk, sizeof(DangKy), 1, fSVDK);
         }
     }
@@ -782,19 +787,23 @@ void loadLopTinChi_Binary(PTRLTC &First, const char *fileLoptinchi, const char *
         return;
     }
 
-    while(true){
-        int maloptc, countDK;
-        if(fread(&countDK, sizeof(int), 1, fSVDK) != 1) break;
+    while (true) {
+    int maloptc, countDK;
 
-        while(countDK--){
-            DangKy dk;
-            if(fread(&maloptc, sizeof(int), 1, fSVDK) != 1) break;
-            if(fread(&dk, sizeof(DangKy), 1, fSVDK) != 1) break;
+    
+    if (fread(&maloptc, sizeof(int), 1, fSVDK) != 1) break;
 
-            PTRLTC p = searchLopTinChi(First, maloptc);
-            if(p) insertSinhVienDangKy(p->ltc.dssvdk, dk);
-        }
+    
+    fread(&countDK, sizeof(int), 1, fSVDK);
+
+    PTRLTC p = searchLopTinChi(First, maloptc);
+
+    while (countDK--) {
+        DangKy dk;
+        fread(&dk, sizeof(DangKy), 1, fSVDK);
+        if (p) insertSinhVienDangKy(p->ltc.dssvdk, dk);
     }
+}
 
     fclose(fSVDK);
 }

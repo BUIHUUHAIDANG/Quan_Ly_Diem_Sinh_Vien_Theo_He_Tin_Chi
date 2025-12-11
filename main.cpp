@@ -69,9 +69,10 @@ int menu(const char *title, const char *role, const char *options[], int n)  {
        }
 }   
    
-int    main() {
+int main() {
     //Khoi tao Tree
-    treeMH dsmh;
+    treeMH dsmh=nullptr;
+    stack undostackMH;
     // Khoi tao DS LopSV
     DS_LOPSV ds;
     ds.n = 0;
@@ -83,6 +84,7 @@ int    main() {
     // Load data (file name theo file binary/text tu ham cua ban)
     loadLopTinChi_Binary(FirstLTC, "LopTinChi.txt", "DSSVDK.txt");
     loadLopSV_Binary(ds, "LopSV.txt", "SinhVien.txt");
+    dsmh = DocMonHoc("MonHocdata.txt");
     // Menu options (khai bao como const char* arrays)
     const char *roles[] = { "Sinh vien", "Giang vien", "Admin", "Thoat" };
 
@@ -123,6 +125,14 @@ int    main() {
         "← Quay lai"
     };
 
+     const char *features_admin_3[] = {
+        "Them Mon Hoc moi",
+        "Xoa Mon Hoc",
+        "Sua Mon Hoc",
+        "Hoan tac thao tac",
+        "← Quay lai"
+    };
+
     const char *features_admin_4[] = {
         "Them moi Lop Tin Chi",
         "Cap nhat xoa sua Lop Tin Chi",
@@ -153,6 +163,7 @@ int    main() {
     const int n_features_sinhvien = sizeof(features_sinhvien) / sizeof(features_sinhvien[0]);
     const int n_features_giangvien = sizeof(features_giangVien) / sizeof(features_giangVien[0]);
     const int n_features_admin = sizeof(features_admin) / sizeof(features_admin[0]);
+    const int n_features_admin_3 = sizeof(features_admin_3) / sizeof(features_admin_3[0]);
     const int n_features_admin_4 = sizeof(features_admin_4) / sizeof(features_admin_4[0]);
     const int n_features_admin_7 = sizeof(features_admin_7) / sizeof(features_admin_7[0]);
     const int n_features_admin_9 = sizeof(features_admin_9) / sizeof(features_admin_9[0]);
@@ -175,9 +186,8 @@ int    main() {
                 if (f == 0) {
                     clrscr();
                     gotoxy(10, 10);
-                    cout << "Chuc nang: " << features_sinhvien[f];
+                    cout << "Chuc nang: " << features_sinhvien[f]<<endl;
                     InDSMH(dsmh);
-                    gotoxy(10, 12);
                     cout << "(Nhan phim bat ky de quay lai...)";
                     getch();
                 }
@@ -203,25 +213,24 @@ int    main() {
                 } else if(f==2) {
                     clrscr();
                     gotoxy(10, 10);
-                    cout << "Chuc nang: " << features_sinhvien[f];
+                    cout << "Chuc nang: " << features_sinhvien[f]<<endl;
                     InDSLTC(FirstLTC);
-                    gotoxy(10, 12);
                     cout << "(Nhan phim bat ky de quay lai...)";
                     getch();
                 }
                 else if(f==3){
+                    clrscr();
                     gotoxy(10, 10);
-                    cout << "Chuc nang: " << features_sinhvien[f];
+                    cout << "Chuc nang: " << features_sinhvien[f]<<endl;
                     IndiemtbSinhvien(FirstLTC,ds,dsmh);
-                    gotoxy(10, 12);
                     cout << "(Nhan phim bat ky de quay lai...)";
                     getch();
                 }
                 else if(f==4){
+                    clrscr();
                     gotoxy(10, 10);
-                    cout << "Chuc nang: " << features_sinhvien[f];
+                    cout << "Chuc nang: " << features_sinhvien[f]<<endl;
                     InbangdiemtongketSinhvien(FirstLTC,ds,dsmh);
-                    gotoxy(10, 12);
                     cout << "(Nhan phim bat ky de quay lai...)";
                     getch();
                 }
@@ -277,7 +286,7 @@ int    main() {
                    gotoxy(10, 10);
                    cout << "Ban da chon: " << features_giangVien[f];
                    NhapDiem(FirstLTC,ds);
-                   saveLopSV_Binary(ds, "LopSV.txt", "SinhVien.txt");
+                   saveLopTinChi_Binary(FirstLTC, "LopTinChi.txt", "DSSVDK.txt");
                    gotoxy(10, 12);
                    cout << "(Nhan phim bat ky de quay lai...)";
                    getch();  
@@ -324,17 +333,16 @@ int    main() {
                 if (f == 0) {
                     clrscr();
                     gotoxy(10, 10);
-                    cout << "Ban da chon: " << features_admin[f];
-                    gotoxy(10, 12);
+                    cout << "Ban da chon: " << features_admin[f]<<endl;
+                    InDSMH(dsmh);
                     cout << "(Nhan phim bat ky de quay lai...)";
                     getch();
                 }
                 else if (f == 1) {
                     clrscr();
                     gotoxy(10, 10);
-                    cout << "Ban da chon: " << features_admin[f];
+                    cout << "Ban da chon: " << features_admin[f]<<endl;
                     InDSLTC(FirstLTC); // ham hien thi tu header
-                    gotoxy(10, 12);
                     cout << "(Nhan phim bat ky de quay lai...)";
                     getch();
                 }
@@ -344,6 +352,53 @@ int    main() {
                     InDSLSV(ds); // hien ds lop sinh vien
                     cout << "(Nhan phim bat ky de quay lai...)";
                     getch();
+                }
+                else if (f == 3) {
+                    clrscr();
+                    while (true) {
+                        int n = menu("===== THEM/XOA/SUA MON HOC =====", "", features_admin_3, n_features_admin_3);
+                        if (n == - 1 || n == n_features_admin_3 - 1) break;
+                        
+                        if (n == 0) { // Them moi MH
+                            clrscr();
+                            cout << "\n=== Nhap mon hoc ===\n";
+                            NhapMonHoc(dsmh, undostackMH);
+                            cout << "\n>>> Da them mon hoc moi thang cong!\n";
+                            cout << "Nhan phim bat ky de quay lai...";
+                            getch();
+                        }
+                        else if (n == 1) { // Xoa MH
+                            clrscr();
+                            char mamh[11];
+                            cout << "Nhap ma mon hoc can xoa: ";
+                            cin >> mamh;
+                            dsmh = XoaMH(dsmh, mamh, undostackMH);
+                            LuuMonHoc(dsmh, "MonHocdata.txt");
+                            cout << "\n>>> Da xoa mon hoc!\n";
+                            cout << "Nhan phim bat ky de quay lai...";
+                            getch();
+                        }
+                        else if (n == 2) { // Sua MH
+                            clrscr();
+                            MonHoc mh;
+                            cout << "Nhap ma mon hoc can sua: ";
+                            cin >> mh.MAMH;
+                            SuaMH(dsmh, mh, undostackMH);
+                            LuuMonHoc(dsmh, "MonHocdata.txt");
+                            cout << "\n>>> Da sua mon hoc!\n";
+                            cout << "Nhan phim bat ky de quay lai...";
+                            getch();
+                        }
+                        else if (n == 3) { // Undo
+                            clrscr();
+                            UndoMH(dsmh, undostackMH);
+                            LuuMonHoc(dsmh, "MonHocdata.txt");
+                            cout << "\n>>> Da hoan tac thao tac!\n";
+                            cout << "Nhan phim bat ky de quay lai...";
+                            getch();
+                        }
+
+                    }
                 }
                 else if (f == 4) { // Them/CN/Huy LTC
                     while (true) {
