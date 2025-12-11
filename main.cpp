@@ -55,18 +55,21 @@ int menu(const char *title, const char *role, const char *options[], int n)  {
         drawOptions(options, n, highlight);
         int ch = getch();
         // support both arrow keys and WASD
-        if (ch == 224) {
-            int arrow = getch();
-            if (arrow == 72) highlight = (highlight - 1 + n) % n; // up
-            if (arrow == 80) highlight = (highlight + 1) % n;     // down
-        }
-        else if (ch == 'w' || ch == 'W') highlight = (highlight - 1 + n) % n;
-        else if (ch == 's' || ch == 'S') highlight = (highlight + 1) % n;
-        else if (ch == 13) return highlight; // Enter
-    }
-}
-
-int main() {
+        if (ch == 27 && getch() == 91) {  
+        int arrow = getch(); // byte cuối xác định hướng
+        if (arrow == 65) highlight = (highlight - 1 + n) % n; // ↑
+        if (arrow == 66) highlight = (highlight + 1) % n;     // ↓
+           }
+       else if (ch == 'w' || ch == 'W')
+           highlight = (highlight - 1 + n) % n;
+       else if (ch == 's' || ch == 'S')
+           highlight = (highlight + 1) % n;
+       else if (ch == 10 || ch == 13) // Enter trên Linux = 10
+           return highlight;
+       }
+}   
+   
+int    main() {
     //Khoi tao Tree
     treeMH dsmh;
     // Khoi tao DS LopSV
