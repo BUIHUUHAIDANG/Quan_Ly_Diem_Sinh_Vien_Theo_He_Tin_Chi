@@ -1086,6 +1086,7 @@ void NhapDiem(PTRLTC &dsltc, DS_LOPSV &dslop) {
             << setw(10) << fixed << setprecision(2) << p->dk.DIEM;cout << "\nNhap diem moi (-1 de giu nguyen): ";
             float diemMoi;
             cin >>diemMoi;
+            cin.ignore();
             if(diemMoi >= 0 && diemMoi <=10) p->dk.DIEM = diemMoi;
         } else {
             cout << setw(5) << stt++<< setw(15) << p->dk.MASV<< setw(25) << "Khong tim thay"

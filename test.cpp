@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <cstdio>
 #include <cstring>
+#include "console.h"
 using namespace std;
 // // stack test implement by array and linked list 
 // // different between linklist and array 
@@ -82,12 +83,9 @@ int getNumOfSinhVien( char MaSV[]){
     return result;
 }
 
-int main(){
-    char masv[16]="N24DECE106";
-    int result=getNumOfSinhVien(masv);
-    cout<<result;
-    return 0;
+int main() {
+    cout << "Nhan phim bat ky: ";
+    int c = getch();
+    cout << "\nBan nhan: " << (char)c << endl;
 }
-
-
 

@@ -243,80 +243,74 @@ int main() {
                 int f = menu("QUAN LY HE TIN CHI", role, features_giangVien, n_features_giangvien);
                 if (f == -1 || f == n_features_giangvien - 1) break;
                 if(f==0){
-                   clrscr();
-                   gotoxy(10, 10);
-                   cout << "Ban da chon: " << features_giangVien[f];
-                   InDSMH(dsmh);
-                   gotoxy(10, 12);
-                   cout << "(Nhan phim bat ky de quay lai...)";
-                   getch();  
+                    clrscr();
+                    gotoxy(10, 10);
+                    cout << "Chuc nang: " << features_sinhvien[f]<<endl;
+                    InDSMH(dsmh);
+                    cout << "(Nhan phim bat ky de quay lai...)";
+                    getch();
                 }
                 else if(f==1){
-                   clrscr();
-                   gotoxy(10, 10);
-                   cout << "Ban da chon: " << features_giangVien[f];
-                   InDSLSV(ds);
-                   gotoxy(10, 12);
-                   cout << "(Nhan phim bat ky de quay lai...)";
-                   getch();  
+                    clrscr();
+                    gotoxy(10, 10);
+                    InDSLSV(ds); // hien ds lop sinh vien
+                    cout << "(Nhan phim bat ky de quay lai...)";
+                    getch();
                 }
                 else if(f==2){
-                   clrscr();
-                   gotoxy(10, 10);
-                   cout << "Ban da chon: " << features_giangVien[f];
-                   InDSLTC(FirstLTC);
-                   gotoxy(10, 12);
-                   cout << "(Nhan phim bat ky de quay lai...)";
-                   getch();  
+                    clrscr();
+                    gotoxy(10, 10);
+                    cout << "Ban da chon: " << features_admin[f]<<endl;
+                    InDSLTC(FirstLTC); // ham hien thi tu header
+                    cout << "(Nhan phim bat ky de quay lai...)";
+                    getch();
                 }
                 else if(f==3){
                    clrscr();
                    gotoxy(10, 10);
-                   cout << "Ban da chon: " << features_giangVien[f];
+                   cout << "Ban da chon: " << features_giangVien[f]<<endl;
                    int maloptc;
-                   cout<<"Nhap Ma Lop Tin Chi"<<endl;
+                   cout<<"Nhap Ma Lop Tin Chi: ";
                    cin>>maloptc;
+                   cin.ignore();
                    InDSSVDK(FirstLTC,maloptc,ds);
-                   gotoxy(10, 12);
                    cout << "(Nhan phim bat ky de quay lai...)";
                    getch();  
                 }
                 else if(f==4){
                    clrscr();
                    gotoxy(10, 10);
-                   cout << "Ban da chon: " << features_giangVien[f];
+                   cout << "Ban da chon: " << features_giangVien[f]<<endl;
                    NhapDiem(FirstLTC,ds);
                    saveLopTinChi_Binary(FirstLTC, "LopTinChi.txt", "DSSVDK.txt");
-                   gotoxy(10, 12);
                    cout << "(Nhan phim bat ky de quay lai...)";
                    getch();  
                 }
                 else if(f==5){
                    clrscr();
                    gotoxy(10, 10);
-                   cout << "Ban da chon: " << features_giangVien[f];
+                   cout << "Ban da chon: " << features_giangVien[f]<<endl;
                    int maloptc;
+                   cout<<"Nhap Ma Lop Tin Chi: ";
                    cin>>maloptc;
+                   cin.ignore();
                    InDSSVDK(FirstLTC,maloptc,ds);
-                   gotoxy(10, 12);
                    cout << "(Nhan phim bat ky de quay lai...)";
                    getch();  
                 }
                 else if(f==6){
                    clrscr();
                    gotoxy(10, 10);
-                   cout << "Ban da chon: " << features_giangVien[f];
+                   cout << "Ban da chon: " << features_giangVien[f]<<endl;
                    IndiemtbLop(FirstLTC,ds,dsmh);
-                   gotoxy(10, 12);
                    cout << "(Nhan phim bat ky de quay lai...)";
                    getch();  
                 }
                 else if(f==7){
                    clrscr();
                    gotoxy(10, 10);
-                   cout << "Ban da chon: " << features_giangVien[f];
+                   cout << "Ban da chon: " << features_giangVien[f]<<endl;
                    InbangdiemtongketLop(FirstLTC,ds,dsmh);
-                   gotoxy(10, 12);
                    cout << "(Nhan phim bat ky de quay lai...)";
                    getch();  
                 }
@@ -468,6 +462,18 @@ int main() {
                     cout << "\nNhan phim bat ky de quay lai...";
                     getch();
                 }
+                else if (f==6){
+                   clrscr();
+                   gotoxy(10, 10);
+                   cout << "Ban da chon: " << features_giangVien[f]<<endl;
+                   int maloptc;
+                   cout<<"Nhap Ma Lop Tin Chi: ";
+                   cin>>maloptc;
+                   cin.ignore();
+                   InDSSVDK(FirstLTC,maloptc,ds);
+                   cout << "(Nhan phim bat ky de quay lai...)";
+                   getch();  
+                }
                 else if (f == 7) { // Quan ly lop sinh vien
                     while (true) {
                         int n = menu("Quan Ly Lop Sinh Vien", "", features_admin_7, n_features_admin_7);
@@ -579,12 +585,21 @@ int main() {
                         }
                     }
                 }
-                else {
-                    // Các trường hợp khác chưa implement
-                    clrscr();
-                    cout << "Chuc nang chua duoc ho tro: " << features_admin[f] << "\n";
-                    cout << "(Nhan phim bat ky de quay lai...)";
-                    getch();
+                else if(f==10){
+                   clrscr();
+                   gotoxy(10, 10);
+                   cout << "Ban da chon: " << features_giangVien[f]<<endl;
+                   IndiemtbLop(FirstLTC,ds,dsmh);
+                   cout << "(Nhan phim bat ky de quay lai...)";
+                   getch();  
+                }
+                else if(f==11){
+                   clrscr();
+                   gotoxy(10, 10);
+                   cout << "Ban da chon: " << features_giangVien[f]<<endl;
+                   InbangdiemtongketLop(FirstLTC,ds,dsmh);
+                   cout << "(Nhan phim bat ky de quay lai...)";
+                   getch();  
                 }
             }
         } // end admin
