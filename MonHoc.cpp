@@ -139,17 +139,17 @@ void WriteNode(FILE* f, treeMH node) {
 }
 
 
-void LuuMonHoc(treeMH t, const string &filename) {
-    FILE* f = fopen(filename.c_str(), "wb");
+void LuuMonHoc(treeMH t, const char* filename) {
+    FILE* f = fopen(filename, "wb");
     if (f == nullptr) {
         cout << "Khong mo duoc file de ghi!\n";
         return;
     }
 
     WriteNode(f, t);
-
     fclose(f);
 }
+
 
 
 treeMH ReadNode(FILE* f) {
@@ -181,18 +181,19 @@ treeMH ReadNode(FILE* f) {
     return node;
 }
 
-treeMH DocMonHoc(const string &filename) {
-    FILE* f = fopen(filename.c_str(), "rb");
+treeMH DocMonHoc(const char* filename) {
+    FILE* f = fopen(filename, "rb");
     if (f == nullptr) {
         cout << "Khong mo duoc file de doc!\n";
         return nullptr;
     }
 
     treeMH root = ReadNode(f);
-
     fclose(f);
+
     return root;
 }
+
 
 // -------------------- HÀM HỖ TRỢ --------------------
 bool checkMH(treeMH t, MonHoc mh) {
@@ -343,7 +344,7 @@ void SuaMH (treeMH &t, MonHoc mh, stack &undostackMH) {
             int choice;
             cout << "Nhap lua chon cua ban: ";
             cin >> choice;
-            if (choice < 1 || choice > 3) {
+            if (choice < 1 || choice > 4) {
                 cout << "Lua chon khong hop le" << endl;
                 continue;
             } else if (choice == 1) {
@@ -431,14 +432,16 @@ void InLTC(PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t) {
     
     PTRLTC p = loptinchi;
     while (p != nullptr) {
-        if (strcmp(p->ltc.NienKhoa, nienkhoa) == 0 && p->ltc.Hocky == hocky) {
+        if (strcmp(p->ltc.NienKhoa, nienkhoa) == 0 && p->ltc.Hocky == hocky && !p->ltc.huylop) {
             treeMH found = timMonHoc(t, p->ltc.MAMH);
             if (found != nullptr) {
+                cout << "Ma lop tin chi: " << p->ltc.MALOPTC << endl;
                 cout << "Ma mon hoc: " << p->ltc.MAMH << endl;
                 cout << "Ten mon hoc: " << found->mh.TENMH << endl;
                 cout << "Nhom: " << p->ltc.Nhom << endl;
                 cout << "So sinh vien da dang ky: " << p->ltc.currentsv << endl;
                 cout << "So slot con trong: " << (p->ltc.sosvmax - p->ltc.currentsv) << endl;
+                cout << "Han chot dang ky lop tin chi " << p->ltc.deadline << endl;
                 cout << "------------------------------\n";
             }
         }
@@ -463,22 +466,22 @@ void SVDangKy(PTRDK &dssvdk, PTRSV sv) {
     }
 }
 
-//kiem tra ma mon hoc co ton tai khong
-PTRLTC checkmamh(PTRLTC loptinchi, char nienkhoa[], int hocky) {
+//kiem tra ma lop tin chi co ton tai khong
+PTRLTC checkmaltc(PTRLTC loptinchi, char nienkhoa[], int hocky) {
     LopTinChi ltc;
-    cout << "Nhap ma mon hoc (Nhap 0 de thoat): ";
-    char mamh[11];
-    cin >> mamh;
-    if (strcmp(mamh, "0") == 0) return nullptr;
+    cout << "Nhap ma lop tin chi (Nhap 0 de thoat): ";
+    int maltc;
+    cin >> maltc;
+    if (maltc == 0) return nullptr;
     PTRLTC p = loptinchi;
     while (p != nullptr) {
-        if (strcmp(p->ltc.MAMH, mamh) == 0 && strcmp(p->ltc.NienKhoa, nienkhoa) == 0 && p->ltc.Hocky == hocky) {
+        if ((p->ltc.MALOPTC == maltc) && strcmp(p->ltc.NienKhoa, nienkhoa) == 0 && p->ltc.Hocky == hocky && !p->ltc.huylop) {
             return p;
         }
         p = p->next;
     }
-    cout << "Khong tim thay ma mon hoc vua nhap, vui long kiem tra lai!" << endl;
-    return checkmamh(loptinchi, nienkhoa, hocky);
+    cout << "Khong tim thay ma lop tin chi vua nhap hoac ma lop tin chi da het han, vui long kiem tra lai!" << endl;
+    return checkmaltc(loptinchi, nienkhoa, hocky);
 }
 
 void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, PTRSV dssv) {
@@ -513,4 +516,22 @@ void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, PTRSV dssv) {
     SVDangKy(c->ltc.dssvdk, p); 
     c->ltc.currentsv++; //tang so luong sinh vien da dang ky len 1
     cout << "Dang ky thanh cong!" << endl;
+}
+
+void ClearTree(treeMH &t) {
+    if (t == nullptr) return;
+
+    ClearTree(t->left);
+    ClearTree(t->right);
+
+    delete t;
+    t = nullptr;
+}
+
+void ClearStackMH(stack &st) {
+    while (st.top != nullptr) {
+        node* temp = st.top;
+        st.top = st.top->next;
+        delete temp;
+    }
 }

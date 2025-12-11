@@ -20,9 +20,9 @@ treeMH Insert(treeMH t, MonHoc mh);
 
 // -------------------- HÀM FILE --------------------
 void WriteNode(FILE* f, treeMH node);
-void LuuMonHoc(treeMH t, const string &filename);
+void LuuMonHoc(treeMH t, const char* filename);
 treeMH ReadNode(FILE* f);
-treeMH DocMonHoc(const string &filename);
+treeMH DocMonHoc(const char* filename);
 
 // -------------------- HÀM HỖ TRỢ --------------------
 PTRLTC FilterLTC(PTRLTC First, char nienkhoa[], int hocky);
@@ -40,5 +40,9 @@ void InLTC (PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t);
 void SVDangKy(PTRDK &dssvdk, PTRSV sv);
 PTRLTC checkmamh(PTRLTC loptinchi, char nienkhoa[], int hocky);
 void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, PTRSV dssv);
+
+// -------------------- HÀM CLEAR ---------------------
+void ClearTree(treeMH &t);
+void ClearStackMH(stack &st);
 
 #endif

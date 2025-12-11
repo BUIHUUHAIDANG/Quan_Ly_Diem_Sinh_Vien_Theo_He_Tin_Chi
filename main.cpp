@@ -158,6 +158,7 @@ int main() {
 
     // Vong chinh
     while (true) {
+        AutoCancelExpiredClasses(FirstLTC);
         int r = menu("CHON VAI TRO DANG NHAP", "", roles, n_roles);
         if (r == -1) break; // neu nhan ESC o menu
         if (r == 3) break;  // Thoat
@@ -279,6 +280,7 @@ int main() {
                             char mamh[11];
                             cout << "Nhap ma mon hoc can xoa: ";
                             cin >> mamh;
+                            cin.ignore();
                             dsMonHoc = XoaMH(dsMonHoc, mamh, undostackMH);
                             LuuMonHoc(dsMonHoc, "MonHocdata.txt");
                             cout << "\n>>> Da xoa mon hoc!\n";
@@ -501,6 +503,8 @@ int main() {
     ClearLTC(FirstLTC);
     ClearDS_Lop(ds);
     ClearStackLTC(rootLTC);
+    ClearTree(dsMonHoc);
+    ClearStackMH(undostackMH);
     clrscr();
     gotoxy(10, 10);
     cout << "Tam biet!\n";
