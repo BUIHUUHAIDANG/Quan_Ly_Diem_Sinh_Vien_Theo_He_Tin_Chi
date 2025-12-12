@@ -1,5 +1,3 @@
-#include "LopSinhVien.h"
-#include "CTDL.h"
 #include <cstring>
 #include <iostream>
 #include <algorithm>
@@ -8,9 +6,15 @@
 #include <fstream>      
 #include <sstream>   
 #include <limits>  
-
+#include <windows.h>
+#include "LopSinhVien.h"
+#include "CTDL.h"
+#include "menu.h"
+#include "mylib.h"
 
 using namespace std;
+
+
 
 bool isEmpty(PTRLTC &First){ return First == nullptr; }
 int deleteFirst(PTRLTC &First){
@@ -574,7 +578,11 @@ void IndiemtbSinhvien(PTRLTC &dsltc,DS_LOPSV &dslop, treeMH &dsmh) { // In diem 
         lop = dslop.nodes[i];
         for (PTRSV sv = lop->FirstSV; sv != nullptr; sv = sv->next) {
             if(strcmp(sv->sv.MASV,MASV) == 0) {
-                cout << "\n -==== DIEM TRUNG BINH ====- \n";
+                SetBold(true);
+                SetColor(4);
+                cout << "\n             -==== DIEM TRUNG BINH ====- \n";
+                SetBold(false);
+                ResetColor();
                 cout << "Lop: " << lop->TENLOP << endl;
                 cout << left  << setw(15) << "MASV" << setw(25) << "HO" << setw(15) << "TEN" << setw(10) << "DIEM TB" << endl;
                 cout << "-------------------------------------------------------------\n";
@@ -744,7 +752,11 @@ void InbangdiemtongketSinhvien( PTRLTC &dsltc,  DS_LOPSV &dslop,  treeMH &dsmh) 
         if (flag) break;
     }
 }
-void NhapDiem(nodeLTC* dsltc, DS_LOPSV &dslop) {
+
+const char *featuresdiem[] = {"Sua diem", "← Quay lai"};
+int n_featuressuadiem = sizeof(featuresdiem) / sizeof(featuresdiem[0]);
+
+void NhapDiem(PTRLTC FirstLTC, DS_LOPSV &dslop) {
     char nienkhoa[10], mamh[11];
     int hocky, nhom;
     cout << "Nhap nien khoa: ";
@@ -754,9 +766,8 @@ void NhapDiem(nodeLTC* dsltc, DS_LOPSV &dslop) {
     cin.ignore();
     cout << "Nhap mon hoc: ";
     cin.getline(mamh,11);
-    nodeLTC *ltc = nullptr;
-    nodeLTC *cur;
-    cur = dsltc;
+    PTRLTC cur = FirstLTC;
+    PTRLTC ltc = nullptr;
     while(cur) {
         if (strcmp(cur->ltc.NienKhoa, nienkhoa) == 0 &&
         cur->ltc.Hocky == hocky && cur->ltc.Nhom == nhom 
@@ -778,37 +789,10 @@ void NhapDiem(nodeLTC* dsltc, DS_LOPSV &dslop) {
         cout << "\n\nKhong co sinh vien dang ky lop tin chi nay!\n";
         return;
     }
-    cout << "\n              -==== DANH SACH SINH VIEN DANG KY ====- \n";
-    cout << left << setw(5) << "STT" << setw(15) << "MASV" << setw(25) << "HO"<<
-    setw(15) << "TEN" << setw(10) << "DIEM" << endl;
-    cout << "------------------------------------------------\n";
-    int stt = 1;
-    PTRDK p = ltc->ltc.dssvdk;
-    while(p != nullptr) {
-        SinhVien *sv = nullptr;
-        for(int i = 0; i<dslop.n && !sv; i++) {
-            PTRSV q = dslop.nodes[i]->FirstSV;
-            while (q!= nullptr) {
-                if(strcmp(q->sv.MASV, p->dk.MASV) == 0) {
-                    sv =&q->sv;
-                    break;
-                }
-                q = q->next;
-            }
-        }
-        if(sv) {
-            cout << left << setw(5) << stt++<< setw(15) << sv->MASV<< setw(25) << sv->HO<< setw(15) << sv->TEN
-            << setw(10) << fixed << setprecision(2) << p->dk.DIEM;cout << "\nNhap diem moi (-1 de giu nguyen): ";
-            float diemMoi;
-            cin >>diemMoi;
-            if(diemMoi >= 0 && diemMoi <=10) p->dk.DIEM = diemMoi;
-        } else {
-            cout << setw(5) << stt++<< setw(15) << p->dk.MASV<< setw(25) << "Khong tim thay"
-            << setw(15) << ""<< setw(10) << "----" << endl;
-        }
-        p = p->next;
-    }
-    cout << "\n==> Da nhap / cap nhat diem thanh cong! <==\n";
+    PTRDK arr[500];
+    int count = 0;
+    for (PTRDK p = cur->ltc.dssvdk; p != nullptr; p = p->next) arr[count++] = p;
+    BangDiem_Interact(arr,count, dslop);
 }
 void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV &dslop) {
     char nienkhoa[10], mamh[11];
