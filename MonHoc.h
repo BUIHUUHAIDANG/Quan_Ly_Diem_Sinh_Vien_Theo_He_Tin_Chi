@@ -4,11 +4,17 @@
 #include <iostream>
 #include "CTDL.h"
 using namespace std;
+
+// -------------------- HÀM STACK --------------------
 void init(stack &s);
 bool empty(stack s);
 void push(stack &s, ActionMH action);
 void pop(stack &s);
 ActionMH top(stack s);
+
+// -------------------- HÀM STRINGSTREAM --------------------
+string StringStream (string s);
+string UpperFirstCharName(string s);
 
 // -------------------- HÀM AVL --------------------
 int GetHeight(treeMH t);

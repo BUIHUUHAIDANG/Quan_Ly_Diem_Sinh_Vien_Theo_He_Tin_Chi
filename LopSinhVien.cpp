@@ -3,8 +3,7 @@
 #include <cstring>
 #include <iostream>
 #include <algorithm>
-#include <fstream>      
-#include <sstream>      
+#include <fstream>         
 #include <string> 
 #include <limits>     
 using namespace std;
@@ -1231,7 +1230,7 @@ time_t stringToTime(string s) {
 void AutoCancelExpiredClasses(PTRLTC &l) {
     time_t now = time(nullptr);
 
-    PTRLTC cur = nullptr;
+    PTRLTC cur = l;
 
     while (cur != nullptr) {
         bool hetHan = (now >= cur->ltc.deadline);

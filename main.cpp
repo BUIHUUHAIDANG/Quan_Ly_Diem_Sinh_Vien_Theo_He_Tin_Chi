@@ -241,7 +241,7 @@ int main() {
                     gotoxy(10, 10);
                     cout << "Ban da chon: " << features_admin[f] << endl;
                     InDSMH(dsMonHoc); // ham hien thi tu header
-                    gotoxy(10, 12);
+                    gotoxy(10, 20);
                     cout << "\n(Nhan phim bat ky de quay lai...)";
                     getch();
                 }

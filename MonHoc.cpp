@@ -1,7 +1,6 @@
 #include "MonHoc.h"
 #include "CTDL.h"
 #include <fstream>
-#include <sstream>
 #include <cstring>
 #include <algorithm>
 
@@ -67,6 +66,7 @@ treeMH CheckandRotation(treeMH t) {
     return t;
 }
 
+// -------------------- HÀM STACK --------------------
 void init(stack &s) {
     s.top = nullptr;
 }
@@ -91,6 +91,39 @@ void pop(stack &s) {
 
 ActionMH top(stack s) {
     return s.top->data; 
+}
+
+// --------------------- HÀM STRINGSTREAM ---------------------
+string StringStream (string s) {
+    int left = 0;
+    int i = 0;
+    while (i < s.size()) {
+        while (i < s.size() && s[i] == ' ') i++;
+
+        if (i == s.size()) break;
+
+        while (i < s.size() && s[i] != ' ') {
+            s[left++] = s[i++];
+        }
+        s[left++] = ' ';
+    }
+    if (left > 0) left--;
+    s.resize(left);
+
+    return s;
+}
+
+string UpperFirstCharName(string s) {
+    if (s.empty()) return s;
+
+    s[0] = toupper(s[0]);
+
+    for (int i = 1; i < s.size(); i++) {
+        if (s[i - 1] == ' ' && s[i] != ' ') {
+            s[i] = toupper(s[i]);
+        }
+    }
+    return s;
 }
 
 //tim sinh vien trong danh sach sinh vien toan truong
@@ -220,6 +253,10 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
         cout << "Nhap ten mon hoc: ";
         cin.ignore();
         cin.getline(mh.TENMH, 51);
+        string s = mh.TENMH;
+        s = StringStream(s);
+        s = UpperFirstCharName(s);
+        strcpy(mh.TENMH, s.c_str());
         cout << "Nhap so tin chi ly thuyet: ";
         cin >> mh.STCLT;
         cout << "Nhap so tin chi thuc hanh: ";
@@ -509,7 +546,7 @@ void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, PTRSV dssv) {
     cin >> lop.Hocky;
     InLTC(loptinchi, lop.NienKhoa, lop.Hocky, t);
     PTRLTC c = nullptr;
-    c = checkmamh(loptinchi, lop.NienKhoa, lop.Hocky);
+    c = checkmaltc(loptinchi, lop.NienKhoa, lop.Hocky);
     if (c == nullptr) {
         return;
     }
