@@ -111,5 +111,52 @@ inline void drawLine(int x, int y, int len) {
     gotoxy(x, y);
     for (int i = 0; i < len; i++) cout << "-";
 }
+inline void ClearLine(int y, int width = 120) {
+    gotoxy(0, y); 
+    if (useANSI()) {
+       
+        printf("\x1b[2K");  
+        printf("\x1b[%d;1H", y + 1); 
+    } else {
+        cout << string(width, ' ');
+        gotoxy(0, y);
+    }
+}
+
+inline void DrawBox(int x, int y, int w, int h, WORD borderColor = 7, WORD bgColor = 0) { // cot x, dong y, be rong width, chieu cao height, mau bien, mau nen 
+    if (w < 2 || h < 2) return;
+
+    SetColor(borderColor);
+    SetBGColor(bgColor);
+    // corners
+    gotoxy(x, y); cout << "o";
+    gotoxy(x + w - 1, y); cout << "o";
+    gotoxy(x, y + h - 1); cout << "o";
+    gotoxy(x + w - 1, y + h - 1); cout << "o";
+
+    for (int i = 1; i < w - 1; i++) {
+        gotoxy(x + i, y); cout << "-";
+        gotoxy(x + i, y + h - 1); cout << "-";
+    }
+    for (int i = 1; i < h - 1; i++) {
+        gotoxy(x, y + i); cout << "|";
+        gotoxy(x + w - 1, y + i); cout << "|";
+    }
+    for (int i = 1; i < h - 1; i++) {
+        gotoxy(x + 1, y + i);
+        cout << string(w - 2, ' ');
+    }
+
+    ResetColor();
+}
+
+
+inline void ClearBox(int x, int y, int w, int h) {
+    for (int i = 0; i < h; i++) {
+        gotoxy(x, y + i);
+        cout << string(w, ' ');
+    }
+}
+
 
 #endif
