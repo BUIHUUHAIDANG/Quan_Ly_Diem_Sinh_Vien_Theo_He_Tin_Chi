@@ -103,6 +103,7 @@ void saveLopTinChi_Binary(PTRLTC &First, const char *fileloptinchi, const char *
 void loadLopTinChi_Binary(PTRLTC &First, const char *fileLop, const char *fileSVDK);
 
 //Tinh/In bang diem cua sinh vien 
+void getmonhocDK(bool MHdaDK[], int soMH, char dsMAMH[][11], const char MASV[], PTRLTC dsltc);
 float Tinhdiemtb(SinhVien &sv, PTRLTC &dsltc, treeMH &dsmh);
 void IndiemtbLop(PTRLTC &dsltc, DS_LOPSV &dslop, treeMH &dsmh);
 void IndiemtbSinhvien(PTRLTC &dsltc, DS_LOPSV &dslop,treeMH &dsmh);

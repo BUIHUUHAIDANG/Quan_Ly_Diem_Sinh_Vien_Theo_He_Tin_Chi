@@ -2,12 +2,15 @@
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
+#include <string>
+#include <iostream>
 
+using namespace std;
 // =======================
 //    GOTOXY
 // =======================
 void gotoxy(int x, int y) {
-    printf("\033[%d;%dH", y, x);
+    printf("\033[%d;%dH", y + 1, x + 1);
 }
 
 // =======================
@@ -68,5 +71,56 @@ int getch() {
 // =======================
 void drawLine(int x, int y, int len){
     gotoxy(x, y);
-    for(int i=0;i<len;i++) printf("─");
+    for(int i = 0; i < len; i++) cout << "-";
+}
+inline bool useANSI() {
+    return true;
+}
+
+inline void ClearLine(int y, int width = 120) {
+    if (useANSI()) {
+        printf("\033[%d;1H", y + 1); // về đầu dòng y
+        printf("\033[2K");           // clear line
+    } else {
+        gotoxy(0, y);
+        cout << string(width, ' ');
+    }
+}
+
+inline void DrawBox(int x, int y, int w, int h, int borderColor = 7, int bgColor = 0) {
+    if (w < 2 || h < 2) return;
+
+    SetColor(borderColor);
+    SetBGColor(bgColor);
+
+    // corners
+    gotoxy(x, y);                 cout << "o";
+    gotoxy(x + w - 1, y);         cout << "o";
+    gotoxy(x, y + h - 1);         cout << "o";
+    gotoxy(x + w - 1, y + h - 1); cout << "o";
+
+    for (int i = 1; i < w - 1; i++) {
+        gotoxy(x + i, y);         cout << "-";
+        gotoxy(x + i, y + h - 1); cout << "-";
+    }
+
+    for (int i = 1; i < h - 1; i++) {
+        gotoxy(x, y + i);         cout << "|";
+        gotoxy(x + w - 1, y + i); cout << "|";
+    }
+
+    for (int i = 1; i < h - 1; i++) {
+        gotoxy(x + 1, y + i);
+        cout << string(w - 2, ' ');
+    }
+
+    ResetColor();
+}
+
+
+inline void ClearBox(int x, int y, int w, int h) {
+    for (int i = 0; i < h; i++) {
+        gotoxy(x, y + i);
+        cout << string(w, ' ');
+    }
 }

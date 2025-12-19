@@ -1,5 +1,7 @@
 #include "LopSinhVien.h"
 #include "CTDL.h"
+#include "menu.h"
+#include "console.h"
 #include <cstring>
 #include <iostream>
 #include <algorithm>
@@ -880,7 +882,11 @@ void IndiemtbSinhvien(PTRLTC &dsltc,DS_LOPSV &dslop, treeMH &dsmh) { // In diem 
         lop = dslop.nodes[i];
         for (PTRSV sv = lop->FirstSV; sv != nullptr; sv = sv->next) {
             if(strcmp(sv->sv.MASV,MASV) == 0) {
-                cout << "\n -==== DIEM TRUNG BINH ====- \n";
+                SetBold(true);
+                SetColor(4);
+                cout << "\n             -==== DIEM TRUNG BINH ====- \n";
+                SetBold(false);
+                ResetColor();
                 cout << "Lop: " << lop->TENLOP << endl;
                 cout << left  << setw(15) << "MASV" << setw(25) << "HO" << setw(15) << "TEN" << setw(10) << "DIEM TB" << endl;
                 cout << "-------------------------------------------------------------\n";
@@ -897,6 +903,24 @@ void IndiemtbSinhvien(PTRLTC &dsltc,DS_LOPSV &dslop, treeMH &dsmh) { // In diem 
             }
         }
         if(flag) break;
+    }
+}
+
+void getmonhocDK(bool MHdaDK[], int soMH, char dsMAMH[][11], const char MASV[], PTRLTC dsltc) {
+    for(int i=0; i<soMH; i++) MHdaDK[i] = false;
+    for (PTRLTC cur = dsltc; cur != nullptr; cur = cur->next) {
+        if (cur->ltc.huylop) continue;
+        for (PTRDK dk = cur->ltc.dssvdk; dk != nullptr; dk = dk->next) {
+            if(dk->dk.HuyDK) continue; 
+            if (strcmp(dk->dk.MASV, MASV) == 0) {
+                for (int j = 0; j < soMH; j++) {
+                    if (strcmp(dsMAMH[j], cur->ltc.MAMH) == 0) {
+                        MHdaDK[j] = true;
+                        break;
+                    }
+                }
+            }
+        }
     }
 }
 void InbangdiemtongketSinhvien( PTRLTC &dsltc,  DS_LOPSV &dslop,  treeMH &dsmh) {
@@ -916,18 +940,21 @@ void InbangdiemtongketSinhvien( PTRLTC &dsltc,  DS_LOPSV &dslop,  treeMH &dsmh) 
         lop = dslop.nodes[i];
         for (PTRSV sv = lop->FirstSV; sv != nullptr; sv = sv->next) {
             if(strcmp(sv->sv.MASV,MASV)==0) {
+                bool MHdaDK[200];
+                getmonhocDK(MHdaDK,soMH,dsMAMH,MASV,dsltc);
                 cout << " -==== DIEM TONG KET ====- ";
                 cout << "\nLop: " << lop->TENLOP << endl;
                 cout << left <<setw(15) << "MASV" << setw(25) << "HO TEN";
-                for (int j = 0; j < soMH; j++) cout << setw(8) << dsMAMH[j];
+                for (int j = 0; j < soMH; j++) {
+                    if(MHdaDK[j]) cout << setw(8) << dsMAMH[j];
+                }
                 cout << endl;
-                cout << "----------------------------------------------------------------------------------------\n";
+                cout << "------------------------------------------------------------\n";
                 float diemMax[200];
                 for (int j = 0; j < soMH; j++) diemMax[j] = -1;
                 for (PTRLTC cur = dsltc; cur != nullptr; cur = cur->next) {
                     if (cur->ltc.huylop) continue;
-
-                    for (PTRDK dk = cur->ltc.dssvdk; dk != nullptr; dk = dk->next) {
+                        for (PTRDK dk = cur->ltc.dssvdk; dk != nullptr; dk = dk->next) {
                         if (strcmp(dk->dk.MASV, sv->sv.MASV) == 0) {
                             for (int j = 0; j < soMH; j++) {
                                 if (strcmp(dsMAMH[j], cur->ltc.MAMH) == 0) {
@@ -944,6 +971,7 @@ void InbangdiemtongketSinhvien( PTRLTC &dsltc,  DS_LOPSV &dslop,  treeMH &dsmh) 
                 strcat(hoten, sv->sv.TEN);
                 cout << left << setw(15) << sv->sv.MASV << setw(25) << hoten;
                 for(int j=0; j< soMH; j++) {
+                    if(!MHdaDK[j]) continue; // skip mon hoc khong dk
                     if(diemMax[j] >= 0) {
                         cout << setw(8) << fixed << setprecision(2) << diemMax[j];
                     } else {
@@ -1029,7 +1057,9 @@ void InbangdiemtongketLop(PTRLTC &dsltc, DS_LOPSV &dslop, treeMH &dsmh) {
         cout << endl;
     }
 }
-void NhapDiem(PTRLTC &dsltc, DS_LOPSV &dslop) {
+const char *featuresdiem[] = {"Sua diem", "← Quay lai"};
+int n_featuressuadiem = sizeof(featuresdiem) / sizeof(featuresdiem[0]);
+void NhapDiem(PTRLTC &FirstLTC, DS_LOPSV &dslop) {
     char nienkhoa[10], mamh[11];
     int hocky, nhom;
     cout << "Nhap nien khoa: ";
@@ -1039,9 +1069,8 @@ void NhapDiem(PTRLTC &dsltc, DS_LOPSV &dslop) {
     cin.ignore();
     cout << "Nhap mon hoc: ";
     cin.getline(mamh,11);
-    nodeLTC *ltc = nullptr;
-    nodeLTC *cur;
-    cur = dsltc;
+    PTRLTC cur = FirstLTC;
+    PTRLTC ltc = nullptr;
     while(cur) {
         if (strcmp(cur->ltc.NienKhoa, nienkhoa) == 0 &&
         cur->ltc.Hocky == hocky && cur->ltc.Nhom == nhom 
@@ -1052,58 +1081,29 @@ void NhapDiem(PTRLTC &dsltc, DS_LOPSV &dslop) {
         cur = cur->next; 
     }
     if (ltc == nullptr) {
-        cout << "Khong tim thay lop tin chi tuong ung!\n";
+        cout << "\n\nKhong tim thay lop tin chi tuong ung!\n";
         return;
     }
     if (ltc->ltc.huylop) {
-        cout << "Lop tin chi nay da bi huy, khong the nhap diem!\n";
+        cout << "\n\nLop tin chi nay da bi huy, khong the nhap diem!\n";
         return;
     }
     if (ltc->ltc.dssvdk == nullptr) {
-        cout << "Khong co sinh vien dang ky lop tin chi nay!\n";
+        cout << "\n\nKhong co sinh vien dang ky lop tin chi nay!\n";
         return;
     }
-    cout << "\n              -==== DANH SACH SINH VIEN DANG KY ====- \n";
-    cout << left << setw(5) << "STT" << setw(15) << "MASV" << setw(25) << "HO"<<
-    setw(15) << "TEN" << setw(10) << "DIEM" << endl;
-    cout << "------------------------------------------------\n";
-    int stt = 1;
-    PTRDK p = ltc->ltc.dssvdk;
-    while(p != nullptr) {
-        SinhVien *sv = nullptr;
-        for(int i = 0; i<dslop.n && !sv; i++) {
-            PTRSV q = dslop.nodes[i]->FirstSV;
-            while (q!= nullptr) {
-                if(strcmp(q->sv.MASV, p->dk.MASV) == 0) {
-                    sv =&q->sv;
-                    break;
-                }
-                q = q->next;
-            }
-        }
-        if(sv) {
-            cout << left << setw(5) << stt++<< setw(15) << sv->MASV<< setw(25) << sv->HO<< setw(15) << sv->TEN
-            << setw(10) << fixed << setprecision(2) << p->dk.DIEM;cout << "\nNhap diem moi (-1 de giu nguyen): ";
-            float diemMoi;
-            cin >>diemMoi;
-            cin.ignore();
-            if(diemMoi >= 0 && diemMoi <=10) p->dk.DIEM = diemMoi;
-        } else {
-            cout << setw(5) << stt++<< setw(15) << p->dk.MASV<< setw(25) << "Khong tim thay"
-            << setw(15) << ""<< setw(10) << "----" << endl;
-        }
-        p = p->next;
-    }
-    cout << "\n==> Da nhap / cap nhat diem thanh cong! <==\n";
+    PTRDK arr[500];
+    int count = 0;
+    for (PTRDK p = cur->ltc.dssvdk; p != nullptr; p = p->next) arr[count++] = p;
+    BangDiem_Interact(arr,count, dslop);
 }
-void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV &dslop){
+void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV &dslop) {
     char nienkhoa[10], mamh[11];
     int hocky, nhom;
     cout << "Nhap nien khoa: ";
     cin.getline(nienkhoa,10);
-    cout << "Nhap hoc ki: "; cin >> hocky;
-    cout << "Nhap nhom: "; cin >> nhom;
-    cin.ignore();
+    cout << "Nhap hoc ki: "; cin >> hocky; cin.ignore();
+    cout << "Nhap nhom: "; cin >> nhom; cin.ignore();
     cout << "Nhap mon hoc: ";
     cin.getline(mamh,11);
     nodeLTC *ltc = nullptr;
@@ -1130,10 +1130,10 @@ void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV &dslop){
         cout << "Khong co sinh vien dang ky lop tin chi nay!\n";
         return;
     }
-    cout << "\n              -==== DANH SACH SINH VIEN DANG KY ====- \n";
+    cout << "\n                -==== BANG DIEM LOP TIN CHI ====- \n";
     cout << left << setw(5) << "STT" << setw(15) << "MASV" << setw(25) << "HO"<<
     setw(15) << "TEN" << setw(10) << "DIEM" << endl;
-    cout << "------------------------------------------------\n";
+    cout << "-----------------------------------------------------------------------------------------------\n";
     int stt = 1;
     PTRDK p = ltc->ltc.dssvdk;
     while(p != nullptr) {
@@ -1150,17 +1150,14 @@ void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV &dslop){
         }
         if(sv) {
             cout << left << setw(5) << stt++<< setw(15) << sv->MASV<< setw(25) << sv->HO<< setw(15) << sv->TEN
-            << setw(10) << fixed << setprecision(2) << p->dk.DIEM;
-            float diemMoi;
-            cin >>diemMoi;
-            if(diemMoi >= 0 && diemMoi <=10) p->dk.DIEM = diemMoi;
+            << setw(10) << fixed << setprecision(2) << p->dk.DIEM << endl;
         } else {
             cout << setw(5) << stt++<< setw(15) << p->dk.MASV<< setw(25) << "Khong tim thay"
             << setw(15) << ""<< setw(10) << "----" << endl;
         }
         p = p->next;
     }
-    cout << "\n==> Da nhap / cap nhat diem thanh cong! <==\n";
+    
 }
 int posLop(DS_LOPSV &ds,char MALOP[16]){
     for(int i=0;i<ds.n;i++){
