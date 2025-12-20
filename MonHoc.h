@@ -25,7 +25,6 @@ treeMH ReadNode(FILE* f);
 treeMH DocMonHoc(const string &filename);
 
 // -------------------- HÀM HỖ TRỢ --------------------
-PTRLTC FilterLTC(PTRLTC First, char nienkhoa[], int hocky);
 PTRSV findSinhVien(PTRSV First, char MASV[], PTRSV dssv);
 bool checkMH(treeMH t, MonHoc mh);
 void NhapMonHoc(treeMH &t, stack &undostackMH);
@@ -42,5 +41,8 @@ void InLTC (PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t);
 void SVDangKy(PTRDK &dssvdk, PTRSV sv);
 PTRLTC checkmamh(PTRLTC loptinchi, char nienkhoa[], int hocky);
 void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, PTRSV dssv);
+// -------------------- HÀM CLEAR ---------------------
+void ClearTree(treeMH &t);
+void ClearStackMH(stack &st);
 
 #endif

@@ -171,6 +171,7 @@ int main() {
 
     // Vong chinh
     while (true) {
+        AutoCancelExpiredClasses(FirstLTC);
         int r = menu("CHON VAI TRO DANG NHAP", "", roles, n_roles);
         if (r == -1) break; // neu nhan ESC o menu
         if (r == 3) break;  // Thoat
@@ -629,6 +630,8 @@ int main() {
     ClearLTC(FirstLTC);
     ClearDS_Lop(ds);
     ClearStackLTC(rootLTC);
+    ClearTree(dsmh);
+    ClearStackMH(undostackMH);
     clrscr();
     gotoxy(10, 10);
     cout << "Tam biet!\n";

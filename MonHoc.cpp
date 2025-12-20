@@ -572,3 +572,20 @@ void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, PTRSV dssv) {
     c->ltc.currentsv++; //tang so luong sinh vien da dang ky len 1
     cout << "Dang ky thanh cong!" << endl;
 }
+void ClearTree(treeMH &t) {
+    if (t == nullptr) return;
+
+    ClearTree(t->left);
+    ClearTree(t->right);
+
+    delete t;
+    t = nullptr;
+}
+
+void ClearStackMH(stack &st) {
+    while (st.top != nullptr) {
+        node* temp = st.top;
+        st.top = st.top->next;
+        delete temp;
+    }
+}
