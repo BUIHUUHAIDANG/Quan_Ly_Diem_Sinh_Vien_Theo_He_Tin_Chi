@@ -91,6 +91,7 @@ void in1TrangSV(SinhVien arr[], int n, int page, int pageSize);
 void printDSSV_sorted(LopSV *lop);
 
 //Nhap Lop Tin Chi + Sua lop Tin Chi
+bool isValidSoSV(int min, int max);
 LopTinChi NhapLTC();
 int getNextMaLopTinChi(PTRLTC First);
 

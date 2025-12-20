@@ -831,7 +831,9 @@ void printDSSV_sorted(LopSV *lop) {
 
     delete[] arr;
 }
-
+bool isValidSoSV(int min, int max) {
+    return min > 0 && max > 0 && min <= max;
+}
 LopTinChi NhapLTC(){
      LopTinChi ltc;
     cout << "\n=== THEM LOP TIN CHI ===\n";
@@ -843,16 +845,21 @@ LopTinChi NhapLTC(){
     cout << "Nhap Nien Khoa: "; cin.getline(ltc.NienKhoa, 10);
     cout << "Nhap Hoc Ky: "; cin >> ltc.Hocky;
     cout << "Nhap Nhom: "; cin >> ltc.Nhom;
-    cout << "Nhap SV Min va Max: "; cin >> ltc.sosvmin >> ltc.sosvmax;
+    do {
+        cout << "Nhap SV Min va Max: ";
+        cin >> ltc.sosvmin >> ltc.sosvmax;
+
+        if (!isValidSoSV(ltc.sosvmin, ltc.sosvmax)) {
+            cout << "Loi: SV Min phai <= SV Max va > 0. Nhap lai!\n";
+        }
+    } while (!isValidSoSV(ltc.sosvmin, ltc.sosvmax));
     cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
     cout << "Nhap Deadline (YYYY-MM-DD HH:MM): ";
     string deadlinestr;
-    cin.ignore();
     getline(cin, deadlinestr);
     ltc.deadline = stringToTime(deadlinestr);
     ltc.huylop = false;
     ltc.dssvdk = nullptr;
-    cin.ignore();
     return ltc;
 }
 int getNextMaLopTinChi(PTRLTC First) {

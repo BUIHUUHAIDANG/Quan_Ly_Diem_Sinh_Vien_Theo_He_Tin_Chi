@@ -374,16 +374,29 @@ int main() {
                         if (n == -1 || n == n_features_admin_4 - 1) break;
 
                         if (n == 0) { // Them moi LTC
-                            clrscr();
-                            LopTinChi ltc = NhapLTC();
-                            ltc.MALOPTC = getNextMaLopTinChi(FirstLTC);
-                            insertLopTinChi(FirstLTC, ltc);
-                            saveLopTinChi_Binary(FirstLTC, "LopTinChi.txt", "DSSVDK.txt");
-                            cout << "\n>>> Da them lop tin chi thanh cong! MA MOI: " << ltc.MALOPTC;
-                            ActionLTC act; act.type = 1; act.ltc = ltc;
-                            push(rootLTC, act);
-                            cout << "\nNhan phim bat ky de quay lai...";
-                            getch();
+                            while (true) {
+                                clrscr();
+                            
+                                LopTinChi ltc = NhapLTC();
+                                ltc.MALOPTC = getNextMaLopTinChi(FirstLTC);
+                            
+                                insertLopTinChi(FirstLTC, ltc);
+                                saveLopTinChi_Binary(FirstLTC, "LopTinChi.txt", "DSSVDK.txt");
+                            
+                                cout << "\n>>> Da them lop tin chi thanh cong!";
+                                cout << "\n>>> MA LOP TC MOI: " << ltc.MALOPTC;
+                            
+                                // Undo / Action
+                                ActionLTC act;
+                                act.type = 1;      // 1 = them
+                                act.ltc  = ltc;
+                                push(rootLTC, act);
+                            
+                                cout << "\n\nNhan [ESC] de thoat | Nhan phim bat ky de them tiep...";
+                            
+                                char key = getch();
+                                if (key == 27) break;   // ESC -> thoat chuc nang
+                            }
                         }
                         else if (n == 1) { // Cap nhat/Sua
                             clrscr();
