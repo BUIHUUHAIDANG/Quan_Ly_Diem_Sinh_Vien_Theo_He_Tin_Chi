@@ -227,25 +227,25 @@ bool editLopTinChi(PTRLTC &First, int id) {
         return false;
     }
 
+    LopTinChi old = p->ltc;
+
     cout << "\n=== CHINH SUA LOP TIN CHI ===\n";
-    cout << "[DU LIEU] [DU LIEU CU] [Nhap DU LIEU MOI]/n";
-    cout << ">> De trong = giu nguyen gia tri cu(ro roi thi enter de tiep tuc)\n\n";
+    cout << "(Enter = giu nguyen)\n\n";
 
-    cin.ignore(); 
+    inputOrKeep(p->ltc.MAMH, 11, old.MAMH, "Ma Mon Hoc");
+    inputOrKeep(p->ltc.NienKhoa, 10, old.NienKhoa, "Nien Khoa");
 
-    
-    string newMAMH = inputOrKeep(p->ltc.MAMH, "Ma Mon Hoc");
-    strcpy(p->ltc.MAMH, newMAMH.c_str());
+    p->ltc.Hocky   = inputIntOrKeep(old.Hocky, "Hoc Ky");
+    p->ltc.Nhom    = inputIntOrKeep(old.Nhom, "Nhom");
+    p->ltc.sosvmin = inputIntOrKeep(old.sosvmin, "SV Min");
+    p->ltc.sosvmax = inputIntOrKeep(old.sosvmax, "SV Max");
 
-    string newNienKhoa = inputOrKeep(p->ltc.NienKhoa, "Nien Khoa");
-    strcpy(p->ltc.NienKhoa, newNienKhoa.c_str());
+    if (p->ltc.sosvmin > p->ltc.sosvmax) {
+        cout << "SV Min khong duoc lon hon SV Max!\n";
+        p->ltc = old;
+        return false;
+    }
 
-    p->ltc.Hocky = inputIntOrKeep(p->ltc.Hocky, "Hoc Ky");
-    p->ltc.Nhom   = inputIntOrKeep(p->ltc.Nhom, "Nhom");
-    p->ltc.sosvmin = inputIntOrKeep(p->ltc.sosvmin, "SV Min");
-    p->ltc.sosvmax = inputIntOrKeep(p->ltc.sosvmax, "SV Max");
-
-    cout << "\n>>> Cap nhat lop tin chi thanh cong!\n";
     return true;
 }
 int DemSoLTC(PTRLTC FirstLTC) {
@@ -899,20 +899,45 @@ int getNextMaLopTinChi(PTRLTC First) {
     }
     return maxID + 1;
 }
-string inputOrKeep(const string &oldValue, const string &label) {
-    cout << label << " [" << oldValue << "]: ";
-    string s;
-    getline(cin, s);
-    if (s.empty()) return oldValue;
-    return s;
-}
-int inputIntOrKeep(int oldValue, const string &label) {
-    cout << label << " [" << oldValue << "]: ";
-    string s;
-    getline(cin, s);
-    if (s.empty()) return oldValue; 
+void inputOrKeep(char dest[], int maxLen, const char oldValue[], const char *label) {
+    char buf[100];
 
-    return stoi(s); 
+    while (true) {
+        cout << label << " [" << oldValue << "]: ";
+        cin.getline(buf, sizeof(buf));
+
+        if (strlen(buf) == 0) {     // Enter
+            strcpy(dest, oldValue);
+            return;
+        }
+
+        if (strlen(buf) < maxLen) {
+            strcpy(dest, buf);
+            return;
+        }
+
+        cout << "Du lieu qua dai! Nhap lai.\n";
+    }
+}
+int inputIntOrKeep(int oldValue, const char *label) {
+    char buf[50];
+    int x;
+
+    while (true) {
+        cout << label << " [" << oldValue << "]: ";
+        cin.getline(buf, sizeof(buf));
+
+        if (strlen(buf) == 0)
+            return oldValue;
+
+        char *end;
+        x = strtol(buf, &end, 10);
+
+        if (*end == '\0' && x > 0)
+            return x;
+
+        cout << "Nhap sai! Hay nhap so hop le.\n";
+    }
 }
 void toUpper(char word[]){
     for (int i = 0; word[i] != '\0'; i++) {

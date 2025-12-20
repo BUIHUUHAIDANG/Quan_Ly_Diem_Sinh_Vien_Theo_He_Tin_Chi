@@ -95,8 +95,8 @@ bool isValidSoSV(int min, int max);
 LopTinChi NhapLTC();
 int getNextMaLopTinChi(PTRLTC First);
 
-string inputOrKeep(const string &oldValue, const string &label);
-int inputIntOrKeep(int oldValue, const string &label);
+void inputOrKeep(char dest[], int maxLen, const char oldValue[], const char *label);
+int inputIntOrKeep(int oldValue, const char *label);
 
 PTRLTC findLTCByParams(PTRLTC FirstLTC);
 
