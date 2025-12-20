@@ -34,6 +34,8 @@ treeMH XoaMH(treeMH &t, char MAMH[], stack &undostackMH);
 void UndoSuaMH (treeMH &t, MonHoc mh);
 void SuaMH(treeMH &t, MonHoc mh, stack &undostackMH);
 void UndoMH (treeMH &t, stack &undostackMH);
+void LuuMH_Inorder(treeMH t, MonHoc ds[], int &n);
+void In1TrangMH(MonHoc ds[], int n, int page, int pageSize);
 void InDSMH(treeMH t);
 treeMH timMonHoc(treeMH t, char mamh[]);
 void InLTC (PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t);

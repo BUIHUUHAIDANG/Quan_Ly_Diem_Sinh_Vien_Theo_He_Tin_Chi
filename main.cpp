@@ -188,8 +188,6 @@ int main() {
                     gotoxy(10, 10);
                     cout << "Chuc nang: " << features_sinhvien[f]<<endl;
                     InDSMH(dsmh);
-                    cout << "(Nhan phim bat ky de quay lai...)";
-                    getch();
                 }
                 else if (f == 1) {
                     // Dang ky / Huy
@@ -215,8 +213,6 @@ int main() {
                     gotoxy(10, 10);
                     cout << "Chuc nang: " << features_sinhvien[f]<<endl;
                     InDSLTC(FirstLTC);
-                    cout << "(Nhan phim bat ky de quay lai...)";
-                    getch();
                 }
                 else if(f==3){
                     clrscr();
@@ -247,35 +243,29 @@ int main() {
                     gotoxy(10, 10);
                     cout << "Chuc nang: " << features_sinhvien[f]<<endl;
                     InDSMH(dsmh);
-                    cout << "(Nhan phim bat ky de quay lai...)";
-                    getch();
                 }
                 else if(f==1){
                     clrscr();
                     gotoxy(10, 10);
                     InDSLSV(ds); // hien ds lop sinh vien
-                    cout << "(Nhan phim bat ky de quay lai...)";
-                    getch();
                 }
                 else if(f==2){
                     clrscr();
                     gotoxy(10, 10);
                     cout << "Ban da chon: " << features_admin[f]<<endl;
                     InDSLTC(FirstLTC); // ham hien thi tu header
-                    cout << "(Nhan phim bat ky de quay lai...)";
-                    getch();
                 }
                 else if(f==3){
-                   clrscr();
-                   gotoxy(10, 10);
-                   cout << "Ban da chon: " << features_giangVien[f]<<endl;
-                   int maloptc;
-                   cout<<"Nhap Ma Lop Tin Chi: ";
-                   cin>>maloptc;
-                   cin.ignore();
-                   InDSSVDK(FirstLTC,maloptc,ds);
-                   cout << "(Nhan phim bat ky de quay lai...)";
-                   getch();  
+                    clrscr();
+                    cout << "=== DANH SACH SINH VIEN DA DANG KY LOP TIN CHI ===\n";
+                    PTRLTC pLTC = findLTCByParams(FirstLTC);
+                    if (pLTC) {
+                        showDanhSachSinhVienDangKy(pLTC->ltc.dssvdk,ds);
+                    } else {
+                        cout << "Khong tim thay lop tin chi voi cac tham so da nhap.\n";
+                        cout << "\nNhan phim bat ky de quay lai...";
+                        getch();
+                    }
                 }
                 else if(f==4){
                    clrscr();
@@ -290,29 +280,19 @@ int main() {
                    clrscr();
                    gotoxy(10, 10);
                    cout << "Ban da chon: " << features_giangVien[f]<<endl;
-                   int maloptc;
-                   cout<<"Nhap Ma Lop Tin Chi: ";
-                   cin>>maloptc;
-                   cin.ignore();
-                   InDSSVDK(FirstLTC,maloptc,ds);
-                   cout << "(Nhan phim bat ky de quay lai...)";
-                   getch();  
+                   InbangDiemLTC(FirstLTC,ds);
                 }
                 else if(f==6){
                    clrscr();
                    gotoxy(10, 10);
                    cout << "Ban da chon: " << features_giangVien[f]<<endl;
                    IndiemtbLop(FirstLTC,ds,dsmh);
-                   cout << "(Nhan phim bat ky de quay lai...)";
-                   getch();  
                 }
                 else if(f==7){
                    clrscr();
                    gotoxy(10, 10);
                    cout << "Ban da chon: " << features_giangVien[f]<<endl;
-                   InbangdiemtongketLop(FirstLTC,ds,dsmh);
-                   cout << "(Nhan phim bat ky de quay lai...)";
-                   getch();  
+                   InbangdiemtongketLop(FirstLTC,ds,dsmh);  
                 }
             }
         }
@@ -329,23 +309,17 @@ int main() {
                     gotoxy(10, 10);
                     cout << "Ban da chon: " << features_admin[f]<<endl;
                     InDSMH(dsmh);
-                    cout << "(Nhan phim bat ky de quay lai...)";
-                    getch();
                 }
                 else if (f == 1) {
                     clrscr();
                     gotoxy(10, 10);
                     cout << "Ban da chon: " << features_admin[f]<<endl;
                     InDSLTC(FirstLTC); // ham hien thi tu header
-                    cout << "(Nhan phim bat ky de quay lai...)";
-                    getch();
                 }
                 else if (f == 2) {
                     clrscr();
                     gotoxy(10, 10);
                     InDSLSV(ds); // hien ds lop sinh vien
-                    cout << "(Nhan phim bat ky de quay lai...)";
-                    getch();
                 }
                 else if (f == 3) {
                     clrscr();
@@ -455,24 +429,18 @@ int main() {
                     cout << "=== DANH SACH SINH VIEN DA DANG KY LOP TIN CHI ===\n";
                     PTRLTC pLTC = findLTCByParams(FirstLTC);
                     if (pLTC) {
-                        showDanhSachSinhVienDangKy(pLTC->ltc.dssvdk);
+                        showDanhSachSinhVienDangKy(pLTC->ltc.dssvdk,ds);
                     } else {
                         cout << "Khong tim thay lop tin chi voi cac tham so da nhap.\n";
+                        cout << "\nNhan phim bat ky de quay lai...";
+                        getch();
                     }
-                    cout << "\nNhan phim bat ky de quay lai...";
-                    getch();
                 }
                 else if (f==6){
                    clrscr();
                    gotoxy(10, 10);
                    cout << "Ban da chon: " << features_giangVien[f]<<endl;
-                   int maloptc;
-                   cout<<"Nhap Ma Lop Tin Chi: ";
-                   cin>>maloptc;
-                   cin.ignore();
-                   InDSSVDK(FirstLTC,maloptc,ds);
-                   cout << "(Nhan phim bat ky de quay lai...)";
-                   getch();  
+                   InbangDiemLTC(FirstLTC,ds);
                 }
                 else if (f == 7) { // Quan ly lop sinh vien
                     while (true) {
@@ -580,26 +548,21 @@ int main() {
                             cout << "Ten lop: " << lop->TENLOP << endl;
 
                             printDSSV_sorted(lop);
-                            cout << "\nNhan phim bat ky de quay lai...";
-                            getch();
+
                         }
                     }
                 }
                 else if(f==10){
                    clrscr();
                    gotoxy(10, 10);
-                   cout << "Ban da chon: " << features_giangVien[f]<<endl;
-                   IndiemtbLop(FirstLTC,ds,dsmh);
-                   cout << "(Nhan phim bat ky de quay lai...)";
-                   getch();  
+                   cout << "Ban da chon: " << features_admin[f]<<endl;
+                   IndiemtbLop(FirstLTC,ds,dsmh); 
                 }
                 else if(f==11){
                    clrscr();
                    gotoxy(10, 10);
-                   cout << "Ban da chon: " << features_giangVien[f]<<endl;
-                   InbangdiemtongketLop(FirstLTC,ds,dsmh);
-                   cout << "(Nhan phim bat ky de quay lai...)";
-                   getch();  
+                   cout << "Ban da chon: " << features_admin[f]<<endl;
+                   InbangdiemtongketLop(FirstLTC,ds,dsmh); 
                 }
             }
         } // end admin

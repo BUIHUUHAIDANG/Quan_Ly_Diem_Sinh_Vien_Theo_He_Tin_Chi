@@ -45,7 +45,6 @@ bool editLopTinChi(PTRLTC &First, int x);
 bool checkLTC(PTRLTC FirstLTC, LopTinChi ltc);
 
 //Danh Sach Sinh Vien Dang Ky
-void showDanhSachSinhVienDangKy(PTRDK &l);
 void insertSinhVienDangKy(PTRDK &First, DangKy svdk);
 int deleteFirstDK(PTRDK &First);
 void ClearlistDSSVDK(PTRDK &First);
@@ -53,7 +52,12 @@ bool CheckDK(PTRDK dssvdk, const char* masv);
 PTRDK taonodeSVDK(const char* masv);
 
 //In LTC va DSSVDK
+PTRDK In1TrangSVDK_Bang(PTRDK start, DS_LOPSV dslop);
+int DemSoSVDK(PTRDK l);
+int TinhTrangHienTai(PTRDK First, PTRDK currPage);
+void showDanhSachSinhVienDangKy(PTRDK &l,DS_LOPSV dslop);
 void InDSSVDK(PTRLTC &FirstLTC, int maloptc, DS_LOPSV &dslop);
+PTRLTC In1TrangLTC_Bang(PTRLTC start);
 void InDSLTC(PTRLTC &l);
 
 //Danh Sach Sinh Vien
@@ -82,8 +86,8 @@ void dangkyLTC(PTRLTC &FirstLTC, DS_LOPSV dslop);
 //Sap Xep theo Alphabet
 LopSV* searchLopSV(DS_LOPSV &dsLop, const char* MALOP);
 int compareSV(const SinhVien& a, const SinhVien& b);
-int listToArray(PTRSV First, SinhVien arr[]);
 void sortSinhVien(SinhVien arr[], int n);
+void in1TrangSV(SinhVien arr[], int n, int page, int pageSize);
 void printDSSV_sorted(LopSV *lop);
 
 //Nhap Lop Tin Chi + Sua lop Tin Chi
@@ -134,4 +138,5 @@ int getNumOfSinhVien(char MaSV[]);
 //change time to int
 time_t stringToTime(string s);
 void AutoCancelExpiredClasses(PTRLTC &l);
+
 #endif

@@ -4,6 +4,7 @@
 #include <sstream>
 #include <cstring>
 #include <algorithm>
+#include "console.h"
 
 using namespace std;
 
@@ -400,12 +401,69 @@ void UndoMH (treeMH &t, stack &undostackMH) {
         cout << "Hoan tac sua mon hoc thanh cong." << endl;
     }
 }
+void LuuMH_Inorder(treeMH t, MonHoc ds[], int &n) {
+    if (!t) return;
+
+    LuuMH_Inorder(t->left, ds, n);
+    ds[n++] = t->mh;
+    LuuMH_Inorder(t->right, ds, n);
+}
+void In1TrangMH(MonHoc ds[], int n, int page, int pageSize) {
+    int start = (page - 1) * pageSize;
+    int end = start + pageSize;
+    if (end > n) end = n;
+
+    cout << left
+         << setw(5)  << "STT"
+         << setw(12) << "MaMH"
+         << setw(40) << "Ten Mon Hoc"
+         << endl;
+    cout << "-------------------------------------------------------------\n";
+
+    for (int i = start; i < end; i++) {
+        cout << left
+             << setw(5)  << (i + 1)
+             << setw(12) << ds[i].MAMH
+             << setw(40) << ds[i].TENMH
+             << endl;
+    }
+}
 
 void InDSMH(treeMH t) {
-    if (!t) return;
-    InDSMH(t->left);
-    cout << "Ma MH: " << t->mh.MAMH << ", Ten MH: " << t->mh.TENMH << endl;
-    InDSMH(t->right);
+    if (!t) {
+        cout << "Danh sach mon hoc rong!";
+        getch();
+        return;
+    }
+
+    MonHoc ds[500];
+    int n = 0;
+
+    LuuMH_Inorder(t, ds, n);
+
+    int pageSize = 5;
+    int page = 1;
+    int totalPage = (n + pageSize - 1) / pageSize;
+
+    while (true) {
+        clrscr();
+
+        cout << "DANH SACH MON HOC\n";
+        In1TrangMH(ds, n, page, pageSize);
+
+        cout << "\nTrang " << page << " / " << totalPage;
+        cout << "    [A] Truoc   [D] Sau   [ESC] Thoat";
+
+        char key = getch();
+
+        if (key == 27) break;
+
+        if ((key == 'd' || key == 'D') && page < totalPage)
+            page++;
+
+        if ((key == 'a' || key == 'A') && page > 1)
+            page--;
+    }
 }
 
 treeMH timMonHoc(treeMH t, char mamh[]) {

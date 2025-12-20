@@ -248,20 +248,93 @@ bool editLopTinChi(PTRLTC &First, int id) {
     cout << "\n>>> Cap nhat lop tin chi thanh cong!\n";
     return true;
 }
+int DemSoLTC(PTRLTC FirstLTC) {
+    int cnt = 0;
+    for (PTRLTC p = FirstLTC; p != nullptr; p = p->next)
+        cnt++;
+    return cnt;
+}
+int TinhTrangHienTai(PTRLTC FirstLTC, PTRLTC currPage) {
+    int pos = 0;
+    for (PTRLTC p = FirstLTC; p != currPage; p = p->next)
+        pos++;
+    return pos / 5 + 1;
+}
+PTRLTC In1TrangLTC_Bang(PTRLTC start) {
+    PTRLTC p = start;
+    int dem = 0;
+
+    cout << "DANH SACH LOP TIN CHI\n";
+    cout << "--------------------------------------------------------------------------------\n";
+    cout << left
+         << setw(12) << "MaLTC"
+         << setw(10) << "MaMH"
+         << setw(12) << "NienKhoa"
+         << setw(8)  << "HK"
+         << setw(8)  << "Nhom"
+         << setw(12) << "SV_Min"
+         << setw(12) << "SV_Max"
+         << endl;
+    cout << "--------------------------------------------------------------------------------\n";
+
+    while (p != nullptr && dem < 5) {
+        cout << left
+             << setw(12) << p->ltc.MALOPTC
+             << setw(10) << p->ltc.MAMH
+             << setw(12) << p->ltc.NienKhoa
+             << setw(8)  << p->ltc.Hocky
+             << setw(8)  << p->ltc.Nhom
+             << setw(12) << p->ltc.sosvmin
+             << setw(12) << p->ltc.sosvmax
+             << endl;
+
+        p = p->next;
+        dem++;
+    }
+
+    cout << "--------------------------------------------------------------------------------\n";
+    return p;   
+}
 void InDSLTC(PTRLTC &FirstLTC) {
-    if(!FirstLTC) {
-        cout << "\n\nDanh sach LTC rong!";
+    if (!FirstLTC) {
+        cout << "\nDanh sach LTC rong!";
+        getch();
         return;
     }
-    cout << "Chi Tiet Cua Lop Tin Chi"<<endl;
-    for(PTRLTC p = FirstLTC; p != nullptr; p=p->next) {
-        cout<<"\n\nMa lop tin chi: "<<p->ltc.MALOPTC
-            <<"\nMa mon hoc: "<<p->ltc.MAMH
-            <<"\nNien Khoa: "<<p->ltc.NienKhoa
-            <<"\nHoc ky: "<<p->ltc.Hocky
-            <<"\nNhom: "<<p->ltc.Nhom
-            <<"\nSo sinh vien toi da: "<<p->ltc.sosvmax
-            <<"\nSo sinh vien toi thieu: "<<p->ltc.sosvmin<<endl;
+    int totalLTC = DemSoLTC(FirstLTC);
+    int totalPage = (totalLTC + 4) / 5;
+
+    PTRLTC currPage = FirstLTC;
+    PTRLTC nextPage = nullptr;
+
+    while (true) {
+        clrscr();
+
+        nextPage = In1TrangLTC_Bang(currPage);
+        int currPageIndex = TinhTrangHienTai(FirstLTC, currPage);
+        cout << "\nTrang " << currPageIndex << " / " << totalPage;
+        cout << "\n[A] Trang truoc   [D] Trang sau   [ESC] Thoat";
+
+        char key = getch();
+
+        if (key == 27) break;
+
+        if (key == 'd' || key == 'D') {
+            if (nextPage != nullptr)
+                currPage = nextPage;
+        }
+
+        if (key == 'a' || key == 'A') {
+            PTRLTC p = FirstLTC;
+            PTRLTC prevPage = FirstLTC;
+
+            while (p != currPage) {
+                prevPage = p;
+                for (int i = 0; i < 5 && p != currPage; i++)
+                    p = p->next;
+            }
+            currPage = prevPage;
+        }
     }
 }
 bool checkLTC(PTRLTC FirstLTC, LopTinChi ltc) { // Kiem tra xem lop tin chi co trong danh sach lop tin chi khong
@@ -276,13 +349,98 @@ bool checkLTC(PTRLTC FirstLTC, LopTinChi ltc) { // Kiem tra xem lop tin chi co t
     }
     return false;
 }
-void showDanhSachSinhVienDangKy(PTRDK &l){
-    PTRDK p=l;
-    if(p==nullptr)cout<<"Khong Co Sinh Vien Dang Ki"<<endl;
-     while(p){
-        cout<<p->dk.MASV<<"|"<<p->dk.DIEM<<"|"<<p->dk.HuyDK<<endl;
-        p=p->next;
-     }
+PTRDK In1TrangSVDK_Bang(PTRDK start, DS_LOPSV dslop) {
+    PTRDK p = start;
+    int dem = 0;
+
+    cout << left
+         << setw(12) << "MASV"
+         << setw(25) << "HO"
+         << setw(12) << "TEN"
+         << setw(8)  << "DIEM"
+         << setw(8)  << "HUYDK"
+         << endl;
+    cout << "---------------------------------------------------------------\n";
+
+    while (p != nullptr && dem < 5) {
+        SinhVien sv = getSinhVien(dslop, p->dk.MASV);
+
+        cout << left
+             << setw(12) << p->dk.MASV;
+
+        if (strlen(sv.MASV) != 0) {
+            cout << setw(25) << sv.HO
+                 << setw(12) << sv.TEN;
+        } else {
+            cout << setw(25) << "(Khong tim thay)"
+                 << setw(12) << "";
+        }
+
+        cout << setw(8) << p->dk.DIEM
+             << setw(8) << p->dk.HuyDK
+             << endl;
+
+        p = p->next;
+        dem++;
+    }
+
+    return p;
+}
+int DemSoSVDK(PTRDK l) {
+    int cnt = 0;
+    for (PTRDK p = l; p != nullptr; p = p->next)
+        cnt++;
+    return cnt;
+}
+int TinhTrangHienTai(PTRDK First, PTRDK currPage) {
+    int pos = 0;
+    for (PTRDK p = First; p != currPage; p = p->next)
+        pos++;
+    return pos / 5 + 1;
+}
+void showDanhSachSinhVienDangKy(PTRDK &l, DS_LOPSV dslop) {
+    if (l == nullptr) {
+        cout << "Khong Co Sinh Vien Dang Ky"<<endl;
+        cout <<"Nhap bat ky phim nao de quay lai..."<<endl;
+        getch();
+        return;
+    }
+
+    int totalSV = DemSoSVDK(l);
+    int totalPage = (totalSV + 4) / 5;
+
+    PTRDK currPage = l;
+    PTRDK nextPage = nullptr;
+
+    while (true) {
+        clrscr();
+
+        nextPage = In1TrangSVDK_Bang(currPage, dslop);
+
+        int currPageIndex = TinhTrangHienTai(l, currPage);
+
+        cout << "\nTrang " << currPageIndex << " / " << totalPage;
+        cout << "    [A] Truoc   [D] Sau   [ESC] Thoat";
+
+        char key = getch();
+
+        if (key == 27) break;
+
+        if ((key == 'd' || key == 'D') && nextPage != nullptr)
+            currPage = nextPage;
+
+        if (key == 'a' || key == 'A') {
+            PTRDK p = l;
+            PTRDK prevPage = l;
+
+            while (p != currPage) {
+                prevPage = p;
+                for (int i = 0; i < 5 && p != currPage; i++)
+                    p = p->next;
+            }
+            currPage = prevPage;
+        }
+    }
 }
 void InDSSVDK(PTRLTC &FirstLTC, int maloptc, DS_LOPSV &dslop) {
     if(!FirstLTC) {
@@ -361,14 +519,51 @@ PTRSV GetLop(DS_LOPSV &dslop, char malop[16]) {
     return FirstSV;
 }
 void InDSLSV(DS_LOPSV &dslop) {
-    if(dslop.n == 0) {
-        cout << "\n\nDanh sach LopSV rong!";
+    if (dslop.n == 0) {
+        cout << "\nDanh sach LopSV rong!";
+        getch();
         return;
     }
-     cout << "Chi tiet lop SV";
-    for(int i = 0; i < dslop.n; i++) {
-        cout<<"\nMa lop: "<<dslop.nodes[i]->MALOP
-            <<"\nTen lop: "<<dslop.nodes[i]->TENLOP<<endl;
+
+    int page = 1;
+    int pageSize = 5;
+    int totalPage = (dslop.n + pageSize - 1) / pageSize;
+
+    while (true) {
+        clrscr();
+
+        cout << "DANH SACH LOP SINH VIEN\n";
+        cout << left
+             << setw(10) << "STT"
+             << setw(15) << "MA LOP"
+             << setw(30) << "TEN LOP"
+             << endl;
+        cout << "------------------------------------------------------\n";
+
+        int start = (page - 1) * pageSize;
+        int end = min(start + pageSize, dslop.n);
+
+        for (int i = start; i < end; i++) {
+            cout << left
+                 << setw(10) << (i + 1)
+                 << setw(15) << dslop.nodes[i]->MALOP
+                 << setw(30) << dslop.nodes[i]->TENLOP
+                 << endl;
+        }
+
+        cout << "------------------------------------------------------\n";
+        cout << "Trang " << page << " / " << totalPage;
+        cout << "    [A] Truoc   [D] Sau   [ESC] Thoat";
+
+        char key = getch();
+
+        if (key == 27) break;
+
+        if ((key == 'd' || key == 'D') && page < totalPage)
+            page++;
+
+        if ((key == 'a' || key == 'A') && page > 1)
+            page--;
     }
 }
 SinhVien getSinhVien(DS_LOPSV dslop, char MASV[16]) {
@@ -557,36 +752,84 @@ void sortSinhVien(SinhVien arr[], int n) {
         }
     }
 }
+void in1TrangSV(SinhVien arr[], int n, int page, int pageSize) {
+    int start = (page - 1) * pageSize;
+    int end = start + pageSize;
+    if (end > n) end = n;
+
+    cout << left
+         << setw(5)  << "STT"
+         << setw(15) << "MaSV"
+         << setw(20) << "Ho"
+         << setw(15) << "Ten"
+         << setw(8)  << "Phai"
+         << setw(15) << "SDT"
+         << setw(25) << "Email"
+         << endl;
+
+    cout << "-------------------------------------------------------------------------------\n";
+
+    for (int i = start; i < end; i++) {
+        cout << left
+             << setw(5)  << (i + 1)
+             << setw(15) << arr[i].MASV
+             << setw(20) << arr[i].HO
+             << setw(15) << arr[i].TEN
+             << setw(8)  << arr[i].PHAI
+             << setw(15) << arr[i].SODT
+             << setw(25) << arr[i].Email
+             << endl;
+    }
+}
 void printDSSV_sorted(LopSV *lop) {
     if(!lop || !lop->FirstSV) {
         cout << "Lop khong co sinh vien!\n";
+        getch();
         return;
     }
+
+    // Đếm số SV
     int n = 0;
     PTRSV p = lop->FirstSV;
     while(p){ n++; p = p->next; }
 
+    
     SinhVien* arr = new SinhVien[n];
     p = lop->FirstSV;
-    for(int i=0;i<n;i++){
+    for(int i = 0; i < n; i++){
         arr[i] = p->sv;
         p = p->next;
     }
 
+    
     sortSinhVien(arr, n);
 
-    cout << "\n===== DANH SACH SINH VIEN (SORT BY TEN + HO) =====\n";
-    for(int i=0;i<n;i++){
-        cout << i+1 << ". "
-             << arr[i].HO << " " << arr[i].TEN
-             << " | MSV: " << arr[i].MASV
-             << " | Phai: " << arr[i].PHAI
-             << " | SDT: " << arr[i].SODT
-             << " | Email: " << arr[i].Email
-             << endl;
+    
+    int pageSize = 5;
+    int page = 1;
+    int totalPage = (n + pageSize - 1) / pageSize;
+
+    while(true) {
+        clrscr();
+
+        cout << "===== DANH SACH SINH VIEN (SORT THEO TEN + HO) =====\n\n";
+        in1TrangSV(arr, n, page, pageSize);
+
+        cout << "\nTrang " << page << " / " << totalPage;
+        cout << "    [A] Truoc   [D] Sau   [ESC] Thoat";
+
+        char key = getch();
+
+        if(key == 27) break;
+
+        if((key == 'd' || key == 'D') && page < totalPage)
+            page++;
+
+        if((key == 'a' || key == 'A') && page > 1)
+            page--;
     }
 
-    delete[] arr; 
+    delete[] arr;
 }
 
 LopTinChi NhapLTC(){
@@ -994,6 +1237,8 @@ void InbangdiemtongketLop( PTRLTC &dsltc,  DS_LOPSV &dslop,  treeMH &dsmh) {
     }
     if (!lop) {
         cout << "Khong tim thay lop!\n";
+        cout << "(Nhan phim bat ky de quay lai...)";
+        getch(); 
         return;
     }
     PTRSV arr[500];
