@@ -606,34 +606,6 @@ bool CheckLopSV(DS_LOPSV dslop, LopSV lop) { // Kiem tra xem lop sinh vien co tr
     }
     return false;
 }
-//fix NhapSV()
-void NhapSV(DS_LOPSV &dslop) {
-    // LoadFile_LopSV("LopSinhVien.txt", dslop); 
-    while (true) {
-        char malop[16];
-        SinhVien sv;
-        cout << "\nNhap ma sinh vien (Nhap 0 de thoat):"; cin.getline(sv.MASV,16);
-        if (strcmp(sv.MASV, "0") == 0) break;
-        cout << "Nhap Ho: "; cin.getline(sv.HO,51);
-        cout << "Nhap Ten: "; cin.getline(sv.TEN,11);
-        cout << "Nhap Phai: "; cin.getline(sv.PHAI,4);
-        cout << "Nhap SDT: "; cin.getline(sv.SODT,16);
-        cout << "Nhap email: "; cin.getline(sv.Email,50);
-
-        cout << "Nhap lop: "; cin.getline(malop,16);
-        if(checkSV(dslop, sv)) {
-            cout << "Sinh vien da ton tai. Vui long nhap lai!\n";
-            continue;
-        }
-        for(int i=0; i<dslop.n; i++) {
-            if(strcmp(malop, dslop.nodes[i]->MALOP) == 0) {
-                // InsertSV(dslop.nodes[i]->FirstSV,sv);
-                break;
-            }
-        }
-        cout << "Luu thanh cong!\n\n";
-    }
-}
 void NhapLopSV(DS_LOPSV &dslop){
     // LoadFile_LopSV("LopSinhVien.txt",dslop);
     if (dslop.n >= MAX_LOPSV) {
@@ -834,17 +806,72 @@ void printDSSV_sorted(LopSV *lop) {
 bool isValidSoSV(int min, int max) {
     return min > 0 && max > 0 && min <= max;
 }
+void formatName(char s[]) {
+    int n = strlen(s);
+    int i = 0, j = 0;
+    while (i < n) {
+        while (i < n && s[i]==' '){
+            i++;
+        }
+        if (i >= n) break;
+        s[j++] = toupper(s[i++]);
+        while (i < n && s[i]!=' ') {
+            s[j++] = tolower(s[i++]);
+        }
+        s[j++] = ' ';
+    }
+    if (j > 0)j--;
+    s[j] = '\0';
+}
 LopTinChi NhapLTC(){
-     LopTinChi ltc;
+    LopTinChi ltc;
     cout << "\n=== THEM LOP TIN CHI ===\n";
     ltc.MALOPTC = -1; 
 
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    do {
+    cout << "Nhap Ma Mon Hoc: ";
+    cin.getline(ltc.MAMH, 11);
 
-    cout << "Nhap Ma Mon Hoc: "; cin.getline(ltc.MAMH, 11);
-    cout << "Nhap Nien Khoa: "; cin.getline(ltc.NienKhoa, 10);
-    cout << "Nhap Hoc Ky: "; cin >> ltc.Hocky;
-    cout << "Nhap Nhom: "; cin >> ltc.Nhom;
+    if (strlen(ltc.MAMH) == 0)
+    cout << "Loi: Khong duoc de trong!\n";
+
+    } while (strlen(ltc.MAMH) == 0);
+
+    do {
+    cout << "Nhap Nien Khoa: ";
+    cin.getline(ltc.NienKhoa, 10);
+
+    if (strlen(ltc.NienKhoa) == 0)
+    cout << "Loi: Khong duoc de trong!\n";
+
+    } while (strlen(ltc.NienKhoa) == 0);
+
+    while (true) {
+    cout << "Nhap Hoc Ky: ";
+    cin >> ltc.Hocky;
+
+    if (!cin.fail() && ltc.Hocky > 0 && ltc.Hocky <=2) {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        break;
+    }
+
+    cout << "Loi! Hay nhap so nguyen > 0\n";
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    while (true) {
+    cout << "Nhap Nhom: ";
+    cin >> ltc.Nhom;
+
+    if (!cin.fail() && ltc.Nhom > 0) {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        break;
+    }
+
+    cout << "Loi! Hay nhap so nguyen > 0\n";
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
     do {
         cout << "Nhap SV Min va Max: ";
         cin >> ltc.sosvmin >> ltc.sosvmax;
@@ -887,16 +914,59 @@ int inputIntOrKeep(int oldValue, const string &label) {
 
     return stoi(s); 
 }
+void toUpper(char word[]){
+    for (int i = 0; word[i] != '\0'; i++) {
+        word[i] = toupper(word[i]);
+    }
+}
 PTRLTC findLTCByParams(PTRLTC FirstLTC) {
     char nienkhoa[10], MAMH[11];
     int hocky, nhom;
 
-    cout << "Nhap Nien Khoa: "; cin.getline(nienkhoa, 10);
-    cout << "Nhap Hoc Ky: "; cin >> hocky;
-    cout << "Nhap Nhom: "; cin >> nhom;
-    cin.ignore();
-    cout << "Nhap Ma Mon Hoc: "; cin.getline(MAMH, 11);
+    do {
+    cout << "Nhap Nien Khoa: ";
+    cin.getline(nienkhoa, 10);
 
+    if (strlen(nienkhoa) == 0)
+    cout << "Loi: Khong duoc de trong!\n";
+
+    } while (strlen(nienkhoa) == 0);
+
+    while (true) {
+    cout << "Nhap Hoc Ky: ";
+    cin >> hocky;
+
+    if (!cin.fail() && hocky > 0 && hocky <=2) {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        break;
+    }
+
+    cout << "Loi! Hay nhap so nguyen > 0\n";
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    while (true) {
+    cout << "Nhap Nhom: ";
+    cin >> nhom;
+
+    if (!cin.fail() && nhom > 0) {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        break;
+    }
+
+    cout << "Loi! Hay nhap so nguyen > 0\n";
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    do {
+    cout << "Nhap Ma Mon Hoc: ";
+    cin.getline(MAMH, 11);
+
+    if (strlen(MAMH) == 0)
+    cout << "Loi: Khong duoc de trong!\n";
+
+    } while (strlen(MAMH) == 0);
+    
     return searchLTC(FirstLTC, nienkhoa, hocky, nhom, MAMH);
 }
 void saveLopSV_Binary(DS_LOPSV &ds, const char *fileLop, const char *fileSV) {
@@ -1297,10 +1367,49 @@ void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV &dslop) {
     char nienkhoa[10], mamh[11];
     int hocky, nhom;
     cout << "\n";
-    cout << "Nhap nien khoa: "; cin.getline(nienkhoa,10);
-    cout << "Nhap hoc ki: "; cin >> hocky; cin.ignore();
-    cout << "Nhap nhom: "; cin >> nhom; cin.ignore();
-    cout << "Nhap mon hoc: "; cin.getline(mamh,11);
+    do {
+    cout << "Nhap Nien Khoa: ";
+    cin.getline(nienkhoa, 10);
+
+    if (strlen(nienkhoa) == 0)
+    cout << "Loi: Khong duoc de trong!\n";
+
+    } while (strlen(nienkhoa) == 0);
+
+    while (true) {
+    cout << "Nhap Hoc Ky: ";
+    cin >> hocky;
+
+    if (!cin.fail() && hocky > 0 && hocky <=2) {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        break;
+    }
+
+    cout << "Loi! Hay nhap so nguyen > 0\n";
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    while (true) {
+    cout << "Nhap Nhom: ";
+    cin >> nhom;
+
+    if (!cin.fail() && nhom > 0) {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        break;
+    }
+
+    cout << "Loi! Hay nhap so nguyen > 0\n";
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    do {
+    cout << "Nhap Ma Mon Hoc: ";
+    cin.getline(mamh, 11);
+
+    if (strlen(mamh) == 0)
+    cout << "Loi: Khong duoc de trong!\n";
+
+    } while (strlen(mamh) == 0);
     nodeLTC *ltc = nullptr;
     nodeLTC *cur;
     cur = dsltc;

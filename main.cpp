@@ -402,15 +402,24 @@ int main() {
                             clrscr();
                             cout << "=== SUA LOP TIN CHI ===\n";
                             int malop;
-                            cin.clear();
-                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                            while (true) {
                             cout << "Nhap Ma Lop TC muon sua: ";
                             cin >> malop;
+                        
+                            if (!cin.fail() && malop > 0) {
+                                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                                break;
+                            }
+                        
+                            cout << "Loi! Hay nhap so nguyen > 0\n";
+                            cin.clear();
                             cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                            }
 
                             PTRLTC tmp = searchLopTinChi(FirstLTC, malop);
                             if (!tmp) {
                                 cout << "Khong tim thay Lop Tin Chi\n";
+                                cout << "nhan bat ky phim nao de quay lai...."<<endl;
                                 getch();
                                 clrscr();
                                 continue;
@@ -522,13 +531,48 @@ int main() {
                         cout << "\nNhap ma SV (Enter de dung): ";
                         cin.getline(sv.MASV, 16);
                         if (sv.MASV[0] == '\0') break;
-
-                        cout << "Nhap ho: "; cin.getline(sv.HO, 51);
+                        if (checkSV(ds,sv)){
+                            cout<<"Ma Sinh Vien da ton tai vui long nhap lai...."<<endl;
+                            continue;
+                        }
+                        do
+                        {
+                        cout<<"nhap Ho: ";
+                        cin.getline(sv.HO,51);
+                        if(strlen(sv.HO)==0){
+                          cout<<"Khong duoc bo trong"<<endl;
+                        }
+                        } while (strlen(sv.HO)==0);
+                        do
+                        {
                         cout << "Nhap ten: "; cin.getline(sv.TEN, 11);
+                        if(strlen(sv.TEN)==0){
+                          cout<<"Khong duoc bo trong"<<endl;
+                        }
+                        } while (strlen(sv.TEN)==0);
+                        do
+                        {
                         cout << "Nhap phai: "; cin.getline(sv.PHAI, 4);
+                        if(strlen(sv.PHAI)==0){
+                          cout<<"Khong duoc bo trong"<<endl;
+                        }
+                        } while (strlen(sv.PHAI)==0);
+                        do
+                        {
                         cout << "Nhap so dien thoai: "; cin.getline(sv.SODT, 16);
+                        if(strlen(sv.SODT)==0){
+                          cout<<"Khong duoc bo trong"<<endl;
+                        }
+                        } while (strlen(sv.SODT)==0);
+                        do
+                        {
                         cout << "Nhap email: "; cin.getline(sv.Email, 50);
-
+                        if(strlen(sv.Email)==0){
+                          cout<<"Khong duoc bo trong"<<endl;
+                        }
+                        } while (strlen(sv.Email)==0);
+                        formatName(sv.HO);
+                        formatName(sv.TEN);
                         insertSinhVien(lop->FirstSV, sv);
                     }
 

@@ -5,6 +5,8 @@
 #include "CTDL.h"
 using namespace std;
 
+//chuan hoa ten
+void formatName(char s[]);
 //stack Hieu Chinh LTC
 stackNode* newNode(ActionLTC data);
 bool isEmpty(stackNode* &root);
@@ -76,8 +78,6 @@ SinhVien getSinhVien(DS_LOPSV dslop, char MASV[16]);
 PTRSV getSinhVienv2(PTRSV &First, char masv[16]);
 bool checkSV(DS_LOPSV &dslop, SinhVien sv);
 bool CheckLopSV(DS_LOPSV dslop, LopSV lop);
-
-void NhapSV(DS_LOPSV &dslop);
 void NhapLopSV(DS_LOPSV &dslop);
 
 //Dang Ki Lop Tin Chi
