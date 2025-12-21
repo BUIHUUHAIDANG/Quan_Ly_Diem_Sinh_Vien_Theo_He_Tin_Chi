@@ -5,72 +5,16 @@
 #include <cstring>
 #include <limits>
 #include <iomanip>
-#include "mylib.h"    
 #include "CTDL.h"
-#include "monhoc.h"
-#include "lopsinhvien.h"
+#include "mylib.h"
+#include "menu.h"    
+#include "MonHoc.h"
+#include "LopSinhVien.h"
+
 
 
 using namespace std;
 // === Draw Menu ===
-void drawStaticMenu(const char *title, const char *role, int n)  {
-    clrscr();
-    SetBGColor(0);
-    SetColor(7);
-    gotoxy(20, 2);
-    SetBold(true);
-    SetColor(4);
-    cout << title;
-    drawLine(5, 3, 53);
-    ResetColor();
-    SetBold(false);
-    gotoxy(5, 4);
-    cout << "Vai tro: ";
-    SetBold(true);
-    SetColor(10);
-    cout << role;
-    ResetColor();
-    SetBold(false);
-    gotoxy(5, 6 + n * 2);
-    cout << "(Dung phim ↑ ↓ hoac W/S de di chuyen, Enter de chon)";
-}
-void drawOptions(const char *options[], int n, int highlight) {
-    for (int i = 0; i < n; i++) {
-        gotoxy(8, 6 + i * 2);
-        cout << string(200, ' ');
-        gotoxy(8, 6 + i * 2);
-        if (i == highlight) {
-            SetBGColor(7); SetColor(0);
-            cout << "> " << options[i] << " <";
-        } else {
-            ResetColor();
-            cout << "  " << options[i];
-        }
-        ResetColor();
-    }
-}
-
-
-// === Menu Logic ===
-int menu(const char *title, const char *role, const char *options[], int n)  {
-    int highlight = 0;
-    drawStaticMenu(title, role, n);
-    while (true) {
-        drawOptions(options, n, highlight);
-        int ch = _getch();
-        // support both arrow keys and WASD
-        if (ch == 224) {
-            int arrow = _getch();
-            if (arrow == 72) highlight = (highlight - 1 + n) % n; // up
-            if (arrow == 80) highlight = (highlight + 1) % n;     // down
-        }
-        else if (ch == 'w' || ch == 'W') highlight = (highlight - 1 + n) % n;
-        else if (ch == 's' || ch == 'S') highlight = (highlight + 1) % n;
-        else if (ch == 13) return highlight; // Enter
-    }
-}
-
-
 int main() {
     PTRLTC FirstLTC = nullptr;
     PTRSV FirstSV = nullptr;
@@ -115,8 +59,6 @@ int main() {
     const char *featuresthemcapnhatxoa[] = {"Them", "Cap nhat", "Xoa", "← Quay lai"};
     const char *featuresthemcapnhathuy[] = {"Them", "Cap nhat", "Huy", "← Quay lai"};
     const char *featuresdangkyhuy[] = {"Dang ky LTC", "Huy LTC", "← Quay lai"};
-
-
 
     int n_roles = sizeof(roles) / sizeof(roles[0]);
     int n_features_sinhvien = sizeof(features_sinhvien) / sizeof(features_sinhvien[0]);
@@ -201,12 +143,11 @@ int main() {
                 //cout << "Ban da chon: " << features_giangVien[f];
                 switch(f) {
                     
-                    case 4: {
+                    case 4: { // Nhap diem
                         LoadFile_LopSV("LopSinhVien.txt", dslop);
                         LoadFile_LTC("LopTinChi.txt", FirstLTC);
                         NhapDiem(FirstLTC, dslop);
                         SaveFile_LTC("LopTinChi.txt", FirstLTC);
-                        
                         break;
                     }
                     break;
@@ -214,8 +155,6 @@ int main() {
                         LoadFile_LopSV("LopSinhVien.txt", dslop);
                         LoadFile_LTC("LopTinChi.txt", FirstLTC);
                         InbangDiemLTC(FirstLTC, dslop);
-                        cout << "\n\n\n(Nhan phim bat ky de quay lai...)";
-                        _getch();
                         break;
                     }
                     case 6:{
@@ -223,8 +162,6 @@ int main() {
                         LoadFile_LTC("LopTinChi.txt",FirstLTC);
                         DocMonHoc("MonHocdata.txt", dsmh);
                         IndiemtbLop(FirstLTC, dslop, dsmh);
-                        cout << "\n(Nhan phim bat ky de quay lai...)";
-                        _getch();
                         break;
                     }
                     
@@ -251,8 +188,8 @@ int main() {
                 }
                     
 
-                //clrscr();
-                //gotoxy(10, 10);
+                clrscr();
+                gotoxy(10, 10);
                 //cout << "Ban da chon: " << features_admin[f] << "\n";
                 switch(f) {
                     case 0:{ // Xem danh sach mon hoc
@@ -385,5 +322,6 @@ int main() {
     return 0;
 }
 
-// g++ main.cpp CTDL.cpp LopSinhVien.cpp MonHoc.cpp -o main.exe
+// g++ main.cpp menu.cpp CTDL.cpp LopSinhVien.cpp MonHoc.cpp -o main.exe
+
 
