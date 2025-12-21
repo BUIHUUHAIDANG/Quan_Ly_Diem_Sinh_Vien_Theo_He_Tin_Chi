@@ -109,6 +109,14 @@ int Popup_ChonHanhDong() { // pop up sua diem
     }
     
 }
+//                                              |PAGING SYSTEM|
+// o=================================================================================================================o
+//  - arr[] la mang luu con tro sinh vien, duoc tao tu danh sach lien ket de ho tro 
+//  truy cap theo chi so va phan trang O(1)
+//  - arr[index] la phan tu dau tien cua trang, arr[index + linenum - 1] la phan tu cuoi trang                                                       
+//  - linenum la so phan tu trong mot trang (VD: linenum = 5 thi show 5 sinh vien moi trang)
+//  - Qua trang sau index += linenum, quay ve trang truoc index -= linenum
+// o=================================================================================================================o
 
 const int linenum = 5; // LINE NUMBER
 
@@ -181,7 +189,7 @@ void drawBangDiemTB(PTRSV arr[], int count, int index, PTRLTC &dsltc,DS_LOPSV &d
 }
 
 void drawBangDiemTK(PTRSV arr[], int count, int index, PTRLTC &dsltc,DS_LOPSV &dslop,treeMH &dsmh, LopSV* lop, char dsMAMH[200][11], int soMH) {
-    SetBold(true);
+    SetBold(true);          
     SetColor(14);
     cout << "               -==== BANG DIEM TONG KET ====- ";
     cout << "\nLop: ";
@@ -231,6 +239,19 @@ void drawBangDiemTK(PTRSV arr[], int count, int index, PTRLTC &dsltc,DS_LOPSV &d
 }
 
 // PAGE INTERACTION
+
+//                                        |BANG DIEM INTERACTION SYSTEM|
+// o=================================================================================================================o
+//                                     [Page system da duoc comment o tren]
+//  - Highlight la dong dang duoc chon (con tro SV) va chi duoc di chuyen trong trang hien tai
+//  - Chuyen highlight ve vi tri tuong doi trong trang r = highlight−index
+//  - Di chuyen len xuong trong khoang [0, pageSize - 1]                                                  
+//  - Truong hop di len nhung dang highlight o phan tu dau: 
+//    highlight = index + (highlight - 1 - index + pageSize) % pageSize; , se xuong cuoi trang
+//  - Truong hop di xuong nhung dang highlight o phan tu cuoi: 
+//    highlight = index + (highlight + 1 - index) % pageSize;, se len dau trang
+// o=================================================================================================================o
+
 void BangDiem_Interact(PTRDK arr[], int count, DS_LOPSV &dslop) {
     clrscr();
     int highlight = 0;
