@@ -274,8 +274,6 @@ int main() {
                    cout << "Ban da chon: " << features_giangVien[f]<<endl;
                    NhapDiem(FirstLTC,ds);
                    saveLopTinChi_Binary(FirstLTC, "LopTinChi.txt", "DSSVDK.txt");
-                   cout << "(Nhan phim bat ky de quay lai...)";
-                   getch();  
                 }
                 else if(f==5){
                    clrscr();

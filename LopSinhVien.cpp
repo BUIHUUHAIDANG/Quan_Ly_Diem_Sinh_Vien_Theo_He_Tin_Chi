@@ -1353,13 +1353,49 @@ int n_featuressuadiem = sizeof(featuresdiem) / sizeof(featuresdiem[0]);
 void NhapDiem(PTRLTC &FirstLTC, DS_LOPSV &dslop) {
     char nienkhoa[10], mamh[11];
     int hocky, nhom;
-    cout << "Nhap nien khoa: ";
-    cin.getline(nienkhoa,10);
-    cout << "Nhap hoc ki: "; cin >> hocky;
-    cout << "Nhap nhom: "; cin >> nhom;
-    cin.ignore();
-    cout << "Nhap mon hoc: ";
-    cin.getline(mamh,11);
+    do {
+    cout << "Nhap Nien Khoa: ";
+    cin.getline(nienkhoa, 10);
+
+    if (strlen(nienkhoa) == 0)
+    cout << "Loi: Khong duoc de trong!\n";
+
+    } while (strlen(nienkhoa) == 0);
+
+    while (true) {
+    cout << "Nhap Hoc Ky: ";
+    cin >> hocky;
+
+    if (!cin.fail() && hocky > 0 && hocky <=2) {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        break;
+    }
+
+    cout << "Loi! Hay nhap so nguyen > 0\n";
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    while (true) {
+    cout << "Nhap Nhom: ";
+    cin >> nhom;
+
+    if (!cin.fail() && nhom > 0) {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        break;
+    }
+
+    cout << "Loi! Hay nhap so nguyen > 0\n";
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    do {
+    cout << "Nhap Ma Mon Hoc: ";
+    cin.getline(mamh, 11);
+
+    if (strlen(mamh) == 0)
+    cout << "Loi: Khong duoc de trong!\n";
+
+    } while (strlen(mamh) == 0);
     PTRLTC cur = FirstLTC;
     PTRLTC ltc = nullptr;
     while(cur) {

@@ -87,7 +87,7 @@ inline void ClearLine(int y, int width = 120) {
     }
 }
 
-inline void DrawBox(int x, int y, int w, int h, int borderColor = 7, int bgColor = 0) {
+void DrawBox(int x, int y, int w, int h, int borderColor , int bgColor) {
     if (w < 2 || h < 2) return;
 
     SetColor(borderColor);
@@ -117,8 +117,7 @@ inline void DrawBox(int x, int y, int w, int h, int borderColor = 7, int bgColor
     ResetColor();
 }
 
-
-inline void ClearBox(int x, int y, int w, int h) {
+void ClearBox(int x, int y, int w, int h) {
     for (int i = 0; i < h; i++) {
         gotoxy(x, y + i);
         cout << string(w, ' ');

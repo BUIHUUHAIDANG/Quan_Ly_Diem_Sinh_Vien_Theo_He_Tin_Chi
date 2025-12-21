@@ -199,53 +199,105 @@ void drawBangDiem(PTRDK arr[], int count, int highlight, DS_LOPSV &dslop) {
     ResetColor();
 }
 void BangDiem_Interact(PTRDK arr[], int count, DS_LOPSV &dslop) {
-    int highlight = 0;
-
     clrscr();
-    draw: drawBangDiem(arr, count, highlight, dslop);
+    int highlight = 0;
+    int index = 0;
+   
+    draw: drawBangDiem(arr, count, highlight, dslop,index);
+    // trang
+    int currentPage = index / linenum + 1;
+    int totalPage   = (count + linenum - 1) / linenum;
+    gotoxy(3, 30);
+    cout << "(Dung phim ↑ ↓ hoac W/S de di chuyen, → ← hoac A/D de chuyen trang,  Enter de chon)";
+    gotoxy(20, 31);
+    SetBold(true);
+    SetColor(9);
+    cout << " Trang " << currentPage << "/" << totalPage << "   " << "  ESC de thoat.";
+    SetBold(false);
+    ResetColor();
 
-    while (true) {
+    while (true) { 
         int ch = getch();
         int oldHighlight = highlight;
+        int pageSize  = min(linenum, count - index);
+        if (pageSize <= 0) continue;
         if (ch == 224) {
             int arrow = getch();
-            if (arrow == 72) highlight = (highlight - 1 + count) % count;
-            else if (arrow == 80) highlight = (highlight + 1) % count;
+            if (arrow == 72) highlight = index + (highlight- 1 - index  + pageSize) % pageSize;
+            else if (arrow == 80) highlight = index + (highlight+ 1 - index ) % pageSize;
+
+            else if(arrow == 75) {highlight = index; index = max(0,index-linenum);  clrscr();  goto draw;} // left 
+            else if(arrow == 77) {if (index + linenum < count) { index += linenum; highlight = index; clrscr(); goto draw;}} // right
         }
-        else if (ch == 'w' || ch == 'W') highlight = (highlight - 1 + count) % count;
-        else if (ch == 's' || ch == 'S') highlight = (highlight + 1) % count;
-        else if (ch == 13||ch ==10) {
+        else if (ch == 'w' || ch == 'W') highlight = index + (highlight- 1 - index  + pageSize) % pageSize; // up
+        else if (ch == 's' || ch == 'S') highlight = index + (highlight + 1- index ) % pageSize; // down
+
+        else if(ch == 'a' || ch == 'A') {highlight = index; index = max(0,index-linenum);  clrscr();  goto draw;} // left
+        else if(ch == 'd' || ch == 'D') {if (index + linenum < count) { index += linenum; highlight = index; clrscr(); goto draw;}} // right
+
+        else if (ch == 13) {
             int choice = Popup_ChonHanhDong();
-            if (choice == 1) {clrscr(); goto draw;}
+            if (choice == 1) {
+                clrscr(); 
+                goto draw;
+            }
 
             float diem;
-            gotoxy(0, 30);
+            
+            DrawBox(0, 17, 50, 3, 5);
+            gotoxy(2, 18);
             cout << "Nhap diem moi cho SV " << arr[highlight]->dk.MASV << " (-1 de bo qua): ";
             if (!(cin >> diem)) {
                 cin.clear(); cin.ignore(9999, '\n');
+                ClearBox(0, 17, 50, 3);
                 continue;
             }
-            if (diem >= 0 && diem <= 10) {
-                arr[highlight]->dk.DIEM = diem;
+            if (diem >= 0 && diem <= 10)  {
+                arr[highlight]->dk.DIEM = diem;  
+                ClearBox(0, 17, 50, 3); 
             }
-            int rowY = 4  + highlight;  
-            gotoxy(0, rowY);
-            SetColor(14);
-            cout << setw(5) << (highlight+1)
-                 << setw(15) << arr[highlight]->dk.MASV
-                 << setw(25) << "..."    
-                 << setw(15) << "..."
-                 << setw(10) << arr[highlight]->dk.DIEM;
-            ResetColor();
+            else if (diem == -1) {
+                ClearBox(0, 17, 50, 3); 
+            }
+            else {
+                gotoxy(7,22);
+                SetColor(4);
+                cout << "- Diem khong hop le! -";
+                ResetColor();
+                ClearBox(0, 17, 50, 3); 
+                getch(); 
+                gotoxy(7,22); string(35, ' '); 
+            }
+            
+            //ClearBox(0, 29, 60, 3);
 
+            SinhVien *sv = nullptr;
+            for (int j = 0; j < dslop.n && !sv; j++) {
+                PTRSV q = dslop.nodes[j]->FirstSV;
+                while (q) {
+                    if (strcmp(q->sv.MASV, arr[highlight]->dk.MASV) == 0) {
+                        sv = &q->sv;
+                        break;
+                    }
+                    q = q->next;
+                }
+            }
+            int y = 4 + (highlight-index);
+            gotoxy(0, y);
+            SetColor(14);
+            if (sv) {
+                cout << left << setw(5)  << (highlight + 1) << setw(15) << sv->MASV << setw(25) << sv->HO
+                    << setw(15) << sv->TEN << setw(10) << fixed << setprecision(2) << arr[highlight]->dk.DIEM;
+            }
+
+            ResetColor();
             continue;
         }
         else if (ch == 27) return; // esc
-        // in lai dong cu
         if (oldHighlight != highlight) {
-
-            {
-                int y = 4 + oldHighlight;
+            // in lai dong cu
+            if (oldHighlight >= index && oldHighlight < index + pageSize) {
+                int y = 4 + (oldHighlight - index);
                 gotoxy(0, y);
                 SetColor(7);
 
@@ -265,9 +317,9 @@ void BangDiem_Interact(PTRDK arr[], int count, DS_LOPSV &dslop) {
                 }
                 ResetColor();
             }
-            // in lai dong moi
-            {
-                int y = 4 + highlight;
+            // in lai dong moi 
+            if (highlight >= index && highlight < index + pageSize) {
+                int y =4 + (highlight-index);
                 gotoxy(0, y);
                 SetColor(14);
 
