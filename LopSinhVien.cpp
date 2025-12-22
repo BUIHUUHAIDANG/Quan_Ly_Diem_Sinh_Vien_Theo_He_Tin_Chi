@@ -605,13 +605,19 @@ void formatName(char s[]) {
     s[j] = '\0';
 }
 
-bool checkdeadline (string s) {
+bool checkformatdeadline (string s) {
     if (s.length() != 16) return false;
     if (s[4] != '-' || s[7] != '-' || s[10] != ' ' || s[13] != ':') return false;
     for (int i = 0; i < s.length(); i++) {
         if (i == 4 || i == 7 || i == 10 || i == 13) continue;
         if(!isdigit(s[i])) return false;
     }
+    return true;
+}
+
+bool validdealine (time_t deadline) {
+    time_t now = time(0);
+    if (difftime(deadline, now) <= 0) return false;
     return true;
 }
 
@@ -677,8 +683,8 @@ LopTinChi NhapLTC(){
     string deadlinestr;
     while (true) {
         getline(cin, deadlinestr);
-        if (checkdeadline(deadlinestr)) break;
-        cout << "Loi: Deadline khong hop le. Nhap lai (YYYY-MM-DD HH:MM): ";
+        if (checkformatdeadline(deadlinestr) && validdealine(stringToTime(deadlinestr))) break;
+        cout << "Loi: Deadline phai dung format va lon hon thoi gian hien tai. Nhap lai (YYYY-MM-DD HH:MM): ";
     }
     ltc.deadline = stringToTime(deadlinestr);
     ltc.huylop = false;

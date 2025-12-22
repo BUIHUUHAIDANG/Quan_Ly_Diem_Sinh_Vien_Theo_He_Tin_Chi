@@ -89,6 +89,8 @@ void printDSSV_sorted(LopSV *lop);
 //Nhap Lop Tin Chi + Sua lop Tin Chi
 bool isValidSoSV(int min, int max);
 void formatName(char s[]);
+bool checkformatdeadline (string s);
+bool validdealine (time_t deadline);
 LopTinChi NhapLTC();
 int getNextMaLopTinChi(PTRLTC First);
 
