@@ -511,3 +511,5 @@ int main() {
     return 0;
 }
 
+// g++ main.cpp CTDL.cpp LopSinhVien.cpp MonHoc.cpp menu.cpp -o main.exe
+
