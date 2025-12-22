@@ -605,6 +605,16 @@ void formatName(char s[]) {
     s[j] = '\0';
 }
 
+bool checkdeadline (string s) {
+    if (s.length() != 16) return false;
+    if (s[4] != '-' || s[7] != '-' || s[10] != ' ' || s[13] != ':') return false;
+    for (int i = 0; i < s.length(); i++) {
+        if (i == 4 || i == 7 || i == 10 || i == 13) continue;
+        if(!isdigit(s[i])) return false;
+    }
+    return true;
+}
+
 LopTinChi NhapLTC(){
     LopTinChi ltc;
     cout << "\n=== THEM LOP TIN CHI ===\n";
@@ -665,7 +675,11 @@ LopTinChi NhapLTC(){
     cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
     cout << "Nhap Deadline (YYYY-MM-DD HH:MM): ";
     string deadlinestr;
-    getline(cin, deadlinestr);
+    while (true) {
+        getline(cin, deadlinestr);
+        if (checkdeadline(deadlinestr)) break;
+        cout << "Loi: Deadline khong hop le. Nhap lai (YYYY-MM-DD HH:MM): ";
+    }
     ltc.deadline = stringToTime(deadlinestr);
     ltc.huylop = false;
     ltc.dssvdk = nullptr;

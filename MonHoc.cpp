@@ -3,6 +3,7 @@
 #include <fstream>
 #include <cstring>
 #include <algorithm>
+#include <limits>
 
 using namespace std;
 
@@ -93,34 +94,31 @@ ActionMH top(stack s) {
     return s.top->data; 
 }
 
-// --------------------- HÀM STRINGSTREAM ---------------------
-string StringStream (string s) {
+// --------------------- HÀM FORMAT ---------------------
+void Deletespaceandtoupper (char s[]) {
     int left = 0;
     int i = 0;
-    while (i < s.size()) {
-        while (i < s.size() && s[i] == ' ') i++;
+    while (i < strlen(s)) {
+        while (i < strlen(s) && s[i] == ' ') i++;
+        if (i >= strlen(s)) break;
 
-        if (i == s.size()) break;
-
-        while (i < s.size() && s[i] != ' ') {
+        while (i < strlen(s) && s[i] != ' ') {
             s[left++] = s[i++];
         }
         s[left++] = ' ';
     }
     if (left > 0) left--;
-    s.resize(left);
-
-    return s;
+    s[left] = '\0';
 }
 
-string UpperFirstCharName(string s) {
-    if (s.empty()) return s;
+string UpperFirstCharName(char s[]) {
+    if (s[0] == '\0') return s;
 
     s[0] = toupper(s[0]);
 
-    for (int i = 1; i < s.size(); i++) {
+    for (int i = 1; i < strlen(s); i++) {
         if (s[i - 1] == ' ' && s[i] != ' ') {
-            s[i] = toupper(s[i]);
+            s[i] = tolower(s[i]);
         }
     }
     return s;
@@ -237,12 +235,17 @@ bool checkMH(treeMH t, MonHoc mh) {
 }
 
 void NhapMonHoc(treeMH &t, stack &undostackMH) {
-    // t = DocMonHocFromFile("D:\\MonHocdata.txt");
-
     while (true) {
         MonHoc mh;
-        cout << "Nhap ma mon hoc (nhap 0 de thoat): ";
-        cin >> mh.MAMH;
+        do {
+            cout << "Nhap ma mon hoc (nhap 0 de thoat): ";
+            cin.getline(mh.MAMH, 11);
+
+            if (strlen(mh.MAMH) == 0)
+            cout << "Loi: Khong duoc de trong!\n";
+
+        } while (strlen(mh.MAMH) == 0);
+
         if (strcmp(mh.MAMH, "0") == 0) break;
 
         if (checkMH(t, mh)) {
@@ -250,17 +253,45 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
             continue;
         }
 
-        cout << "Nhap ten mon hoc: ";
-        cin.ignore();
-        cin.getline(mh.TENMH, 51);
-        string s = mh.TENMH;
-        s = StringStream(s);
-        s = UpperFirstCharName(s);
-        strcpy(mh.TENMH, s.c_str());
-        cout << "Nhap so tin chi ly thuyet: ";
-        cin >> mh.STCLT;
-        cout << "Nhap so tin chi thuc hanh: ";
-        cin >> mh.STCTH;
+        do {
+            cout << "Nhap ten mon hoc: ";
+            cin.getline(mh.TENMH, 11);
+
+            if (strlen(mh.TENMH) == 0)
+            cout << "Loi: Khong duoc de trong!\n";
+
+        } while (strlen(mh.TENMH) == 0);
+        
+        Deletespaceandtoupper(mh.TENMH);
+        UpperFirstCharName(mh.TENMH);
+
+        while (true) {
+            cout << "Nhap so tin chi ly thuyet: ";
+            cin >> mh.STCLT;
+
+            if (!cin.fail() && mh.STCLT > 0) {
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                break;
+            }
+
+            cout << "Loi! Hay nhap so nguyen > 0\n";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+        
+        while (true) {
+            cout << "Nhap so tin chi thuc hanh: ";
+            cin >> mh.STCTH;
+
+            if (!cin.fail() && mh.STCTH > 0) {
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                break;
+            }
+
+            cout << "Loi! Hay nhap so nguyen > 0\n";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
 
         t = Insert(t, mh);
 
