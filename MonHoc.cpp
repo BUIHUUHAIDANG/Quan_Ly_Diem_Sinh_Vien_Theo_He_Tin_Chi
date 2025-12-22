@@ -1,5 +1,6 @@
 #include "MonHoc.h"
 #include "CTDL.h"
+#include "menu.h"
 #include <fstream>
 #include <cstring>
 #include <algorithm>

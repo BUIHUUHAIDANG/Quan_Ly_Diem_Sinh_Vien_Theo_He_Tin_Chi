@@ -81,7 +81,9 @@ struct nodeLTC {
     nodeLTC();
     nodeLTC(LopTinChi data);
 };
+
 typedef nodeLTC* PTRLTC;
+
 struct ActionLTC {
     int type;
     LopTinChi ltc;

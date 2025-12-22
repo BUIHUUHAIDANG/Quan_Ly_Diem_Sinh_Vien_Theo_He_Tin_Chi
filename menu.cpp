@@ -7,9 +7,12 @@
 #include <iomanip>
 #include "mylib.h"
 #include "menu.h"
+#include "MonHoc.h"
 #include "LopSinhVien.h"
 #include "CTDL.h"
 using namespace std;
+
+const int linenum = 5; // LINE NUMBER
 
 void drawStaticMenu(const char *title, const char *role, int n)  {
     clrscr();
@@ -117,8 +120,6 @@ int Popup_ChonHanhDong() { // pop up sua diem
 //  - linenum la so phan tu trong mot trang (VD: linenum = 5 thi show 5 sinh vien moi trang)
 //  - Qua trang sau index += linenum, quay ve trang truoc index -= linenum
 // o=================================================================================================================o
-
-const int linenum = 5; // LINE NUMBER
 
 // DRAW
 void drawBangDiem(PTRDK arr[], int count, int highlight, DS_LOPSV &dslop, int index) {
@@ -491,3 +492,24 @@ void BangDiemTK(PTRSV arr[], int count, PTRLTC &dsltc,DS_LOPSV &dslop,treeMH &ds
         else if (ch == 27) return; // esc
     }
 }
+
+void drawMonHoc (treeMH t, MonHoc mh, int count, int highlight, int index) {
+    SetColor(14);
+    SetBold(true);
+    cout << "\n              -==== DANH SACH MON HOC ====- \n";
+    SetBold(false);
+    SetColor(2);
+    cout << left << setw(5) << "STT" << setw(15) << "MAMH" << setw(30) << "TENMH" << 
+    setw(10) << "STCLT" << setw(10) << "STCTH" << endl;
+
+    cout << "----------------------------------------------------------------------------------\n";
+    ResetColor();
+    int endindex = min(index + linenum, count);
+    for(int i=index; i<endindex; i++) {
+        if(i == highlight) SetColor(14); else SetColor(7);
+        cout << left << setw(5) << (i+1) << setw(15) << t->mh.MAMH << setw(30) << t->mh.TENMH
+        << setw(10) << t->mh.STCLT << setw(10) << t->mh.STCTH;
+        cout << "\n";
+    }
+    ResetColor();
+} 
