@@ -1,61 +1,16 @@
-#include <iostream>    
+#include <iostream>
+#include <conio.h>      
+#include <windows.h>    
 #include <cstdio>
 #include <cstring>
 #include <limits>
 #include <iomanip>
-#include "mylib.h"    
 #include "CTDL.h"
-#include "monhoc.h"
-#include "lopsinhvien.h"
-
+#include "mylib.h"
+#include "menu.h"    
+#include "MonHoc.h"
+#include "LopSinhVien.h"
 using namespace std;
-// === Draw Menu ===
-void drawMenu(const char *title, const char *role, const char *options[], int n, int highlight) {
-    clrscr();
-    SetBGColor(0);  // black background
-    SetColor(7);    // white text
-    gotoxy(20, 2);
-    cout << title;
-
-    gotoxy(5, 4);
-    cout << "Vai tro: " << role;
-
-    for (int i = 0; i < n; ++i) {
-        gotoxy(8, 6 + i * 2);
-        if (i == highlight) {
-            // in ngược để highlight
-            printf("\033[47m");   // background white
-            printf("\033[30m");   // text black
-            cout << "> " << options[i] << " <";
-            printf("\033[0m");    // reset
-        } else {
-            cout << "  " << options[i];
-        }
-    }
-
-    gotoxy(5, 6 + n * 2);
-    cout << "(Dung phim ↑ ↓ hoac W/S de di chuyen, Enter de chon)";
-}
-
-// === Menu Logic ===
-// Nhận phím (getch đã có trong console.h giả sử)
-// Trả về ký tự thường hoá cho W/w, S/s; phát hiện Enter = '\n' hoặc 10
-int menu(const char *title, const char *role, const char *options[], int n) {
-    int highlight = 0;
-    while (true) {
-        drawMenu(title, role, options, n, highlight);
-        int ch = getch();
-        if (ch == 'w' || ch == 'W') {
-            highlight = (highlight - 1 + n) % n;
-        } else if (ch == 's' || ch == 'S') {
-            highlight = (highlight + 1) % n;
-        } else if (ch == '\n' || ch == 10 || ch == 13) { // Enter
-            return highlight;
-        } else if (ch == 27) { // Esc -> trả về -1 (nếu cần xử lý)
-            return -1;
-        }
-    }
-}
 
 int main() {
     // Khoi tao DS LopSV
@@ -511,5 +466,5 @@ int main() {
     return 0;
 }
 
-// g++ main.cpp CTDL.cpp LopSinhVien.cpp MonHoc.cpp menu.cpp -o main.exe
+// g++ main.cpp CTDL.cpp LopSinhVien.cpp MonHoc.cpp -o main
 

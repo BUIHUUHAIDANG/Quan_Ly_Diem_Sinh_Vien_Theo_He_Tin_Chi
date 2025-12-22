@@ -584,27 +584,91 @@ void printDSSV_sorted(LopSV *lop) {
     delete[] arr; 
 }
 
+bool isValidSoSV(int min, int max) {
+    return min > 0 && max > 0 && min <= max;
+}
+void formatName(char s[]) {
+    int n = strlen(s);
+    int i = 0, j = 0;
+    while (i < n) {
+        while (i < n && s[i]==' '){
+            i++;
+        }
+        if (i >= n) break;
+        s[j++] = toupper(s[i++]);
+        while (i < n && s[i]!=' ') {
+            s[j++] = tolower(s[i++]);
+        }
+        s[j++] = ' ';
+    }
+    if (j > 0)j--;
+    s[j] = '\0';
+}
+
 LopTinChi NhapLTC(){
-     LopTinChi ltc;
+    LopTinChi ltc;
     cout << "\n=== THEM LOP TIN CHI ===\n";
     ltc.MALOPTC = -1; 
 
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    do {
+    cout << "Nhap Ma Mon Hoc: ";
+    cin.getline(ltc.MAMH, 11);
 
-    cout << "Nhap Ma Mon Hoc: "; cin.getline(ltc.MAMH, 11);
-    cout << "Nhap Nien Khoa: "; cin.getline(ltc.NienKhoa, 10);
-    cout << "Nhap Hoc Ky: "; cin >> ltc.Hocky;
-    cout << "Nhap Nhom: "; cin >> ltc.Nhom;
-    cout << "Nhap SV Min va Max: "; cin >> ltc.sosvmin >> ltc.sosvmax;
+    if (strlen(ltc.MAMH) == 0)
+    cout << "Loi: Khong duoc de trong!\n";
+
+    } while (strlen(ltc.MAMH) == 0);
+
+    do {
+    cout << "Nhap Nien Khoa: ";
+    cin.getline(ltc.NienKhoa, 10);
+
+    if (strlen(ltc.NienKhoa) == 0)
+    cout << "Loi: Khong duoc de trong!\n";
+
+    } while (strlen(ltc.NienKhoa) == 0);
+
+    while (true) {
+    cout << "Nhap Hoc Ky: ";
+    cin >> ltc.Hocky;
+
+    if (!cin.fail() && ltc.Hocky > 0 && ltc.Hocky <=2) {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        break;
+    }
+
+    cout << "Loi! Hay nhap so nguyen > 0\n";
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    while (true) {
+    cout << "Nhap Nhom: ";
+    cin >> ltc.Nhom;
+
+    if (!cin.fail() && ltc.Nhom > 0) {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        break;
+    }
+
+    cout << "Loi! Hay nhap so nguyen > 0\n";
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    do {
+        cout << "Nhap SV Min va Max: ";
+        cin >> ltc.sosvmin >> ltc.sosvmax;
+
+        if (!isValidSoSV(ltc.sosvmin, ltc.sosvmax)) {
+            cout << "Loi: SV Min phai <= SV Max va > 0. Nhap lai!\n";
+        }
+    } while (!isValidSoSV(ltc.sosvmin, ltc.sosvmax));
     cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
     cout << "Nhap Deadline (YYYY-MM-DD HH:MM): ";
     string deadlinestr;
-    cin.ignore();
     getline(cin, deadlinestr);
     ltc.deadline = stringToTime(deadlinestr);
     ltc.huylop = false;
     ltc.dssvdk = nullptr;
-    cin.ignore();
     return ltc;
 }
 int getNextMaLopTinChi(PTRLTC First) {
@@ -1239,9 +1303,7 @@ void AutoCancelExpiredClasses(PTRLTC &l) {
         if (hetHan && thieuSV) {
             cur->ltc.huylop = true;
         } 
-        else {
-            cur = cur->next;
-        }
+        cur = cur->next;
     }
 }
 
