@@ -264,8 +264,13 @@ PTRLTC In1TrangLTC_Bang(PTRLTC start) {
     PTRLTC p = start;
     int dem = 0;
 
-    cout << "DANH SACH LOP TIN CHI\n";
-    cout << "--------------------------------------------------------------------------------\n";
+    int x = 2;
+    int y = 4;
+    int w = 90;
+
+    gotoxy(x + 2, y);
+    SetBold(true);
+    SetColor(11);
     cout << left
          << setw(12) << "MaLTC"
          << setw(10) << "MaMH"
@@ -273,11 +278,15 @@ PTRLTC In1TrangLTC_Bang(PTRLTC start) {
          << setw(8)  << "HK"
          << setw(8)  << "Nhom"
          << setw(12) << "SV_Min"
-         << setw(12) << "SV_Max"
-         << endl;
-    cout << "--------------------------------------------------------------------------------\n";
+         << setw(12) << "SV_Max";
+    ResetColor();
+    SetBold(false);
 
+    drawLine(x + 1, y + 1, w - 2);
+
+    int row = y + 2;
     while (p != nullptr && dem < 5) {
+        gotoxy(x + 2, row++);
         cout << left
              << setw(12) << p->ltc.MALOPTC
              << setw(10) << p->ltc.MAMH
@@ -285,22 +294,22 @@ PTRLTC In1TrangLTC_Bang(PTRLTC start) {
              << setw(8)  << p->ltc.Hocky
              << setw(8)  << p->ltc.Nhom
              << setw(12) << p->ltc.sosvmin
-             << setw(12) << p->ltc.sosvmax
-             << endl;
+             << setw(12) << p->ltc.sosvmax;
 
         p = p->next;
         dem++;
     }
 
-    cout << "--------------------------------------------------------------------------------\n";
-    return p;   
+    return p;  
 }
+
 void InDSLTC(PTRLTC &FirstLTC) {
     if (!FirstLTC) {
         cout << "\nDanh sach LTC rong!";
         getch();
         return;
     }
+
     int totalLTC = DemSoLTC(FirstLTC);
     int totalPage = (totalLTC + 4) / 5;
 
@@ -310,18 +319,37 @@ void InDSLTC(PTRLTC &FirstLTC) {
     while (true) {
         clrscr();
 
+        int x = 1;
+        int y = 1;
+        int w = 94;
+        int h = 14;
+
+        DrawBox(x, y, w, h, 7, 0);
+
+        gotoxy(x + 30, y + 1);
+        SetBold(true);
+        SetColor(14);
+        cout << "DANH SACH LOP TIN CHI";
+        ResetColor();
+        SetBold(false);
+
         nextPage = In1TrangLTC_Bang(currPage);
+
         int currPageIndex = TinhTrangHienTai(FirstLTC, currPage);
-        cout << "\nTrang " << currPageIndex << " / " << totalPage;
-        cout << "\n[A] Trang truoc   [D] Trang sau   [ESC] Thoat";
+
+        drawLine(x + 1, y + h - 3, w - 2);
+        gotoxy(x + 2, y + h - 2);
+        SetColor(10);
+        cout << "Trang " << currPageIndex << "/" << totalPage
+             << "   [A] Truoc   [D] Sau   [ESC] Thoat";
+        ResetColor();
 
         char key = getch();
 
         if (key == 27) break;
 
-        if (key == 'd' || key == 'D') {
-            if (nextPage != nullptr)
-                currPage = nextPage;
+        if ((key == 'd' || key == 'D') && nextPage != nullptr) {
+            currPage = nextPage;
         }
 
         if (key == 'a' || key == 'A') {
@@ -337,6 +365,7 @@ void InDSLTC(PTRLTC &FirstLTC) {
         }
     }
 }
+
 bool checkLTC(PTRLTC FirstLTC, LopTinChi ltc) { // Kiem tra xem lop tin chi co trong danh sach lop tin chi khong
                                                 // Neu co thi tra ve true
     if (!FirstLTC) return false;
@@ -353,20 +382,32 @@ PTRDK In1TrangSVDK_Bang(PTRDK start, DS_LOPSV dslop) {
     PTRDK p = start;
     int dem = 0;
 
+    int x = 4;
+    int y = 4;
+    int w = 80;
+
+    // ===== HEADER =====
+    gotoxy(x + 2, y);
+    SetBold(true);
+    SetColor(11);
     cout << left
          << setw(12) << "MASV"
          << setw(25) << "HO"
          << setw(12) << "TEN"
          << setw(8)  << "DIEM"
-         << setw(8)  << "HUYDK"
-         << endl;
-    cout << "---------------------------------------------------------------\n";
+         << setw(8)  << "HUYDK";
+    ResetColor();
+    SetBold(false);
 
+    drawLine(x + 1, y + 1, w - 2);
+
+    // ===== DATA =====
+    int row = y + 2;
     while (p != nullptr && dem < 5) {
         SinhVien sv = getSinhVien(dslop, p->dk.MASV);
 
-        cout << left
-             << setw(12) << p->dk.MASV;
+        gotoxy(x + 2, row);
+        cout << left << setw(12) << p->dk.MASV;
 
         if (strlen(sv.MASV) != 0) {
             cout << setw(25) << sv.HO
@@ -377,15 +418,16 @@ PTRDK In1TrangSVDK_Bang(PTRDK start, DS_LOPSV dslop) {
         }
 
         cout << setw(8) << p->dk.DIEM
-             << setw(8) << p->dk.HuyDK
-             << endl;
+             << setw(8) << p->dk.HuyDK;
 
+        row++;
         p = p->next;
         dem++;
     }
 
-    return p;
+    return p;   // trang kế
 }
+
 int DemSoSVDK(PTRDK l) {
     int cnt = 0;
     for (PTRDK p = l; p != nullptr; p = p->next)
@@ -400,8 +442,8 @@ int TinhTrangHienTai(PTRDK First, PTRDK currPage) {
 }
 void showDanhSachSinhVienDangKy(PTRDK &l, DS_LOPSV dslop) {
     if (l == nullptr) {
-        cout << "Khong Co Sinh Vien Dang Ky"<<endl;
-        cout <<"Nhap bat ky phim nao de quay lai..."<<endl;
+        cout << "Khong Co Sinh Vien Dang Ky\n";
+        cout << "Nhap bat ky phim nao de quay lai...";
         getch();
         return;
     }
@@ -412,16 +454,37 @@ void showDanhSachSinhVienDangKy(PTRDK &l, DS_LOPSV dslop) {
     PTRDK currPage = l;
     PTRDK nextPage = nullptr;
 
+    int x = 2;
+    int y = 1;
+    int w = 84;
+    int h = 14;
+
     while (true) {
         clrscr();
+
+        DrawBox(x, y, w, h, 7, 0);
+
+        
+        gotoxy(x + (w - 36) / 2, y + 1);
+        SetBold(true);
+        SetColor(14);
+        cout << "DANH SACH SINH VIEN DANG KY";
+        ResetColor();
+        SetBold(false);
 
         nextPage = In1TrangSVDK_Bang(currPage, dslop);
 
         int currPageIndex = TinhTrangHienTai(l, currPage);
 
-        cout << "\nTrang " << currPageIndex << " / " << totalPage;
-        cout << "    [A] Truoc   [D] Sau   [ESC] Thoat";
 
+        drawLine(x + 1, y + h - 3, w - 2);
+        gotoxy(x + 2, y + h - 2);
+        SetColor(10);
+        cout << "Trang " << currPageIndex << "/" << totalPage
+             << "   [A] Truoc   [D] Sau   [ESC] Thoat";
+        ResetColor();
+
+        
         char key = getch();
 
         if (key == 27) break;
@@ -429,7 +492,7 @@ void showDanhSachSinhVienDangKy(PTRDK &l, DS_LOPSV dslop) {
         if ((key == 'd' || key == 'D') && nextPage != nullptr)
             currPage = nextPage;
 
-        if (key == 'a' || key == 'A') {
+        if ((key == 'a' || key == 'A')) {
             PTRDK p = l;
             PTRDK prevPage = l;
 
@@ -442,6 +505,7 @@ void showDanhSachSinhVienDangKy(PTRDK &l, DS_LOPSV dslop) {
         }
     }
 }
+
 void InDSSVDK(PTRLTC &FirstLTC, int maloptc, DS_LOPSV &dslop) {
     if(!FirstLTC) {
         cout << "\n\nDanh sach LTC rong!";
@@ -529,43 +593,64 @@ void InDSLSV(DS_LOPSV &dslop) {
     int pageSize = 5;
     int totalPage = (dslop.n + pageSize - 1) / pageSize;
 
+    
+    int x = 6;
+    int y = 2;
+    int w = 70;
+    int h = pageSize + 9;
+
     while (true) {
         clrscr();
 
-        cout << "DANH SACH LOP SINH VIEN\n";
+        DrawBox(x, y, w, h, 7, 0);
+
+        gotoxy(x + (w - 24) / 2, y + 1);
+        SetBold(true);
+        SetColor(14);
+        cout << "DANH SACH LOP SINH VIEN";
+        ResetColor();
+        SetBold(false);
+
+
+        gotoxy(x + 2, y + 3);
+        SetBold(true);
+        SetColor(11);
         cout << left
              << setw(10) << "STT"
              << setw(15) << "MA LOP"
-             << setw(30) << "TEN LOP"
-             << endl;
-        cout << "------------------------------------------------------\n";
+             << setw(30) << "TEN LOP";
+        ResetColor();
+        SetBold(false);
+
+        drawLine(x + 1, y + 4, w - 2);
 
         int start = (page - 1) * pageSize;
         int end = min(start + pageSize, dslop.n);
 
+        int row = y + 5;
         for (int i = start; i < end; i++) {
+            gotoxy(x + 2, row++);
             cout << left
                  << setw(10) << (i + 1)
                  << setw(15) << dslop.nodes[i]->MALOP
-                 << setw(30) << dslop.nodes[i]->TENLOP
-                 << endl;
+                 << setw(30) << dslop.nodes[i]->TENLOP;
         }
 
-        cout << "------------------------------------------------------\n";
-        cout << "Trang " << page << " / " << totalPage;
-        cout << "    [A] Truoc   [D] Sau   [ESC] Thoat";
+        drawLine(x + 1, y + h - 3, w - 2);
+        gotoxy(x + 2, y + h - 2);
+        SetColor(10);
+        cout << "Trang " << page << " / " << totalPage
+             << "   [A] Truoc   [D] Sau   [ESC] Thoat";
+        ResetColor();
 
         char key = getch();
 
         if (key == 27) break;
-
-        if ((key == 'd' || key == 'D') && page < totalPage)
-            page++;
-
-        if ((key == 'a' || key == 'A') && page > 1)
-            page--;
+        if ((key == 'd' || key == 'D') && page < totalPage) page++;
+        if ((key == 'a' || key == 'A') && page > 1) page--;
     }
 }
+
 SinhVien getSinhVien(DS_LOPSV dslop, char MASV[16]) {
     for (int i = 0; i < dslop.n; i++) {
         LopSV* lop = dslop.nodes[i];

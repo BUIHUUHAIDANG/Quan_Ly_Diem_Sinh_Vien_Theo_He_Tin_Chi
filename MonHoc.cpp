@@ -413,21 +413,31 @@ void In1TrangMH(MonHoc ds[], int n, int page, int pageSize) {
     int end = start + pageSize;
     if (end > n) end = n;
 
+    int x = 5;
+    int y = 4;
+    int w = 70;
+    gotoxy(x + 2, y);
+    SetBold(true);
+    SetColor(11);
     cout << left
          << setw(5)  << "STT"
          << setw(12) << "MaMH"
-         << setw(40) << "Ten Mon Hoc"
-         << endl;
-    cout << "-------------------------------------------------------------\n";
+         << setw(40) << "Ten Mon Hoc";
+    ResetColor();
+    SetBold(false);
 
+    drawLine(x + 1, y + 1, w - 2);
+
+    int row = y + 2;
     for (int i = start; i < end; i++) {
+        gotoxy(x + 2, row++);
         cout << left
              << setw(5)  << (i + 1)
              << setw(12) << ds[i].MAMH
-             << setw(40) << ds[i].TENMH
-             << endl;
+             << setw(40) << ds[i].TENMH;
     }
 }
+
 
 void InDSMH(treeMH t) {
     if (!t) {
@@ -448,21 +458,34 @@ void InDSMH(treeMH t) {
     while (true) {
         clrscr();
 
-        cout << "DANH SACH MON HOC\n";
+        int x = 3;
+        int y = 1;
+        int w = 76;
+        int h = pageSize + 9;
+
+        DrawBox(x, y, w, h, 7, 0);
+
+        gotoxy(x + 25, y + 1);
+        SetBold(true);
+        SetColor(14);
+        cout << "DANH SACH MON HOC";
+        ResetColor();
+        SetBold(false);
+
         In1TrangMH(ds, n, page, pageSize);
 
-        cout << "\nTrang " << page << " / " << totalPage;
-        cout << "    [A] Truoc   [D] Sau   [ESC] Thoat";
+        drawLine(x + 1, y + h - 3, w - 2);
+        gotoxy(x + 2, y + h - 2);
+        SetColor(10);
+        cout << "Trang " << page << "/" << totalPage
+             << "   [A] Truoc   [D] Sau   [ESC] Thoat";
+        ResetColor();
 
         char key = getch();
 
         if (key == 27) break;
-
-        if ((key == 'd' || key == 'D') && page < totalPage)
-            page++;
-
-        if ((key == 'a' || key == 'A') && page > 1)
-            page--;
+        if ((key == 'd' || key == 'D') && page < totalPage) page++;
+        if ((key == 'a' || key == 'A') && page > 1) page--;
     }
 }
 

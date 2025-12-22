@@ -235,7 +235,7 @@ void BangDiem_Interact(PTRDK arr[], int count, DS_LOPSV &dslop) {
         else if(ch == 'a' || ch == 'A') {highlight = index; index = max(0,index-linenum);  clrscr();  goto draw;} // left
         else if(ch == 'd' || ch == 'D') {if (index + linenum < count) { index += linenum; highlight = index; clrscr(); goto draw;}} // right
 
-        else if (ch == 13) {
+        else if (ch == 13||ch==10) {
             int choice = Popup_ChonHanhDong();
             if (choice == 1) {
                 clrscr(); 
