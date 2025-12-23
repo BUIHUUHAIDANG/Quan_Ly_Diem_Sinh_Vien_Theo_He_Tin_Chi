@@ -13,8 +13,8 @@ void pop(stack &s);
 ActionMH top(stack s);
 
 // -------------------- HÀM STRINGSTREAM --------------------
-string StringStream (string s);
-string UpperFirstCharName(string s);
+void Deletespaceandtoupper (char s[]);
+void UpperFirstCharName(char s[]);
 
 // -------------------- HÀM AVL --------------------
 int GetHeight(treeMH t);
@@ -38,9 +38,12 @@ void NhapMonHoc(treeMH &t, stack &undostackMH);
 treeMH UndoThemMH (treeMH &t, char MAMH[]);
 treeMH XoaMH(treeMH &t, char MAMH[], stack &undostackMH);
 void UndoSuaMH (treeMH &t, MonHoc mh);
-void SuaMH(treeMH &t, MonHoc mh, stack &undostackMH);
-void UndoMH (treeMH &t, stack &undostackMH);
-void InDSMH(treeMH t);
+treeMH getMH(treeMH &t, MonHoc mh, stack &undostackMH);
+void SuaTenMH(treeMH t, stack &undostackMH);
+void SuaSTCTH(treeMH t, stack &undostackMH);
+void SuaSTCLT(treeMH t, stack &undostackMH);
+void UndoMH(treeMH &t, stack &undostackMH);
+void InDSMH(treeMH t, treeMH arr[], int &count);
 treeMH timMonHoc(treeMH t, char mamh[]);
 void InLTC (PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t);
 void SVDangKy(PTRDK &dssvdk, PTRSV sv);

@@ -1,10 +1,9 @@
 #include <iostream>
-#include <conio.h>      
-#include <windows.h>    
 #include <cstdio>
 #include <cstring>
 #include <limits>
 #include <iomanip>
+#include <conio.h>
 #include "mylib.h"
 #include "menu.h"
 #include "MonHoc.h"
@@ -493,23 +492,87 @@ void BangDiemTK(PTRSV arr[], int count, PTRLTC &dsltc,DS_LOPSV &dslop,treeMH &ds
     }
 }
 
-void drawMonHoc (treeMH t, MonHoc mh, int count, int highlight, int index) {
+void drawDSMonHoc(treeMH arr[], int count, int index, int highlight) {
     SetColor(14);
     SetBold(true);
     cout << "\n              -==== DANH SACH MON HOC ====- \n";
     SetBold(false);
     SetColor(2);
-    cout << left << setw(5) << "STT" << setw(15) << "MAMH" << setw(30) << "TENMH" << 
-    setw(10) << "STCLT" << setw(10) << "STCTH" << endl;
 
-    cout << "----------------------------------------------------------------------------------\n";
+    cout << left << setw(5)  << "STT"
+         << setw(15) << "MAMH"
+         << setw(35) << "TEN MON HOC"
+         << setw(10) << "STCLT"
+         << setw(10) << "STCTH" << endl;
+
+    cout << "-------------------------------------------------------------------------------\n";
     ResetColor();
+
     int endindex = min(index + linenum, count);
-    for(int i=index; i<endindex; i++) {
-        if(i == highlight) SetColor(14); else SetColor(7);
-        cout << left << setw(5) << (i+1) << setw(15) << t->mh.MAMH << setw(30) << t->mh.TENMH
-        << setw(10) << t->mh.STCLT << setw(10) << t->mh.STCTH;
-        cout << "\n";
+    for (int i = index; i < endindex; i++) {
+        if (i == highlight) SetColor(14);
+        else SetColor(7);
+
+        cout << left << setw(5)  << (i + 1)
+             << setw(15) << arr[i]->mh.MAMH
+             << setw(35) << arr[i]->mh.TENMH
+             << setw(10) << arr[i]->mh.STCLT
+             << setw(10) << arr[i]->mh.STCTH << endl;
     }
     ResetColor();
-} 
+}
+void InDSMH_Bang(treeMH dsmh) {
+    treeMH arr[500];
+    int count = 0;
+    InDSMH(dsmh, arr, count);
+
+    if (count == 0) {
+        cout << "Danh sach mon hoc rong!\n";
+        return;
+    }
+
+    int index = 0;
+    clrscr();
+
+draw: drawDSMonHoc(arr, count, index, -1);
+
+    int currentPage = index / linenum + 1;
+    int totalPage   = (count + linenum - 1) / linenum;
+
+    gotoxy(6, 30);
+    cout << "(Dung phim → ← hoac A/D de chuyen trang)";
+    gotoxy(20, 31);
+    SetBold(true);
+    SetColor(9);
+    cout << " Trang " << currentPage << "/" << totalPage << "   ESC de thoat";
+    ResetColor();
+    SetBold(false);
+
+    while (true) {
+        int ch = _getch();
+        if (ch == 224) {
+            int arrow = _getch();
+            if (arrow == 75) { // left
+                index = max(0, index - linenum);
+                clrscr(); goto draw;
+            }
+            else if (arrow == 77) { // right
+                if (index + linenum < count) {
+                    index += linenum;
+                    clrscr(); goto draw;
+                }
+            }
+        }
+        else if (ch == 'a' || ch == 'A') {
+            index = max(0, index - linenum);
+            clrscr(); goto draw;
+        }
+        else if (ch == 'd' || ch == 'D') {
+            if (index + linenum < count) {
+                index += linenum;
+                clrscr(); goto draw;
+            }
+        }
+        else if (ch == 27) return;
+    }
+}

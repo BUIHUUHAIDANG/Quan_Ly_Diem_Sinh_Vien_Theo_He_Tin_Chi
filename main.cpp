@@ -1,6 +1,5 @@
-#include <iostream>
-#include <conio.h>      
-#include <windows.h>    
+#include <iostream> 
+#include <conio.h>
 #include <cstdio>
 #include <cstring>
 #include <limits>
@@ -75,6 +74,14 @@ int main() {
         "← Quay lai"
     };
 
+    const char* SUA_MH_OPTIONS[] = {
+    "Sua ten mon hoc",
+    "Sua so tin chi ly thuyet",
+    "Sua so tin chi thuc hanh",
+    "Thoat"
+    };
+
+
     const char *features_admin_4[] = {
         "Them moi Lop Tin Chi",
         "Cap nhat xoa sua Lop Tin Chi",
@@ -106,6 +113,7 @@ int main() {
     const int n_features_giangvien = sizeof(features_giangVien) / sizeof(features_giangVien[0]);
     const int n_features_admin = sizeof(features_admin) / sizeof(features_admin[0]);
     const int n_features_admin_3 = sizeof(features_admin_3) / sizeof(features_admin_3[0]);
+    const int n_SUA_MH_OPTIONS = sizeof(SUA_MH_OPTIONS) / sizeof(SUA_MH_OPTIONS[0]);
     const int n_features_admin_4 = sizeof(features_admin_4) / sizeof(features_admin_4[0]);
     const int n_features_admin_7 = sizeof(features_admin_7) / sizeof(features_admin_7[0]);
     const int n_features_admin_9 = sizeof(features_admin_9) / sizeof(features_admin_9[0]);
@@ -130,10 +138,7 @@ int main() {
                     clrscr();
                     gotoxy(10, 10);
                     cout << "Ban da chon: " << features_sinhvien[f] << endl;
-                    InDSMH(dsMonHoc); // ham hien thi tu header
-                    gotoxy(10, 12);
-                    cout << "\n(Nhan phim bat ky de quay lai...)";
-                    getch();
+                    InDSMH_Bang(dsMonHoc); 
                 }
                 else if (f == 1) {
                     // Dang ky / Huy
@@ -176,10 +181,7 @@ int main() {
                     clrscr();
                     gotoxy(10, 10);
                     cout << "Ban da chon: " << features_giangVien[f] << endl;
-                    InDSMH(dsMonHoc); // ham hien thi tu header
-                    gotoxy(10, 12);
-                    cout << "\n(Nhan phim bat ky de quay lai...)";
-                    getch();
+                    InDSMH_Bang(dsMonHoc);
                 }
             }
         }
@@ -195,10 +197,7 @@ int main() {
                     clrscr();
                     gotoxy(10, 10);
                     cout << "Ban da chon: " << features_admin[f] << endl;
-                    InDSMH(dsMonHoc); // ham hien thi tu header
-                    gotoxy(10, 20);
-                    cout << "\n(Nhan phim bat ky de quay lai...)";
-                    getch();
+                    InDSMH_Bang(dsMonHoc);
                 }
                 else if (f == 1) {
                     clrscr();
@@ -224,11 +223,30 @@ int main() {
                         
                         if (n == 0) { // Them moi MH
                             clrscr();
-                            cout << "\n=== Nhap mon hoc ===\n";
+
+                            // ====== TIEU DE ======
+                            DrawBox(20, 2, 60, 5, 11);
+                            gotoxy(35, 4);
+                            SetBold(true);
+                            SetColor(14);
+                            cout << "NHAP MON HOC";
+                            ResetColor();
+                            SetBold(false);
+                            // ====== KHU NHAP ======
+                            gotoxy(0, 8);
                             NhapMonHoc(dsMonHoc, undostackMH);
-                            cout << "\n>>> Da them mon hoc moi thang cong!\n";
+
+                            // ====== THONG BAO THANH CONG ======
+                            DrawBox(22, 18, 56, 5, 10);
+                            gotoxy(30, 20);
+                            SetColor(10);
+                            cout << ">>> THEM MON HOC THANH CONG <<<";
+                            ResetColor();
+
+                            gotoxy(28, 21);
                             cout << "Nhan phim bat ky de quay lai...";
                             getch();
+
                         }
                         else if (n == 1) { // Xoa MH
                             clrscr();
@@ -244,12 +262,30 @@ int main() {
                         }
                         else if (n == 2) { // Sua MH
                             clrscr();
+                            treeMH temp;
                             MonHoc mh;
                             cout << "Nhap ma mon hoc can sua: ";
                             cin >> mh.MAMH;
-                            SuaMH(dsMonHoc, mh, undostackMH);
+                            int n = menu("===== SUA MON HOC =====", "", SUA_MH_OPTIONS, n_SUA_MH_OPTIONS);
+                            if (n == - 1 || n == n_SUA_MH_OPTIONS - 1) break;
+
+                            if (n == 0) {
+                                temp = getMH(dsMonHoc, mh, undostackMH);
+                                SuaTenMH(temp, undostackMH);
+                            } 
+                            else if (n == 1) {
+                                temp = getMH(dsMonHoc, mh, undostackMH);
+                                SuaSTCLT(temp, undostackMH);
+                            }
+                            else if (n == 2) {
+                                temp = getMH(dsMonHoc, mh, undostackMH);
+                                SuaSTCTH(temp, undostackMH);
+                            }
+
                             LuuMonHoc(dsMonHoc, "MonHocdata.txt");
+                            gotoxy(0, 22);
                             cout << "\n>>> Da sua mon hoc!\n";
+                            gotoxy(0, 23);
                             cout << "Nhan phim bat ky de quay lai...";
                             getch();
                         }
@@ -466,5 +502,5 @@ int main() {
     return 0;
 }
 
-// g++ main.cpp CTDL.cpp LopSinhVien.cpp MonHoc.cpp -o main
+// g++ main.cpp CTDL.cpp LopSinhVien.cpp MonHoc.cpp menu.cpp mylib.cpp -o main
 

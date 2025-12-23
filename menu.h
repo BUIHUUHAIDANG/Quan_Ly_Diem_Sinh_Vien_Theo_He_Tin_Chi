@@ -11,4 +11,6 @@ void BangDiem_Interact(PTRDK arr[], int count, DS_LOPSV &dslop);
 void BangDiemLTC(PTRDK arr[], int count, DS_LOPSV &dslop);
 void BangDiemTB(PTRSV arr[], int count, PTRLTC &dsltc,DS_LOPSV &dslop,treeMH &dsmh, LopSV* lop);
 void BangDiemTK(PTRSV arr[], int count, PTRLTC &dsltc,DS_LOPSV &dslop,treeMH &dsmh, LopSV* lop);
+void InDSMH_Bang(treeMH dsmh);
+
 #endif

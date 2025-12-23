@@ -1,10 +1,12 @@
 #include "MonHoc.h"
 #include "CTDL.h"
 #include "menu.h"
+#include "mylib.h"
 #include <fstream>
 #include <cstring>
 #include <algorithm>
 #include <limits>
+#include <conio.h>
 
 using namespace std;
 
@@ -112,17 +114,16 @@ void Deletespaceandtoupper (char s[]) {
     s[left] = '\0';
 }
 
-string UpperFirstCharName(char s[]) {
-    if (s[0] == '\0') return s;
+void UpperFirstCharName(char s[]) {
+    if (s[0] == '\0') return;
 
     s[0] = toupper(s[0]);
 
     for (int i = 1; i < strlen(s); i++) {
         if (s[i - 1] == ' ' && s[i] != ' ') {
-            s[i] = tolower(s[i]);
-        }
+            s[i] = toupper(s[i]);
+        } else s[i] = tolower(s[i]);
     }
-    return s;
 }
 
 //tim sinh vien trong danh sach sinh vien toan truong
@@ -238,74 +239,144 @@ bool checkMH(treeMH t, MonHoc mh) {
 void NhapMonHoc(treeMH &t, stack &undostackMH) {
     while (true) {
         MonHoc mh;
-        do {
-            cout << "Nhap ma mon hoc (nhap 0 de thoat): ";
+
+        clrscr();
+        DrawBox(20, 3, 60, 20, 3);
+        gotoxy(35, 4);
+        SetBold(true);
+        SetColor(14);
+        cout << "NHAP MON HOC";
+        ResetColor();
+        SetBold(false);
+
+        // ===== MA MON HOC =====
+        while (true) {
+            gotoxy(22, 6);
+            cout << "Ma mon hoc (0 de thoat): ";
+            gotoxy(48, 6);
+            cout << "          ";
+            gotoxy(48, 6);
+
             cin.getline(mh.MAMH, 11);
 
-            if (strlen(mh.MAMH) == 0)
-            cout << "Loi: Khong duoc de trong!\n";
+            if (strcmp(mh.MAMH, "0") == 0) return;
 
-        } while (strlen(mh.MAMH) == 0);
+            if (strlen(mh.MAMH) == 0) {
+                gotoxy(22, 15);
+                SetColor(4);
+                cout << "Ma mon hoc khong duoc de trong!";
+                ResetColor();
+                continue;
+            }
 
-        if (strcmp(mh.MAMH, "0") == 0) break;
-
-        if (checkMH(t, mh)) {
-            cout << "Ma mon hoc da ton tai. Vui long nhap lai.\n";
-            continue;
+            if (checkMH(t, mh)) {
+                gotoxy(22, 15);
+                SetColor(4);
+                cout << "Ma mon hoc da ton tai!";
+                ResetColor();
+                continue;
+            }
+            break;
         }
 
-        do {
-            cout << "Nhap ten mon hoc: ";
-            cin.getline(mh.TENMH, 11);
+        // ===== TEN MON HOC =====
+        while (true) {
+            gotoxy(22, 8);
+            cout << "Ten mon hoc: ";
+            gotoxy(48, 8);
+            cout << string(30, ' ');
+            gotoxy(48, 8);
 
-            if (strlen(mh.TENMH) == 0)
-            cout << "Loi: Khong duoc de trong!\n";
+            cin.getline(mh.TENMH, 51);
 
-        } while (strlen(mh.TENMH) == 0);
-        
+            if (strlen(mh.TENMH) == 0) {
+                gotoxy(22, 15);
+                SetColor(4);
+                cout << "Ten mon hoc khong duoc de trong!";
+                ResetColor();
+                continue;
+            }
+            break;
+        }
+
         Deletespaceandtoupper(mh.TENMH);
         UpperFirstCharName(mh.TENMH);
 
+        // ===== STCLT =====
+        int tempLT;
         while (true) {
-            cout << "Nhap so tin chi ly thuyet: ";
-            cin >> mh.STCLT;
+            gotoxy(22,10);
+            cout << "So TC ly thuyet: ";
+            gotoxy(48,10);
+            cout << "     ";
+            gotoxy(48,10);
 
-            if (!cin.fail() && mh.STCLT > 0) {
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            
+            cin >> tempLT;
+
+            if (!cin.fail() && tempLT > 0) {
+                cin.ignore(1000, '\n');
                 break;
             }
 
-            cout << "Loi! Hay nhap so nguyen > 0\n";
             cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.ignore(1000, '\n');
+            gotoxy(22,15);
+            SetColor(4);
+            cout << "STCLT phai la so nguyen > 0!";
+            ResetColor();
         }
-        
-        while (true) {
-            cout << "Nhap so tin chi thuc hanh: ";
-            cin >> mh.STCTH;
 
-            if (!cin.fail() && mh.STCTH > 0) {
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        mh.STCLT = tempLT;
+
+        // ===== STCTH =====
+        int tempTH;
+        while (true) {
+            gotoxy(22,12);
+            cout << "So TC thuc hanh: ";
+            gotoxy(48,12);
+            cout << "     ";
+            gotoxy(48,12);
+
+            cin >> tempTH;
+
+            if (!cin.fail() && tempTH > 0) {
+                cin.ignore(1000, '\n');
                 break;
             }
 
-            cout << "Loi! Hay nhap so nguyen > 0\n";
             cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.ignore(1000, '\n');
+            gotoxy(22,15);
+            SetColor(4);
+            cout << "STCTH phai la so nguyen > 0!";
+            ResetColor();
         }
 
+        mh.STCTH = tempTH;
+
+        // ===== INSERT + SAVE =====
         t = Insert(t, mh);
-
         LuuMonHoc(t, "MonHocdata.txt");
-
-        cout << "Luu thanh cong!\n\n";
 
         ActionMH act;
         act.type = 1;
         act.mh = mh;
         push(undostackMH, act);
+
+        // ===== THONG BAO =====
+        gotoxy(22,15);
+        SetColor(10);
+        cout << "Them mon hoc thanh cong!";
+        ResetColor();
+
+        gotoxy(22,17);
+        cout << "Nhan phim bat ky de tiep tuc...";
+        _getch();
     }
 }
+
+
 
 treeMH UndoThemMH (treeMH &t, char MAMH[]) {
     MonHoc mh;
@@ -394,59 +465,106 @@ void UndoSuaMH (treeMH &t, MonHoc mh) {
     }
 }
 
-void SuaMH (treeMH &t, MonHoc mh, stack &undostackMH) {
-    if (t == nullptr) {
-        cout <<  "Khong tim thay mon hoc de sua" << endl;
-        return;
+treeMH getMH(treeMH &t, MonHoc mh, stack &undostackMH) {
+    if (t == nullptr) return nullptr;
+
+    if (strcmp(mh.MAMH, t->mh.MAMH) < 0)
+        getMH(t->left, mh, undostackMH);
+    else if (strcmp(mh.MAMH, t->mh.MAMH) > 0)
+        getMH(t->right, mh, undostackMH);
+    
+    return t;
+}
+
+void SuaTenMH(treeMH t, stack &undostackMH) {
+    ActionMH act;
+    act.type = 3;
+    act.mh = t->mh;   // lưu TRẠNG THÁI CŨ
+
+    char tenMoi[51];
+    while (true) {
+        gotoxy(25, 18);
+        cout << "Ten mon hoc moi: ";
+        gotoxy(45, 18);
+        cout << string(30, ' ');
+        gotoxy(45, 18);
+
+        cin.getline(tenMoi, 51);
+        if (strlen(tenMoi) == 0) continue;
+        break;
     }
-    if (strcmp(mh.MAMH, t->mh.MAMH) < 0) {
-        SuaMH(t->left, mh, undostackMH);
-    } else if (strcmp (mh.MAMH, t->mh.MAMH) > 0) {
-        SuaMH(t->right, mh, undostackMH);
-    } else {
-        while (true) {
-            cout << "Ban muon sua thong tin gi:" << endl;
-            cout << "1. Ten mon hoc" << endl;
-            cout << "2. So tin chi ly thuyet" << endl;
-            cout << "3. So tin chi thuc hanh" << endl;
-            cout << "4. Thoat" << endl;
-            int choice;
-            cout << "Nhap lua chon cua ban: ";
-            cin >> choice;
-            if (choice < 1 || choice > 4) {
-                cout << "Lua chon khong hop le" << endl;
-                continue;
-            } else if (choice == 1) {
-                ActionMH act;
-                act.type = 3;
-                act.mh = t->mh;
-                cout << "Nhap ten mon hoc moi: ";
-                cin.ignore();
-                cin.getline(t->mh.TENMH, 51);
-                cout << "Sua ten mon hoc thanh cong" << endl;
-                push(undostackMH, act);
-                continue;
-            } else if (choice == 2) {
-                ActionMH act;
-                act.type = 3;
-                act.mh = t->mh;
-                cout << "Nhap so tin chi ly thuyet moi: ";
-                cin >> t->mh.STCLT;
-                cout << "Sua so tin chi ly thuyet thanh cong" << endl;
-                push(undostackMH, act);
-                continue;
-            } else if (choice == 3) {
-                ActionMH act;
-                act.type = 3;
-                act.mh = t->mh;
-                cout << "Nhap so tin chi thuc hanh moi: ";
-                cin >> t->mh.STCTH;
-                cout << "Sua so tin chi thuc hanh thanh cong" << endl;
-                push(undostackMH, act);
-                continue;
-            } else return;
+
+    Deletespaceandtoupper(tenMoi);
+    UpperFirstCharName(tenMoi);
+    strcpy(t->mh.TENMH, tenMoi);
+
+    push(undostackMH, act);
+
+    LuuMonHoc(t, "MonHocdata.txt");
+
+    gotoxy(8, 6 + 4 * 2 + 2);
+    SetColor(10);
+    cout << "Cap nhat thanh cong! Nhan phim bat ky...";
+    ResetColor();
+    _getch();
+}
+
+void SuaSTCLT(treeMH t, stack &undostackMH) {
+    ActionMH act;
+    act.type = 3;
+    act.mh = t->mh;
+
+    while (true) {
+        gotoxy(25, 18);
+        cout << "So tin chi LT moi: ";
+        cin >> t->mh.STCLT;
+
+        if (!cin.fail() && t->mh.STCLT > 0) {
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            break;
         }
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
+
+    push(undostackMH, act);
+
+    LuuMonHoc(t, "MonHocdata.txt");
+
+    gotoxy(8, 6 + 4 * 2 + 2);
+    SetColor(10);
+    cout << "Cap nhat thanh cong! Nhan phim bat ky...";
+    ResetColor();
+    _getch();
+}
+
+void SuaSTCTH(treeMH t, stack &undostackMH) {
+    ActionMH act;
+    act.type = 3;
+    act.mh = t->mh;
+
+    while (true) {
+        gotoxy(25, 18);
+        cout << "So tin chi TH moi: ";
+        cin >> t->mh.STCTH;
+
+        if (!cin.fail() && t->mh.STCTH > 0) {
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            break;
+        }
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+
+    push(undostackMH, act);
+
+    LuuMonHoc(t, "MonHocdata.txt");
+
+    gotoxy(8, 6 + 4 * 2 + 2);
+    SetColor(10);
+    cout << "Cap nhat thanh cong! Nhan phim bat ky...";
+    ResetColor();
+    _getch();
 }
 
 void UndoMH (treeMH &t, stack &undostackMH) {
@@ -471,11 +589,11 @@ void UndoMH (treeMH &t, stack &undostackMH) {
     }
 }
 
-void InDSMH(treeMH t) {
+void InDSMH(treeMH t, treeMH arr[], int &count) {
     if (!t) return;
-    InDSMH(t->left);
-    cout << "Ma MH: " << t->mh.MAMH << ", Ten MH: " << t->mh.TENMH << endl;
-    InDSMH(t->right);
+    InDSMH(t->left, arr, count);
+    arr[count++] = t;
+    InDSMH(t->right, arr, count);
 }
 
 treeMH timMonHoc(treeMH t, char mamh[]) {
