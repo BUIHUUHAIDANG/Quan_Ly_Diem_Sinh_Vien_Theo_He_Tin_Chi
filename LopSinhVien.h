@@ -7,6 +7,7 @@ using namespace std;
 
 //chuan hoa ten
 void formatName(char s[]);
+void toUpperCase(char s[]);
 //stack Hieu Chinh LTC
 stackNode* newNode(ActionLTC data);
 bool isEmpty(stackNode* &root);
@@ -65,7 +66,7 @@ int deleteFirstSinhVien(PTRSV &First);
 int deleteAfterSinhVien(PTRSV p);
 int deleteSinhVien(PTRSV &First, char MASV[16]);
 bool findSinhVien(PTRSV &First, char MASV[16]);
-bool editSinhVien(PTRSV &sv);
+bool editSinhVien(PTRSV &First, char MASV[16]);
 void NhapSinhVien(DS_LOPSV dslop);
 
 //Lop Sinh Vien

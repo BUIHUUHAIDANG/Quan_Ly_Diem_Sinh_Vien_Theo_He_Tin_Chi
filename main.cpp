@@ -3,7 +3,7 @@
 #include <cstring>
 #include <limits>
 
-#include "console.h"
+#include "mylib.h"
 #include "MonHoc.h"
 #include "LopSinhVien.h"
 #include "CTDL.h"
@@ -161,8 +161,8 @@ int main() {
     };
     const char *features_admin_8[]= {
         "Them Sinh Vien vao 1 lop",
-        "Sua Sinh Vien",
         "Xoa Sinh Vien",
+        "Sua Sinh Vien",
         "Quay lai"
     };
 
@@ -497,6 +497,7 @@ int main() {
                             char malop[16];
                             cout << "Nhap ma lop can sua: ";
                             cin.getline(malop, 16);
+                            toUpperCase(malop);
                             int pos = posLop(ds, malop);
                             if (pos == -1) {
                                 cout << "Khong tim thay lop\n";
@@ -512,6 +513,7 @@ int main() {
                             char malop[16];
                             cout << "Nhap ma lop can xoa: ";
                             cin.getline(malop, 16);
+                            toUpperCase(malop);
                             int pos = posLop(ds, malop);
                             if (pos == -1) {
                                 cout << "khong tim thay lop\n";
@@ -538,10 +540,53 @@ int main() {
                     getch();
                     }
                     if (n==1){
-                     
+                     clrscr();
+                     char malop[16], masv[16];
+
+                     cout << "Nhap ma lop: ";
+                     cin.getline(malop, 16);
+                     LopSV *lop = searchLopSV(ds, malop);
+                     if (!lop) {
+                         cout << "Khong tim thay lop!\n";
+                         getch();
+                         continue;
+                     }
+
+                     cout << "Nhap ma sinh vien can xoa: ";
+                     cin.getline(masv, 16);
+                     toUpperCase(masv);
+
+                     if (deleteSinhVien(lop->FirstSV, masv)) {
+                         cout << ">>> Xoa sinh vien thanh cong!\n";
+                         saveLopSV_Binary(ds, "LopSV.txt", "SinhVien.txt");
+                     } else {
+                         cout << "Khong tim thay sinh vien!\n";
+                     }
+                     getch();
                     }
                     if (n==2){
+                      clrscr();
+                      char malop[16], masv[16];
 
+                      cout << "Nhap ma lop: ";
+                      cin.getline(malop, 16);
+                      toUpperCase(malop);
+                      LopSV *lop = searchLopSV(ds, malop);
+                      if (!lop) {
+                          cout << "Khong tim thay lop!\n";
+                          getch();
+                          continue;
+                      }
+
+                     cout << "Nhap ma sinh vien can sua: ";
+                     cin.getline(masv, 16);
+                     toUpperCase(masv);
+
+                     if (editSinhVien(lop->FirstSV, masv)) {
+                         cout << "\n>>> Cap nhat sinh vien thanh cong!\n";
+                         saveLopSV_Binary(ds, "LopSV.txt", "SinhVien.txt");
+                     }
+                     getch();
                     }
                   }
                 }
@@ -577,6 +622,7 @@ int main() {
                           char malop[20];
                           cout << "Nhap Ma Lop: ";
                           cin >> malop;
+                          toUpperCase(malop);
                           cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                           LopSV *lop = searchLopSV(ds, malop);

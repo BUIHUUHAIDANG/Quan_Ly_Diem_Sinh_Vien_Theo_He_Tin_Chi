@@ -1,7 +1,7 @@
 #include "LopSinhVien.h"
 #include "CTDL.h"
 #include "menu.h"
-#include "console.h"
+#include "mylib.h"
 #include <cstring>
 #include <iostream>
 #include <algorithm>
@@ -551,11 +551,26 @@ void insertSinhVienDangKy(PTRDK &First,DangKy svdk){
 int deleteFirstSinhVien(PTRSV &First){ if(isEmptySinhVien(First)) return 0; PTRSV p=First; First=p->next; delete p; return 1; }
 int deleteAfterSinhVien(PTRSV p){ if(!p||!p->next) return 0; PTRSV q=p->next; p->next=q->next; delete q; return 1; }
 int deleteSinhVien(PTRSV &First,char MASV[16]){
-    if(isEmptySinhVien(First)) return 0;
-    if(strcmp(First->sv.MASV,MASV)==0) return deleteFirstSinhVien(First);
-    PTRSV p;
-    for(p=First; p->next!=nullptr && strcmp(p->next->sv.MASV,MASV)!=0; p=p->next);
-    if(p->next!=nullptr) return deleteAfterSinhVien(p);
+    if (First == nullptr) return 0;
+
+    int target = getNumOfSinhVien(MASV);
+
+    if (getNumOfSinhVien(First->sv.MASV) == target &&
+        strcmp(First->sv.MASV, MASV) == 0)
+        return deleteFirstSinhVien(First);
+
+    PTRSV p = First;
+    while (p->next != nullptr) {
+        int nextNum = getNumOfSinhVien(p->next->sv.MASV);
+
+        if (nextNum == target && strcmp(p->next->sv.MASV, MASV) == 0)
+            return deleteAfterSinhVien(p);
+
+        if (nextNum > target)
+            break;
+
+        p = p->next;
+    }
     return 0;
 }
 bool findSinhVien(PTRSV &First,char MASV[16]){
@@ -563,13 +578,27 @@ bool findSinhVien(PTRSV &First,char MASV[16]){
     while(p!=nullptr){ if(strcmp(p->sv.MASV,MASV)==0) return true; p=p->next; }
     return false;
 }
-bool editSinhVien(PTRSV &sv){
-    char h[51], t[11], p[4], sdt[16], email[50];
-    cout<<"nhap ho moi: "; cin.getline(h,51); if(strlen(h)>0) strcpy(sv->sv.HO,h);
-    cout<<"nhap ten moi: "; cin.getline(t,11); if(strlen(t)>0) strcpy(sv->sv.TEN,t);
-    cout<<"doi phai moi: "; cin.getline(p,4); if(strlen(p)>0) strcpy(sv->sv.PHAI,p);
-    cout<<"so dien thoai moi: "; cin.getline(sdt,16); if(strlen(sdt)>0) strcpy(sv->sv.SODT,sdt);
-    cout<<"email moi: "; cin.getline(email,50); if(strlen(email)>0) strcpy(sv->sv.Email,email);
+bool editSinhVien(PTRSV &First, char MASV[16]){
+    PTRSV p = getSinhVienv2(First, MASV);
+    if (!p) {
+        cout << "Khong tim thay sinh vien!\n";
+        return false;
+    }
+
+    SinhVien old = p->sv;
+
+    cout << "\n=== CHINH SUA SINH VIEN ===\n";
+    cout << "(Enter = giu nguyen)\n\n";
+
+    inputOrKeep(p->sv.HO,   51, old.HO,   "Ho");
+    inputOrKeep(p->sv.TEN,  11, old.TEN,  "Ten");
+    inputOrKeep(p->sv.PHAI, 4,  old.PHAI, "Phai");
+    inputOrKeep(p->sv.SODT, 16, old.SODT, "So DT");
+    inputOrKeep(p->sv.Email,50, old.Email,"Email");
+
+    formatName(p->sv.HO);
+    formatName(p->sv.TEN);
+
     return true;
 }
 void NhapSinhVien(DS_LOPSV ds){
@@ -578,6 +607,7 @@ void NhapSinhVien(DS_LOPSV ds){
     char malop[16];
     cout << "Nhap Ma Lop: ";
     cin.getline(malop, 16);
+    toUpperCase(malop);
     LopSV *lop = searchLopSV(ds, malop);
     if (!lop) {
         cout << "Khong tim thay lop!\n";
@@ -589,6 +619,7 @@ void NhapSinhVien(DS_LOPSV ds){
     while (true) {
         cout << "\nNhap ma SV (Enter de dung): ";
         cin.getline(sv.MASV, 16);
+        toUpperCase(sv.MASV);
         if (sv.MASV[0] == '\0') break;
         if (checkSV(ds,sv)){
             cout<<"Ma Sinh Vien da ton tai vui long nhap lai...."<<endl;
@@ -728,11 +759,23 @@ SinhVien getSinhVien(DS_LOPSV dslop, char MASV[16]) {
     return empty;
 }
 PTRSV getSinhVienv2(PTRSV &First, char masv[16]){
-      if(First==nullptr)return nullptr;
-      for(PTRSV p=First;p!=nullptr;p=p->next){
-         if(strcmp(p->sv.MASV,masv)==0)return p;
-      }
-      return nullptr;
+      if (First == nullptr) return nullptr;
+
+    int target = getNumOfSinhVien(masv);
+    PTRSV p = First;
+
+    while (p != nullptr) {
+        int curr = getNumOfSinhVien(p->sv.MASV);
+
+        if (curr == target && strcmp(p->sv.MASV,masv) == 0)
+            return p;
+
+        if (curr > target) 
+            return nullptr;
+
+        p = p->next;
+    }
+    return nullptr;
 }
 bool checkSV(DS_LOPSV &dslop, SinhVien sv) {
     if (dslop.n == 0) return false;
@@ -765,8 +808,10 @@ void NhapLopSV(DS_LOPSV &dslop){
         LopSV lop;
 
         cout << "\nNhap Ma Lop (Nhap 0 de thoat):"; cin.getline(lop.MALOP,16);
+        toUpperCase(lop.MALOP);
         if (strcmp(lop.MALOP, "0") == 0) break;
         cout << "Nhap Ten Lop: "; cin.getline(lop.TENLOP,51);
+
         if (CheckLopSV(dslop,lop)) {
             cout << "LopSV da ton tai. Vui long nhap lai.\n";
             continue;
@@ -997,6 +1042,13 @@ void formatName(char s[]) {
     if (j > 0)j--;
     s[j] = '\0';
 }
+void toUpperCase(char s[]) {
+    for (int i = 0; s[i] != '\0'; i++) {
+        if (s[i] >= 'a' && s[i] <= 'z') {
+            s[i] = s[i] - ('a' - 'A');
+        }
+    }
+}
 bool checkformatdeadline (string s) {
     if (s.length() != 16) return false;
     if (s[4] != '-' || s[7] != '-' || s[10] != ' ' || s[13] != ':') return false;
@@ -1183,6 +1235,7 @@ PTRLTC findLTCByParams(PTRLTC FirstLTC) {
     cout << "Loi: Khong duoc de trong!\n";
 
     } while (strlen(MAMH) == 0);
+    toUpperCase(MAMH);
     
     return searchLTC(FirstLTC, nienkhoa, hocky, nhom, MAMH);
 }
@@ -1588,6 +1641,7 @@ void NhapDiem(PTRLTC &FirstLTC, DS_LOPSV &dslop) {
     cout << "Loi: Khong duoc de trong!\n";
 
     } while (strlen(mamh) == 0);
+    toUpperCase(mamh);
     PTRLTC cur = FirstLTC;
     PTRLTC ltc = nullptr;
     while(cur) {

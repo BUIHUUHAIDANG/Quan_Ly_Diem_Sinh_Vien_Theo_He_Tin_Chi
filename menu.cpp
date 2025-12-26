@@ -3,7 +3,7 @@
 #include <cstring>
 #include <limits>
 #include <iomanip>
-#include "console.h"
+#include "mylib.h"
 #include "menu.h"
 #include "LopSinhVien.h"
 using namespace std;
