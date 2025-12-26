@@ -1,86 +1,18 @@
-#include <iostream>    
+#include <iostream>
+#include <conio.h>      
+#include <windows.h>    
 #include <cstdio>
 #include <cstring>
 #include <limits>
-
+#include <iomanip>
+#include "CTDL.h"
 #include "mylib.h"
+#include "menu.h"    
 #include "MonHoc.h"
 #include "LopSinhVien.h"
-#include "CTDL.h"
 
 using namespace std;
-void drawStaticMenu(const char *title, const char *role, int n) {
-    int baseX = 75;
-    int baseY = 4;
 
-    clrscr();
-    SetBGColor(0);
-    SetColor(7);
-
-    gotoxy(baseX + 10, baseY);
-    SetBold(true);
-    SetColor(4);
-    cout << title;
-    SetBold(false);
-    ResetColor();
-
-    drawLine(baseX, baseY + 1, 40);
-
-    gotoxy(baseX, baseY + 2);
-    cout << "Vai tro: ";
-    SetBold(true);
-    SetColor(10);
-    cout << role;
-    ResetColor();
-    SetBold(false);
-
-    gotoxy(baseX, baseY + 4 + n * 2);
-    cout << "(↑ ↓ hoac W/S de di chuyen, Enter de chon)";
-}
-
-void drawOptions(const char *options[], int n, int highlight) {
-    int baseX = 75;
-    int baseY = 4;
-
-    for (int i = 0; i < n; i++) {
-        gotoxy(baseX + 3, baseY + 4 + i * 2);
-        cout << string(80, ' ');
-
-        gotoxy(baseX + 3, baseY + 4 + i * 2);
-        if (i == highlight) {
-            SetBGColor(7);
-            SetColor(0);
-            cout << "> " << options[i] << " <";
-        } else {
-            ResetColor();
-            cout << "  " << options[i];
-        }
-        ResetColor();
-    }
-}
-
-
-
-int menu(const char *title, const char *role, const char *options[], int n)  {
-    int highlight = 0;
-    drawStaticMenu(title, role, n);
-    while (true) {
-        drawOptions(options, n, highlight);
-        int ch = getch();
-        // support both arrow keys and WASD
-        if (ch == 27 && getch() == 91) {  
-        int arrow = getch(); // byte cuối xác định hướng
-        if (arrow == 65) highlight = (highlight - 1 + n) % n; // ↑
-        if (arrow == 66) highlight = (highlight + 1) % n;     // ↓
-           }
-       else if (ch == 'w' || ch == 'W')
-           highlight = (highlight - 1 + n) % n;
-       else if (ch == 's' || ch == 'S')
-           highlight = (highlight + 1) % n;
-       else if (ch == 10 || ch == 13) // Enter trên Linux = 10
-           return highlight;
-       }
-}   
    
 int main() {
     //Khoi tao Tree
