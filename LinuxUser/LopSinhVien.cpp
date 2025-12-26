@@ -266,19 +266,21 @@ PTRLTC In1TrangLTC_Bang(PTRLTC start) {
 
     int x = 2;
     int y = 4;
-    int w = 90;
+    int w = 90;   
 
     gotoxy(x + 2, y);
     SetBold(true);
     SetColor(11);
     cout << left
-         << setw(12) << "MaLTC"
+         << setw(10) << "MaLTC"
          << setw(10) << "MaMH"
          << setw(12) << "NienKhoa"
-         << setw(8)  << "HK"
-         << setw(8)  << "Nhom"
-         << setw(12) << "SV_Min"
-         << setw(12) << "SV_Max";
+         << setw(6)  << "HK"
+         << setw(6)  << "Nhom"
+         << setw(8)  << "Min"
+         << setw(8)  << "Max"
+         << setw(10) << "DangKy"     
+         << setw(20) << "Deadline";  
     ResetColor();
     SetBold(false);
 
@@ -288,13 +290,15 @@ PTRLTC In1TrangLTC_Bang(PTRLTC start) {
     while (p != nullptr && dem < 5) {
         gotoxy(x + 2, row++);
         cout << left
-             << setw(12) << p->ltc.MALOPTC
+             << setw(10) << p->ltc.MALOPTC
              << setw(10) << p->ltc.MAMH
              << setw(12) << p->ltc.NienKhoa
-             << setw(8)  << p->ltc.Hocky
-             << setw(8)  << p->ltc.Nhom
-             << setw(12) << p->ltc.sosvmin
-             << setw(12) << p->ltc.sosvmax;
+             << setw(6)  << p->ltc.Hocky
+             << setw(6)  << p->ltc.Nhom
+             << setw(8)  << p->ltc.sosvmin
+             << setw(8)  << p->ltc.sosvmax
+             << setw(10) << p->ltc.currentsv
+             << setw(20) << p->ltc.deadline;
 
         p = p->next;
         dem++;

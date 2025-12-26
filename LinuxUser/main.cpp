@@ -112,7 +112,7 @@ int main() {
 
     const char *features_giangVien[] = {
         "Xem danh sach mon hoc",
-        "Xem danh sach sinh vien",
+        "Xem danh sach lop sinh vien",
         "Xem danh sach lop tin chi",
         "Xem danh sach sinh vien da dang ki lop tin chi",
         "Nhap diem/ Sua diem cua sinh vien",//done
@@ -598,10 +598,16 @@ int main() {
                             clrscr();
                             cout << "=== XEM DANH SACH SINH VIEN THEO ALPHABET ===\n";
                             char malop[20];
+                            do {
                             cout << "Nhap Ma Lop: ";
-                            cin >> malop;
-                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
+                            cin.getline(malop, 20);
+                        
+                            if (strlen(malop) == 0)
+                            cout << "Loi: Khong duoc de trong!\n";
+                        
+                            } while (strlen(malop) == 0);
+                            toUpperCase(malop);
+                        
                             LopSV *lop = searchLopSV(ds, malop);
                             if (!lop) {
                                 cout << "\n>>> Khong tim thay lop!\n";
@@ -620,11 +626,15 @@ int main() {
                           clrscr();
                           cout << "=== XEM DANH SACH SINH VIEN ===\n";
                           char malop[20];
-                          cout << "Nhap Ma Lop: ";
-                          cin >> malop;
+                         do {
+                            cout << "Nhap Ma Lop: ";
+                            cin.getline(malop, 20);
+                        
+                            if (strlen(malop) == 0)
+                            cout << "Loi: Khong duoc de trong!\n";
+                        
+                         } while (strlen(malop) == 0);
                           toUpperCase(malop);
-                          cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
                           LopSV *lop = searchLopSV(ds, malop);
                           if (!lop) {
                                 cout << "\n>>> Khong tim thay lop!\n";
