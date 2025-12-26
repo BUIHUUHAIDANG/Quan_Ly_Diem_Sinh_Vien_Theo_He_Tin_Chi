@@ -27,10 +27,6 @@ ActionSV top(stackNodeSV* &root);
 void undoSuaSV(PTRSV &First,SinhVien sv);
 void undoSV(PTRSV &First, stackNodeSV* &root);
 bool deleteFirstStackSV(stackNodeSV* &root);
-// void undoSuaLTC(PTRLTC &First, LopTinChi ltc);
-// void undoLTC(PTRLTC &First, stackNode* &root);
-// void initializeStackNode(stackNode* &root);
-// bool deleteFirstStackLTC(stackNode* &root);
 
 //Lop Tin Chi
 PTRLTC createNodeLopTinChi(LopTinChi data);
@@ -70,6 +66,7 @@ int deleteAfterSinhVien(PTRSV p);
 int deleteSinhVien(PTRSV &First, char MASV[16]);
 bool findSinhVien(PTRSV &First, char MASV[16]);
 bool editSinhVien(PTRSV &sv);
+void NhapSinhVien(DS_LOPSV dslop);
 
 //Lop Sinh Vien
 PTRSV GetLop(DS_LOPSV &dslop, char malop[16]);
@@ -89,9 +86,12 @@ int compareSV(const SinhVien& a, const SinhVien& b);
 void sortSinhVien(SinhVien arr[], int n);
 void in1TrangSV(SinhVien arr[], int n, int page, int pageSize);
 void printDSSV_sorted(LopSV *lop);
+void printDSSV(LopSV *lop);
 
 //Nhap Lop Tin Chi + Sua lop Tin Chi
 bool isValidSoSV(int min, int max);
+bool checkformatdeadline (string s);
+bool validdealine (time_t deadline);
 LopTinChi NhapLTC();
 int getNextMaLopTinChi(PTRLTC First);
 

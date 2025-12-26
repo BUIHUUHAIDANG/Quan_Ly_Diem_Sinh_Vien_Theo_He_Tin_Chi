@@ -87,7 +87,7 @@ void undoSV(PTRSV &First, stackNodeSV* &root){
      //xoa
      else if(p.type==2){
        //function them
-       insertSinhVien(First,p.sv);
+       insertSinhVienV2(First,p.sv);
      }
      //sua
      else if(p.type==3){
@@ -572,6 +572,70 @@ bool editSinhVien(PTRSV &sv){
     cout<<"email moi: "; cin.getline(email,50); if(strlen(email)>0) strcpy(sv->sv.Email,email);
     return true;
 }
+void NhapSinhVien(DS_LOPSV ds){
+    gotoxy(10, 10);
+    cout << "=== NHAP SINH VIEN VAO LOP ===\n";
+    char malop[16];
+    cout << "Nhap Ma Lop: ";
+    cin.getline(malop, 16);
+    LopSV *lop = searchLopSV(ds, malop);
+    if (!lop) {
+        cout << "Khong tim thay lop!\n";
+        getch();
+        return;
+    }
+    cout << "Ten lop: " << lop->TENLOP << endl;
+    SinhVien sv;
+    while (true) {
+        cout << "\nNhap ma SV (Enter de dung): ";
+        cin.getline(sv.MASV, 16);
+        if (sv.MASV[0] == '\0') break;
+        if (checkSV(ds,sv)){
+            cout<<"Ma Sinh Vien da ton tai vui long nhap lai...."<<endl;
+            continue;
+        }
+        do
+        {
+        cout<<"nhap Ho: ";
+        cin.getline(sv.HO,51);
+        if(strlen(sv.HO)==0){
+          cout<<"Khong duoc bo trong"<<endl;
+        }
+        } while (strlen(sv.HO)==0);
+        do
+        {
+        cout << "Nhap ten: "; cin.getline(sv.TEN, 11);
+        if(strlen(sv.TEN)==0){
+          cout<<"Khong duoc bo trong"<<endl;
+        }
+        } while (strlen(sv.TEN)==0);
+        do
+        {
+        cout << "Nhap phai: "; cin.getline(sv.PHAI, 4);
+        if(strlen(sv.PHAI)==0){
+          cout<<"Khong duoc bo trong"<<endl;
+        }
+        } while (strlen(sv.PHAI)==0);
+        do
+        {
+        cout << "Nhap so dien thoai: "; cin.getline(sv.SODT, 16);
+        if(strlen(sv.SODT)==0){
+          cout<<"Khong duoc bo trong"<<endl;
+        }
+        } while (strlen(sv.SODT)==0);
+        do
+        {
+        cout << "Nhap email: "; cin.getline(sv.Email, 50);
+        if(strlen(sv.Email)==0){
+          cout<<"Khong duoc bo trong"<<endl;
+        }
+        } while (strlen(sv.Email)==0);
+        formatName(sv.HO);
+        formatName(sv.TEN);
+        insertSinhVienV2(lop->FirstSV, sv);
+    }
+
+}
 PTRSV GetLop(DS_LOPSV &dslop, char malop[16]) {
     PTRSV FirstSV = nullptr;
     for(int i=0; i<dslop.n; i++) {
@@ -770,23 +834,6 @@ void dangkyLTC(PTRLTC &FirstLTC, DS_LOPSV dslop) { // Sinh vien dang ki ltc
         cout << " Dang ky thanh cong!\n";
     }
 }
-
-void InDSSV_TheoTen(PTRSV first){
-    if(!first){ cout<<"Danh sach rong!\n"; return; }
-    int n=0; for(PTRSV p=first;p;p=p->next) n++;
-    SinhVien* arr=new SinhVien[n]; int i=0;
-    for(PTRSV p=first;p;p=p->next) arr[i++]=p->sv;
-    for(int i=0;i<n-1;i++){
-        for(int j=i+1;j<n;j++){
-            if(strcmp(arr[i].TEN,arr[j].TEN)>0 || (strcmp(arr[i].TEN,arr[j].TEN)==0 && strcmp(arr[i].HO,arr[j].HO)>0)) swap(arr[i],arr[j]);
-        }
-    }
-    cout<<"\ndanh sach sinh vien theo alphabet\n";
-    for(int i=0;i<n;i++){
-        cout<<arr[i].MASV<<" | "<<arr[i].HO<<" "<<arr[i].TEN<<" | "<<arr[i].PHAI<<" | "<<arr[i].SODT<<endl;
-    }
-    delete[] arr;
-}
 LopSV* searchLopSV(DS_LOPSV &dsLop,const char* MALOP){
     for(int i=0;i<dsLop.n;i++){
         if(strcmp(dsLop.nodes[i]->MALOP,MALOP)==0) return dsLop.nodes[i];
@@ -845,7 +892,6 @@ void printDSSV_sorted(LopSV *lop) {
         return;
     }
 
-    // Đếm số SV
     int n = 0;
     PTRSV p = lop->FirstSV;
     while(p){ n++; p = p->next; }
@@ -888,6 +934,49 @@ void printDSSV_sorted(LopSV *lop) {
 
     delete[] arr;
 }
+void printDSSV(LopSV *lop) {
+    if(!lop || !lop->FirstSV) {
+        cout << "Lop khong co sinh vien!\n";
+        getch();
+        return;
+    }
+    int n = 0;
+    PTRSV p = lop->FirstSV;
+    while(p){ n++; p = p->next; }
+
+    
+    SinhVien* arr = new SinhVien[n];
+    p = lop->FirstSV;
+    for(int i = 0; i < n; i++){
+        arr[i] = p->sv;
+        p = p->next;
+    }
+    int pageSize = 5;
+    int page = 1;
+    int totalPage = (n + pageSize - 1) / pageSize;
+
+    while(true) {
+        clrscr();
+
+        cout << "===== DANH SACH SINH VIEN =====\n\n";
+        in1TrangSV(arr, n, page, pageSize);
+
+        cout << "\nTrang " << page << " / " << totalPage;
+        cout << "    [A] Truoc   [D] Sau   [ESC] Thoat";
+
+        char key = getch();
+
+        if(key == 27) break;
+
+        if((key == 'd' || key == 'D') && page < totalPage)
+            page++;
+
+        if((key == 'a' || key == 'A') && page > 1)
+            page--;
+    }
+
+    delete[] arr;
+}
 bool isValidSoSV(int min, int max) {
     return min > 0 && max > 0 && min <= max;
 }
@@ -907,6 +996,20 @@ void formatName(char s[]) {
     }
     if (j > 0)j--;
     s[j] = '\0';
+}
+bool checkformatdeadline (string s) {
+    if (s.length() != 16) return false;
+    if (s[4] != '-' || s[7] != '-' || s[10] != ' ' || s[13] != ':') return false;
+    for (int i = 0; i < s.length(); i++) {
+        if (i == 4 || i == 7 || i == 10 || i == 13) continue;
+        if(!isdigit(s[i])) return false;
+    }
+    return true;
+}
+bool validdealine (time_t deadline) {
+    time_t now = time(0);
+    if (difftime(deadline, now) <= 0) return false;
+    return true;
 }
 LopTinChi NhapLTC(){
     LopTinChi ltc;
@@ -968,7 +1071,11 @@ LopTinChi NhapLTC(){
     cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
     cout << "Nhap Deadline (YYYY-MM-DD HH:MM): ";
     string deadlinestr;
-    getline(cin, deadlinestr);
+    while (true) {
+        getline(cin, deadlinestr);
+        if (checkformatdeadline(deadlinestr) && validdealine(stringToTime(deadlinestr))) break;
+        cout << "Loi: Deadline khong hop le. Nhap lai (YYYY-MM-DD HH:MM): ";
+    }
     ltc.deadline = stringToTime(deadlinestr);
     ltc.huylop = false;
     ltc.dssvdk = nullptr;
@@ -1137,7 +1244,7 @@ void loadLopSV_Binary(DS_LOPSV &ds, const char *fileLop, const char *fileSV) {
         fread(&sv, sizeof(SinhVien), 1, fSV);
 
         LopSV* lop = searchLopSV(ds, malop);
-        if(lop) insertSinhVien(lop->FirstSV, sv);
+        if(lop) insertSinhVienV2(lop->FirstSV, sv);
     }
 
     fclose(fSV);

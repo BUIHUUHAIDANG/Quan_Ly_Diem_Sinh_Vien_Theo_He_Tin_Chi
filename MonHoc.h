@@ -23,7 +23,9 @@ void WriteNode(FILE* f, treeMH node);
 void LuuMonHoc(treeMH t, const string &filename);
 treeMH ReadNode(FILE* f);
 treeMH DocMonHoc(const string &filename);
-
+// format
+void Deletespaceandtoupper (char s[]);
+void UpperFirstCharName(char s[]);
 // -------------------- HÀM HỖ TRỢ --------------------
 PTRSV findSinhVien(PTRSV First, char MASV[], PTRSV dssv);
 bool checkMH(treeMH t, MonHoc mh);
@@ -40,6 +42,7 @@ treeMH timMonHoc(treeMH t, char mamh[]);
 void InLTC (PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t);
 void SVDangKy(PTRDK &dssvdk, PTRSV sv);
 PTRLTC checkmamh(PTRLTC loptinchi, char nienkhoa[], int hocky);
+PTRLTC checkmaltc(PTRLTC loptinchi, char nienkhoa[], int hocky);
 void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, PTRSV dssv);
 // -------------------- HÀM CLEAR ---------------------
 void ClearTree(treeMH &t);

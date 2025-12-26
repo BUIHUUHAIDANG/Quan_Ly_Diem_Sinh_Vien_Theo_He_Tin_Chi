@@ -437,3 +437,23 @@ void BangDiemTK(PTRSV arr[], int count, PTRLTC &dsltc,DS_LOPSV &dslop,treeMH &ds
         else if (ch == 27) return; // esc
     }
 }
+void drawMonHoc (treeMH t, MonHoc mh, int count, int highlight, int index) {
+    SetColor(14);
+    SetBold(true);
+    cout << "\n              -==== DANH SACH MON HOC ====- \n";
+    SetBold(false);
+    SetColor(2);
+    cout << left << setw(5) << "STT" << setw(15) << "MAMH" << setw(30) << "TENMH" << 
+    setw(10) << "STCLT" << setw(10) << "STCTH" << endl;
+
+    cout << "----------------------------------------------------------------------------------\n";
+    ResetColor();
+    int endindex = min(index + linenum, count);
+    for(int i=index; i<endindex; i++) {
+        if(i == highlight) SetColor(14); else SetColor(7);
+        cout << left << setw(5) << (i+1) << setw(15) << t->mh.MAMH << setw(30) << t->mh.TENMH
+        << setw(10) << t->mh.STCLT << setw(10) << t->mh.STCTH;
+        cout << "\n";
+    }
+    ResetColor();
+} 

@@ -9,34 +9,47 @@
 #include "CTDL.h"
 
 using namespace std;
-void drawStaticMenu(const char *title, const char *role, int n)  {
+void drawStaticMenu(const char *title, const char *role, int n) {
+    int baseX = 75;
+    int baseY = 4;
+
     clrscr();
     SetBGColor(0);
     SetColor(7);
-    gotoxy(20, 2);
+
+    gotoxy(baseX + 10, baseY);
     SetBold(true);
     SetColor(4);
     cout << title;
-    drawLine(5, 3, 53);
-    ResetColor();
     SetBold(false);
-    gotoxy(5, 4);
+    ResetColor();
+
+    drawLine(baseX, baseY + 1, 40);
+
+    gotoxy(baseX, baseY + 2);
     cout << "Vai tro: ";
     SetBold(true);
     SetColor(10);
     cout << role;
     ResetColor();
     SetBold(false);
-    gotoxy(5, 6 + n * 2);
-    cout << "(Dung phim ↑ ↓ hoac W/S de di chuyen, Enter de chon)";
+
+    gotoxy(baseX, baseY + 4 + n * 2);
+    cout << "(↑ ↓ hoac W/S de di chuyen, Enter de chon)";
 }
+
 void drawOptions(const char *options[], int n, int highlight) {
+    int baseX = 75;
+    int baseY = 4;
+
     for (int i = 0; i < n; i++) {
-        gotoxy(8, 6 + i * 2);
-        cout << string(200, ' ');
-        gotoxy(8, 6 + i * 2);
+        gotoxy(baseX + 3, baseY + 4 + i * 2);
+        cout << string(80, ' ');
+
+        gotoxy(baseX + 3, baseY + 4 + i * 2);
         if (i == highlight) {
-            SetBGColor(7); SetColor(0);
+            SetBGColor(7);
+            SetColor(0);
             cout << "> " << options[i] << " <";
         } else {
             ResetColor();
@@ -47,7 +60,7 @@ void drawOptions(const char *options[], int n, int highlight) {
 }
 
 
-// === Menu Logic ===
+
 int menu(const char *title, const char *role, const char *options[], int n)  {
     int highlight = 0;
     drawStaticMenu(title, role, n);
@@ -146,10 +159,16 @@ int main() {
         "xoa lop sinh vien",
         "Quay lai"
     };
+    const char *features_admin_8[]= {
+        "Them Sinh Vien vao 1 lop",
+        "Sua Sinh Vien",
+        "Xoa Sinh Vien",
+        "Quay lai"
+    };
 
     const char *features_admin_9[] = {
-        "Xem danh sach sinh vien(dua vao ma lop) theo thu tu alphabet theo ten",
-        "xem danh sach ....",
+        "Xem danh sach sinh vien theo thu tu alphabet",
+        "xem danh sach sinh vien (dua vao ma lop)",
         "← Quay lai"
     };
 
@@ -166,6 +185,7 @@ int main() {
     const int n_features_admin_3 = sizeof(features_admin_3) / sizeof(features_admin_3[0]);
     const int n_features_admin_4 = sizeof(features_admin_4) / sizeof(features_admin_4[0]);
     const int n_features_admin_7 = sizeof(features_admin_7) / sizeof(features_admin_7[0]);
+    const int n_features_admin_8 = sizeof(features_admin_8) / sizeof(features_admin_8[0]);
     const int n_features_admin_9 = sizeof(features_admin_9) / sizeof(features_admin_9[0]);
     const int n_featuresdangkyhuy = sizeof(featuresdangkyhuy) / sizeof(featuresdangkyhuy[0]);
 
@@ -330,9 +350,6 @@ int main() {
                             clrscr();
                             cout << "\n=== Nhap mon hoc ===\n";
                             NhapMonHoc(dsmh, undostackMH);
-                            cout << "\n>>> Da them mon hoc moi thang cong!\n";
-                            cout << "Nhan phim bat ky de quay lai...";
-                            getch();
                         }
                         else if (n == 1) { // Xoa MH
                             clrscr();
@@ -509,76 +526,24 @@ int main() {
                     }
                 }
                 else if (f == 8) { // Nhap sinh vien vao lop
+                    while(true){
+                    int n = menu("Quan Ly Sinh Vien", "", features_admin_8, n_features_admin_8);
+                    if (n == -1 || n == n_features_admin_8 - 1) break;
+                    if (n==0){
                     clrscr();
-                    gotoxy(10, 10);
-                    cout << "=== NHAP SINH VIEN VAO LOP ===\n";
-
-                    char malop[16];
-                    cout << "Nhap Ma Lop: ";
-                    cin.getline(malop, 16);
-
-                    LopSV *lop = searchLopSV(ds, malop);
-                    if (!lop) {
-                        cout << "Khong tim thay lop!\n";
-                        getch();
-                        continue;
-                    }
-
-                    cout << "Ten lop: " << lop->TENLOP << endl;
-                    SinhVien sv;
-                    while (true) {
-                        cout << "\nNhap ma SV (Enter de dung): ";
-                        cin.getline(sv.MASV, 16);
-                        if (sv.MASV[0] == '\0') break;
-                        if (checkSV(ds,sv)){
-                            cout<<"Ma Sinh Vien da ton tai vui long nhap lai...."<<endl;
-                            continue;
-                        }
-                        do
-                        {
-                        cout<<"nhap Ho: ";
-                        cin.getline(sv.HO,51);
-                        if(strlen(sv.HO)==0){
-                          cout<<"Khong duoc bo trong"<<endl;
-                        }
-                        } while (strlen(sv.HO)==0);
-                        do
-                        {
-                        cout << "Nhap ten: "; cin.getline(sv.TEN, 11);
-                        if(strlen(sv.TEN)==0){
-                          cout<<"Khong duoc bo trong"<<endl;
-                        }
-                        } while (strlen(sv.TEN)==0);
-                        do
-                        {
-                        cout << "Nhap phai: "; cin.getline(sv.PHAI, 4);
-                        if(strlen(sv.PHAI)==0){
-                          cout<<"Khong duoc bo trong"<<endl;
-                        }
-                        } while (strlen(sv.PHAI)==0);
-                        do
-                        {
-                        cout << "Nhap so dien thoai: "; cin.getline(sv.SODT, 16);
-                        if(strlen(sv.SODT)==0){
-                          cout<<"Khong duoc bo trong"<<endl;
-                        }
-                        } while (strlen(sv.SODT)==0);
-                        do
-                        {
-                        cout << "Nhap email: "; cin.getline(sv.Email, 50);
-                        if(strlen(sv.Email)==0){
-                          cout<<"Khong duoc bo trong"<<endl;
-                        }
-                        } while (strlen(sv.Email)==0);
-                        formatName(sv.HO);
-                        formatName(sv.TEN);
-                        insertSinhVien(lop->FirstSV, sv);
-                    }
-
+                    NhapSinhVien(ds);
                     saveLopSV_Binary(ds, "LopSV.txt", "SinhVien.txt");
                     cout << "\n>>> Da cap nhat danh sach sinh vien vao lop!\n";
                     cout << "(Nhan phim bat ky de quay lai...)";
                     getch();
+                    }
+                    if (n==1){
+                     
+                    }
+                    if (n==2){
+
+                    }
+                  }
                 }
                 else if (f == 9) { // Xem danh sach sinh vien theo alphabet
                     while (true) {
@@ -606,6 +571,27 @@ int main() {
                             printDSSV_sorted(lop);
 
                         }
+                        if(n==1){
+                          clrscr();
+                          cout << "=== XEM DANH SACH SINH VIEN ===\n";
+                          char malop[20];
+                          cout << "Nhap Ma Lop: ";
+                          cin >> malop;
+                          cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                          LopSV *lop = searchLopSV(ds, malop);
+                          if (!lop) {
+                                cout << "\n>>> Khong tim thay lop!\n";
+                                cout << "Nhan phim bat ky de quay lai...";
+                                getch();
+                                continue;
+                            }
+
+                          cout << "\nMa lop : " << lop->MALOP << endl;
+                          cout << "Ten lop: " << lop->TENLOP << endl;
+                          printDSSV(lop);
+                        }
+
                     }
                 }
                 else if(f==10){
@@ -635,3 +621,4 @@ int main() {
     cout << "Tam biet!\n";
     return 0;
 }
+//g++ main.cpp MonHoc.cpp LopSinhVien.cpp console.cpp CTDL.cpp menu.cpp -o main
