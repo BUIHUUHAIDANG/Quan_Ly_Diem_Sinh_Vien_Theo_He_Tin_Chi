@@ -4,89 +4,141 @@
 #include <iostream>
 #include "CTDL.h"
 using namespace std;
-//void initializeLTC(PTRLTC &First);
-//void initializeSV(PTRSV & FirstSV);
-//PTRLTC createNodeLopTinChi(LopTinChi data);
-//void insertLopTinChi(PTRLTC &First, LopTinChi data);
+
+//chuan hoa ten
+void formatName(char s[]);
+void toUpperCase(char s[]);
+//stack Hieu Chinh LTC
+stackNode* newNode(ActionLTC data);
+bool isEmpty(stackNode* &root);
+void push(stackNode* &root, ActionLTC data);
+void pop(stackNode* &root);
+ActionLTC top(stackNode* &root);
+void undoSuaLTC(PTRLTC &First, LopTinChi ltc);
+void undoLTC(PTRLTC &First, stackNode* &root);
+bool deleteFirstStackLTC(stackNode* &root);
+
+//stack Hieu Chinh Sinh Vien
+stackNodeSV* newNode(ActionSV data);
+stackNodeSV* newNode(ActionSV data);
+bool isEmpty(stackNodeSV* &root);
+void push(stackNodeSV* &root, ActionSV data);
+void pop(stackNodeSV* &root);
+ActionSV top(stackNodeSV* &root);
+void undoSuaSV(PTRSV &First,SinhVien sv);
+void undoSV(PTRSV &First, stackNodeSV* &root);
+bool deleteFirstStackSV(stackNodeSV* &root);
+
+//Lop Tin Chi
+PTRLTC createNodeLopTinChi(LopTinChi data);
+void insertLopTinChi(PTRLTC &First, LopTinChi data);
 bool isEmpty(PTRLTC &First);
 int deleteFirst(PTRLTC &First);
-//int deleteAfter(PTRLTC p);
-//int deleteLopTinChi(PTRLTC &First,int MALTC);
-//void Clearlist(PTRLTC &First);
-//void ClearlistSV(PTRSV &First);
-//void ClearDS_Lop(DS_LOPSV &ds);
-//PTRLTC searchLopTinChi(PTRLTC &First,int x);
-//PTRLTC searchLTC(PTRLTC &First,char nienkhoa[10],int hocky,int nhom,char MAMH[11]);
-//bool editLopTinChi(PTRLTC &First,int x);
-//void showDanhSachSinhVienDangKy(PTRLTC &l);
-//void showLopTinChi(PTRLTC &l);
-void InDSSV(DS_LOPSV &dslop, char MALOP[]);
-void InDSSVDK(PTRLTC &FirstLTC, int maloptc, DS_LOPSV &dslop);
-void InDSLTC(PTRLTC &FirstLTC); // In DSLTC
-void InDSLSV(DS_LOPSV &dslop);  // In DSLOPSV
+int deleteAfter(PTRLTC p);
+int deleteLopTinChi(PTRLTC &First, int MALTC);
 
-//bool showDSSVOfLopTinChi(PTRLTC &First,char nienkhoa[10],int hocky,int nhom,char MAMH[11]);
+PTRLTC searchLopTinChi(PTRLTC &First, int x);
+PTRLTC searchLTC(PTRLTC &First, char nienkhoa[10], int hocky, int nhom, char MAMH[11]);
 
-//bool isEmptySinhVien(PTRSV &First);
-//void insertSinhVien(PTRSV &First,SinhVien x);
-//int deleteFirstSinhVien(PTRSV &First);
-//int deleteAfterSinhVien(PTRSV p);
-//int deleteSinhVien(PTRSV &First,char MASV[16]);
-//bool findSinhVien(PTRSV &First,char MASV[16]);
-//SinhVien getSinhVien(PTRSV &FirstSV, char MASV[16]); 
-//bool editSinhVien(PTRSV &sv);
+bool editLopTinChi(PTRLTC &First, int x);
+bool checkLTC(PTRLTC FirstLTC, LopTinChi ltc);
 
-//LopSV* searchLopSV(DS_LOPSV &dsLop,const char* MALOP);
-//int compareSV(const SinhVien& a, const SinhVien& b);
-//int listToArray(PTRSV First, SinhVien arr[]);
-//void sortSinhVien(SinhVien arr[], int n);
-//void printDSSV_sorted(LopSV *lop);
-void NhapSV(DS_LOPSV &dslop); // Nhap SV
-void NhapLTC(PTRLTC &FirstLTC); // Nhap LTC
-void NhapLopSV(DS_LOPSV &dslop); // Nhap LopSV
-//void saveLopTinChiToFileText(PTRLTC First, const string &filename);
-//void loadLopTinChiFromFileText(PTRLTC &First, const string &filename);
-int getNextMaLopTinChi(PTRLTC First);
-//string inputOrKeep(const string &oldValue, const string &label);
-//int inputIntOrKeep(int oldValue, const string &label);
-//PTRLTC findLTCByParams(PTRLTC FirstLTC);
-// void saveSinhVienToFile(PTRSV First, const string &filename);
-// void loadSinhVienFromFile(PTRSV &First, const string &filename);
-// LopSV* searchLopSV(DS_LOPSV &ds, const char* MALOP);
-//void saveLopSV(DS_LOPSV &ds, const string &fileLop, const string &fileSV);
-//void loadLopSV(DS_LOPSV &ds, const string &fileLop, const string &fileSV);
-
-// ========================================================================================
-// -- SINH VIEN --
-
+//Danh Sach Sinh Vien Dang Ky
+void insertSinhVienDangKy(PTRDK &First, DangKy svdk);
+int deleteFirstDK(PTRDK &First);
+void ClearlistDSSVDK(PTRDK &First);
+bool CheckDK(PTRDK dssvdk, const char* masv);
 PTRDK taonodeSVDK(const char* masv);
-void insertSVDK(PTRDK &First, PTRDK node);
-void InsertSV(PTRSV &FirstSV, SinhVien sv);
+
+//In LTC va DSSVDK
+PTRDK In1TrangSVDK_Bang(PTRDK start, DS_LOPSV dslop);
+int DemSoSVDK(PTRDK l);
+int TinhTrangHienTai(PTRDK First, PTRDK currPage);
+void showDanhSachSinhVienDangKy(PTRDK &l,DS_LOPSV dslop);
+void InDSSVDK(PTRLTC &FirstLTC, int maloptc, DS_LOPSV &dslop);
+PTRLTC In1TrangLTC_Bang(PTRLTC start);
+void InDSLTC(PTRLTC &l);
+
+//Danh Sach Sinh Vien
+bool isEmptySinhVien(PTRSV &First);
+void insertSinhVien(PTRSV &First, SinhVien x);
+int deleteFirstSinhVien(PTRSV &First);
+int deleteAfterSinhVien(PTRSV p);
+int deleteSinhVien(PTRSV &First, char MASV[16]);
+bool findSinhVien(PTRSV &First, char MASV[16]);
+bool editSinhVien(PTRSV &First, char MASV[16]);
+void NhapSinhVien(DS_LOPSV dslop);
+
+//Lop Sinh Vien
+PTRSV GetLop(DS_LOPSV &dslop, char malop[16]);
+void InDSLSV(DS_LOPSV &dslop);
+SinhVien getSinhVien(DS_LOPSV dslop, char MASV[16]);
+PTRSV getSinhVienv2(PTRSV &First, char masv[16]);
+bool checkSV(DS_LOPSV &dslop, SinhVien sv);
+bool CheckLopSV(DS_LOPSV dslop, LopSV lop);
+void NhapLopSV(DS_LOPSV &dslop);
+
+//Dang Ki Lop Tin Chi
 void dangkyLTC(PTRLTC &FirstLTC, DS_LOPSV dslop);
 
-// -- HAM HO TRO --
-void DeleteDSSV(PTRSV &FirstSV);
-void DeleteDSLopSV(DS_LOPSV &dslop);
-void DeleteDSLTC(PTRLTC &FirstLTC);
+//Sap Xep theo Alphabet
+LopSV* searchLopSV(DS_LOPSV &dsLop, const char* MALOP);
+int compareSV(const SinhVien& a, const SinhVien& b);
+void sortSinhVien(SinhVien arr[], int n);
+void in1TrangSV(SinhVien arr[], int n, int page, int pageSize);
+void printDSSV_sorted(LopSV *lop);
+void printDSSV(LopSV *lop);
 
-void InsertLast_LTC(PTRLTC &FirstLTC,LopTinChi &ltc);
-void InsertLast_DK(PTRDK &dssvdk, DangKy dk);
-void duyettreeMH(treeMH t, char dsMAMH[][11], int &soMH);
+//Nhap Lop Tin Chi + Sua lop Tin Chi
+bool isValidSoSV(int min, int max);
+bool checkformatdeadline (string s);
+bool validdealine (time_t deadline);
+LopTinChi NhapLTC();
+int getNextMaLopTinChi(PTRLTC First);
 
-// -- SAVE LOAD --
-int SaveFile_LopSV(const char* tenfile, DS_LOPSV &dslop);
-int LoadFile_LopSV(const char* tenfile, DS_LOPSV &dslop);
-int SaveFile_LTC(const char* tenfile, PTRLTC &FirstLTC);
-int LoadFile_LTC(const char* tenfile, PTRLTC &FirstLTC);
+void inputOrKeep(char dest[], int maxLen, const char oldValue[], const char *label);
+int inputIntOrKeep(int oldValue, const char *label);
 
-// -- DIEM --
+PTRLTC findLTCByParams(PTRLTC FirstLTC);
+
+// Save/Load cua Lop Tin Chi(Danh sach sinh vien dang ky) va Lop Sinh Vien(danh sach sinh vien cua lop do)
+void saveLopSV_Binary(DS_LOPSV &ds, const char *fileLop, const char *fileSV);
+void loadLopSV_Binary(DS_LOPSV &ds, const char *fileLop, const char *fileSV);
+
+void saveLopTinChi_Binary(PTRLTC &First, const char *fileloptinchi, const char *fileSVDK);
+void loadLopTinChi_Binary(PTRLTC &First, const char *fileLop, const char *fileSVDK);
+
+//Tinh/In bang diem cua sinh vien 
+void getmonhocDK(bool MHdaDK[], int soMH, char dsMAMH[][11], const char MASV[], PTRLTC dsltc);
 float Tinhdiemtb(SinhVien &sv, PTRLTC &dsltc, treeMH &dsmh);
-void IndiemtbLop(PTRLTC &dsltc,DS_LOPSV &dslop, treeMH &dsmh);
-void IndiemtbSinhvien( PTRLTC &dsltc,  DS_LOPSV &dslop,  treeMH &dsmh);
-void NhapDiem(nodeLTC* dsltc, DS_LOPSV &dslop);
-void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV &dslop);
-void InbangdiemtongketLop( PTRLTC &dsltc,  DS_LOPSV &dslop,  treeMH &dsmh);
-void InbangdiemtongketSinhvien( PTRLTC &dsltc,  DS_LOPSV &dslop, treeMH &dsmh);
+void IndiemtbLop(PTRLTC &dsltc, DS_LOPSV &dslop, treeMH &dsmh);
+void IndiemtbSinhvien(PTRLTC &dsltc, DS_LOPSV &dslop,treeMH &dsmh);
 
+void duyettreeMH(treeMH t, char dsMAMH[][11], int &soMH);
+void InbangdiemtongketLop(PTRLTC &dsltc, DS_LOPSV &dslop, treeMH &dsmh);
+void InbangdiemtongketSinhvien( PTRLTC &dsltc,  DS_LOPSV &dslop,  treeMH &dsmh);
+
+void NhapDiem(PTRLTC &dsltc, DS_LOPSV &dslop);
+void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV &dslop);
+
+//Tim/Xoa/CapNhap Sinh Vien 
+int posLop(DS_LOPSV &ds, char MALOP[16]);
+void xoaLopByPos(DS_LOPSV &ds, int pos);
+
+//don dep sau khi thoat chuong trinh 
+void ClearlistSV(PTRSV &First);
+void ClearLTC(PTRLTC &First);
+void ClearDS_Lop(DS_LOPSV &ds);
+void ClearStackLTC(stackNode* &dsnode);
+void ClearStackSV(stackNodeSV* &dsnode);
+//recode function insert
+void insertSinhVienV2(PTRSV &First,SinhVien sv);
+void insertSinhVienDKV2(PTRDK &First,DangKy svdk);
+//get 3number at the end of MaSV
+int getNumOfSinhVien(char MaSV[]);
+
+//change time to int
+time_t stringToTime(string s);
+void AutoCancelExpiredClasses(PTRLTC &l);
 
 #endif

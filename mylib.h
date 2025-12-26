@@ -40,7 +40,7 @@ inline void gotoxy(short x, short y) {
 // ========== Clear Screen ==========
 // Always uses Windows API clear (more reliable in all Windows terminals)
 inline void clrscr() {
-    // If ANSI environment (Linux/WSL/Git Bash) → use ANSI clear
+    // If ANSI environment (Linux/WSL/Git Bash) â†’ use ANSI clear
     if (useANSI()) {
         printf("\x1b[2J\x1b[H");
         fflush(stdout);

@@ -4,6 +4,7 @@
 #include<iostream>
 #include<iomanip>
 #include<cstring>
+#include<ctime>
 using namespace std;
 const int MAX_LOPSV = 10000;
 struct MonHoc {
@@ -38,7 +39,6 @@ struct LopSV {
     char TENLOP[51];
     PTRSV FirstSV;
     LopSV();
-    LopSV(const LopSV &lop);
 };
 
 struct DS_LOPSV {
@@ -50,7 +50,7 @@ struct DS_LOPSV {
 struct DangKy {
     char MASV[16];
     float DIEM;
-    bool HuyDK;
+    bool HuyDK=false;
 };
 
 struct nodeDK {
@@ -69,6 +69,8 @@ struct LopTinChi {
     int sosvmin, sosvmax;
     bool huylop;
     PTRDK dssvdk;
+    int currentsv;
+    time_t deadline;
     LopTinChi();
 };
 
@@ -79,10 +81,40 @@ struct nodeLTC {
     nodeLTC(LopTinChi data);
 };
 typedef nodeLTC* PTRLTC;
+struct ActionLTC {
+    int type;
+    LopTinChi ltc;
+};
+struct stackNode
+{
+    ActionLTC data;
+    stackNode* next;
+};
+struct ActionSV {
+    int type;
+    SinhVien sv;
+};
+struct stackNodeSV
+{
+    ActionSV data;
+    stackNodeSV* next;
+};
+struct ActionMH {
+    int type = 0; //1 = them, 2 = xoa, 3 = sua mh
+    MonHoc mh;
+};
 
-//void initializeLTC(PTRLTC &First);
-//PTRLTC createNodeLopTinChi(LopTinChi data);
+struct node {
+    ActionMH data;
+    node* next;
+};
+
+typedef node* PTRNode;
+
+struct stack {
+    node* top = nullptr; // đỉnh stack
+};
+
 
 
 #endif
-
