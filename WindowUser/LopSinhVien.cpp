@@ -1850,7 +1850,7 @@ void AutoCancelExpiredClasses(PTRLTC &l) {
     PTRLTC cur = nullptr;
 
     while (cur != nullptr) {
-        bool hetHan = (now >= cur->ltc.deadline);
+        bool hetHan = (now >= stringToTime(cur->ltc.deadline));
         bool thieuSV = (cur->ltc.currentsv < cur->ltc.sosvmin);
 
         if (hetHan && thieuSV) {

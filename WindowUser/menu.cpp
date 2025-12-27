@@ -9,6 +9,7 @@
 #include "menu.h"
 #include "LopSinhVien.h"
 #include "CTDL.h"
+#include "MonHoc.h"
 using namespace std;
 
 void drawStaticMenu(const char *title, const char *role, int n) {
@@ -531,3 +532,28 @@ void drawMonHoc (treeMH t, MonHoc mh, int count, int highlight, int index) {
     }
     ResetColor();
 } 
+
+void InLTC_UI(PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t) {
+    if (loptinchi == nullptr) {
+        cout << "Danh sach lop tin chi rong!\n";
+        getch();
+        return;
+    }
+
+    const int pageSize = 5;
+    int page = 0;
+    char key;
+
+    while (true) {
+        InTrangLTC(loptinchi, nienkhoa, hocky, t, page, pageSize);
+        key = getch();
+
+        if (key == 27) break;          // ESC
+        else if (key == 'a' || key == 'A') {
+            if (page > 0) page--;
+        }
+        else if (key == 'd' || key == 'D') {
+            page++;
+        }
+    }
+}

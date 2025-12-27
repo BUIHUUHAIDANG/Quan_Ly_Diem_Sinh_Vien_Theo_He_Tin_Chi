@@ -9,6 +9,8 @@
 #include <sstream>   
 #include <limits> 
 #include "mylib.h"
+#include "menu.h"
+#include "LopSinhVien.h"
 #include <conio.h>
 
 using namespace std;
@@ -97,16 +99,6 @@ void pop(stack &s) {
 
 ActionMH top(stack s) {
     return s.top->data; 
-}
-
-//tim sinh vien trong danh sach sinh vien toan truong
-PTRSV findSinhVien(PTRSV First, char MASV[], PTRSV dssv) {
-    First = dssv;
-    while (First != nullptr) {
-        if (strcmp(First->sv.MASV, MASV) == 0) return First;
-        else First = First->next;
-    }
-    return nullptr;
 }
 
 treeMH Insert(treeMH t, MonHoc mh) {
@@ -641,30 +633,44 @@ treeMH timMonHoc(treeMH t, char mamh[]) {
     } else return t;
 }
 
-void InLTC(PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t) {
-    LopTinChi ltc;
-    MonHoc mh;
-    if (loptinchi == nullptr) {
-        cout << "Danh sach lop tin chi rong" << endl;
-        return;
-    } 
-    
+void InTrangLTC(PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t,
+               int page, int pageSize) {
+
+    int start = page * pageSize;
+    int end = start + pageSize;
+    int index = 0;
+
     PTRLTC p = loptinchi;
+    clrscr();
+
+    cout << "=== DANH SACH LOP TIN CHI ===\n";
+    cout << "Nien khoa: " << nienkhoa << " | Hoc ky: " << hocky << "\n\n";
+
     while (p != nullptr) {
-        if (strcmp(p->ltc.NienKhoa, nienkhoa) == 0 && p->ltc.Hocky == hocky) {
-            treeMH found = timMonHoc(t, p->ltc.MAMH);
-            if (found != nullptr) {
-                cout << "Ma mon hoc: " << p->ltc.MAMH << endl;
-                cout << "Ten mon hoc: " << found->mh.TENMH << endl;
-                cout << "Nhom: " << p->ltc.Nhom << endl;
-                cout << "So sinh vien da dang ky: " << p->ltc.currentsv << endl;
-                cout << "So slot con trong: " << (p->ltc.sosvmax - p->ltc.currentsv) << endl;
-                cout << "------------------------------\n";
+        if (strcmp(p->ltc.NienKhoa, nienkhoa) == 0 &&
+            p->ltc.Hocky == hocky) {
+
+            if (index >= start && index < end) {
+                treeMH found = timMonHoc(t, p->ltc.MAMH);
+                if (found != nullptr) {
+                    cout << "Ma MH: " << p->ltc.MAMH << "\n";
+                    cout << "Ten MH: " << found->mh.TENMH << "\n";
+                    cout << "Nhom: " << p->ltc.Nhom << "\n";
+                    cout << "Da DK: " << p->ltc.currentsv << "/"
+                         << p->ltc.sosvmax << "\n";
+                    cout << "Han DK: " << p->ltc.deadline << "\n";
+                    cout << "----------------------------\n";
+                }
             }
+            index++;
         }
         p = p->next;
     }
+
+    cout << "\n[A] Trang truoc | [D] Trang sau | [ESC] Thoat\n";
+    cout << "Trang: " << page + 1 << endl;
 }
+
 
 //luu sinh vien dang ky vao danh sach dang ky cua lop tin chi
 void SVDangKy(PTRDK &dssvdk, PTRSV sv) {
@@ -716,15 +722,18 @@ PTRLTC checkmaltc(PTRLTC loptinchi, char nienkhoa[], int hocky) {
     cout << "Khong tim thay ma lop tin chi vua nhap hoac ma lop tin chi da het han, vui long kiem tra lai!" << endl;
     return checkmaltc(loptinchi, nienkhoa, hocky);
 }
-void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, PTRSV dssv) {
+void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, DS_LOPSV dslop) {
     PTRSV p = nullptr;
-    PTRSV First = nullptr;
     char masv[16];
+    char malop[16];
     cout << "Nhap ma so sinh vien: ";
-    cin.ignore();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.getline(masv, 16);
-    
-    if ((p = findSinhVien(First, masv, dssv)) != nullptr) {
+    cout << "Nhap lop sinh vien: ";
+    cin.getline(malop, 16);
+    PTRSV First = GetLop(dslop, malop);
+
+    if ((p = getSinhVienv2(First, masv)) != nullptr) {
         cout << "Ho:" << p->sv.HO << endl <<
             "Ten: " << p->sv.TEN << endl << 
             "Phai:" << p->sv.PHAI << endl <<
@@ -739,7 +748,7 @@ void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, PTRSV dssv) {
     cin >> lop.NienKhoa;
     cout << "Nhap hoc ky: ";
     cin >> lop.Hocky;
-    InLTC(loptinchi, lop.NienKhoa, lop.Hocky, t);
+    InLTC_UI(loptinchi, lop.NienKhoa, lop.Hocky, t);
     PTRLTC c = nullptr;
     c = checkmaltc(loptinchi, lop.NienKhoa, lop.Hocky);
     if (c == nullptr) {

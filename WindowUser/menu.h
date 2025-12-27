@@ -13,4 +13,5 @@ void BangDiemLTC(PTRDK arr[], int count, DS_LOPSV &dslop);
 void BangDiemTB(PTRSV arr[], int count, PTRLTC &dsltc,DS_LOPSV &dslop,treeMH &dsmh, LopSV* lop);
 void BangDiemTK(PTRSV arr[], int count, PTRLTC &dsltc,DS_LOPSV &dslop,treeMH &dsmh, LopSV* lop);
 void drawMonHoc (treeMH t, MonHoc mh, int count, int highlight, int index);
+void InLTC_UI(PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t);
 #endif

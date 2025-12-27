@@ -27,7 +27,6 @@ treeMH DocMonHoc(const string &filename);
 void Deletespaceandtoupper (char s[]);
 void UpperFirstCharName(char s[]);
 // -------------------- HÀM HỖ TRỢ --------------------
-PTRSV findSinhVien(PTRSV First, char MASV[], PTRSV dssv);
 bool checkMH(treeMH t, MonHoc mh);
 void NhapMonHoc(treeMH &t, stack &undostackMH);
 treeMH UndoThemMH (treeMH &t, char MAMH[]);
@@ -39,11 +38,11 @@ void LuuMH_Inorder(treeMH t, MonHoc ds[], int &n);
 void In1TrangMH(MonHoc ds[], int n, int page, int pageSize);
 void InDSMH(treeMH t);
 treeMH timMonHoc(treeMH t, char mamh[]);
-void InLTC (PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t);
+void InTrangLTC(PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t, int page, int pageSize);
 void SVDangKy(PTRDK &dssvdk, PTRSV sv);
 PTRLTC checkmamh(PTRLTC loptinchi, char nienkhoa[], int hocky);
 PTRLTC checkmaltc(PTRLTC loptinchi, char nienkhoa[], int hocky);
-void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, PTRSV dssv);
+void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, DS_LOPSV dslop);
 // -------------------- HÀM CLEAR ---------------------
 void ClearTree(treeMH &t);
 void ClearStackMH(stack &st);
