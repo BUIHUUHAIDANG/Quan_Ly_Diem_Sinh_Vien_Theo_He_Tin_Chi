@@ -1,99 +1,123 @@
 #include "mylib.h"
-#include <stdio.h>
-#include <termios.h>
-#include <unistd.h>
-#include <string>
+
+#include <conio.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
 
 using namespace std;
-// =======================
-//    GOTOXY
-// =======================
-void gotoxy(int x, int y) {
-    printf("\033[%d;%dH", y + 1, x + 1);
+
+// ========== Environment Detection ==========
+bool useANSI() {
+    char* term = getenv("TERM");
+    char* vscode = getenv("TERM_PROGRAM");
+    char* conemu = getenv("ConEmuPID");
+    char* wt = getenv("WT_SESSION");
+    return (term && strstr(term, "xterm")) ||
+           (vscode && strstr(vscode, "vscode")) ||
+           conemu || wt;
 }
 
-// =======================
-//    CLEAR SCREEN
-// =======================
-void clrscr() {
-    printf("\033[2J\033[H");
-}
-
-// =======================
-//    SET TEXT COLOR
-// color = 0-15 (style ANSI hệ 256 màu nhẹ)
-// =======================
-void SetColor(int color) {
-    printf("\033[38;5;%dm", color); // text color
-}
-
-// =======================
-//    SET BACKGROUND COLOR
-// color = 0-15
-// =======================
-void SetBGColor(int color) {
-    printf("\033[48;5;%dm", color); // background color
-}
-
-// =======================
-//    RESET COLOR (về mặc định)
-// =======================
-void ResetColor() {
-    printf("\033[0m");
-}
-
-// =======================
-//   BOLD (đậm chữ)
-// =======================
-void SetBold(bool enable) {
-    if (enable) printf("\033[1m");
-    else printf("\033[22m");
-}
-
-// =======================
-//   GETCH() — không cần Enter
-// =======================
-int getch() {
-    struct termios oldt, newt;
-    int ch;
-    tcgetattr(STDIN_FILENO, &oldt);
-    newt = oldt;
-    newt.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-    ch = getchar();
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-    return ch;
-}
-
-// =======================
-//   DRAW LINE
-// =======================
-void drawLine(int x, int y, int len){
-    gotoxy(x, y);
-    for(int i = 0; i < len; i++) cout << "-";
-}
-inline bool useANSI() {
-    return true;
-}
-
-inline void ClearLine(int y, int width = 120) {
+// ========== Cursor ==========
+void gotoxy(short x, short y) {
     if (useANSI()) {
-        printf("\033[%d;1H", y + 1); // về đầu dòng y
-        printf("\033[2K");           // clear line
+        printf("\x1b[%d;%dH", y + 1, x + 1);
+        fflush(stdout);
     } else {
-        gotoxy(0, y);
-        cout << string(width, ' ');
+        HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+        COORD pos = { x, y };
+        SetConsoleCursorPosition(h, pos);
     }
 }
 
-void DrawBox(int x, int y, int w, int h, int borderColor , int bgColor) {
+// ========== Clear Screen ==========
+void clrscr() {
+    if (useANSI()) {
+        printf("\x1b[2J\x1b[H");
+        fflush(stdout);
+        return;
+    }
+
+    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO info;
+    DWORD cells, written;
+    COORD home = {0, 0};
+
+    if (!GetConsoleScreenBufferInfo(h, &info)) return;
+    cells = info.dwSize.X * info.dwSize.Y;
+
+    FillConsoleOutputCharacter(h, ' ', cells, home, &written);
+    FillConsoleOutputAttribute(h, info.wAttributes, cells, home, &written);
+    SetConsoleCursorPosition(h, home);
+}
+
+// ========== Color ==========
+void SetColor(WORD color) {
+    if (useANSI()) {
+        printf("\x1b[%dm", 30 + (color % 8));
+        fflush(stdout);
+    } else {
+        HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+        CONSOLE_SCREEN_BUFFER_INFO info;
+        GetConsoleScreenBufferInfo(h, &info);
+        WORD attrs = (info.wAttributes & 0xFFF0) | (color & 0x000F);
+        SetConsoleTextAttribute(h, attrs);
+    }
+}
+
+void SetBGColor(WORD color) {
+    if (useANSI()) {
+        printf("\x1b[%dm", 40 + (color % 8));
+        fflush(stdout);
+    } else {
+        HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+        CONSOLE_SCREEN_BUFFER_INFO info;
+        GetConsoleScreenBufferInfo(h, &info);
+        WORD attrs = (info.wAttributes & 0xFF0F) | ((color & 0x000F) << 4);
+        SetConsoleTextAttribute(h, attrs);
+    }
+}
+
+void ResetColor() {
+    if (useANSI()) {
+        printf("\x1b[0m");
+        fflush(stdout);
+    } else {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+    }
+}
+
+void SetBold(bool enable) {
+    if (useANSI()) {
+        printf(enable ? "\x1b[1m" : "\x1b[22m");
+        fflush(stdout);
+    }
+}
+
+// ========== Drawing ==========
+void drawLine(int x, int y, int len) {
+    gotoxy(x, y);
+    for (int i = 0; i < len; i++) cout << "-";
+}
+
+void ClearLine(int y, int width) {
+    gotoxy(0, y);
+    if (useANSI()) {
+        printf("\x1b[2K");
+        printf("\x1b[%d;1H", y + 1);
+    } else {
+        cout << string(width, ' ');
+        gotoxy(0, y);
+    }
+}
+
+void DrawBox(int x, int y, int w, int h, WORD borderColor, WORD bgColor) {
     if (w < 2 || h < 2) return;
 
     SetColor(borderColor);
     SetBGColor(bgColor);
 
-    // corners
     gotoxy(x, y);                 cout << "o";
     gotoxy(x + w - 1, y);         cout << "o";
     gotoxy(x, y + h - 1);         cout << "o";
@@ -103,12 +127,10 @@ void DrawBox(int x, int y, int w, int h, int borderColor , int bgColor) {
         gotoxy(x + i, y);         cout << "-";
         gotoxy(x + i, y + h - 1); cout << "-";
     }
-
     for (int i = 1; i < h - 1; i++) {
         gotoxy(x, y + i);         cout << "|";
         gotoxy(x + w - 1, y + i); cout << "|";
     }
-
     for (int i = 1; i < h - 1; i++) {
         gotoxy(x + 1, y + i);
         cout << string(w - 2, ' ');
