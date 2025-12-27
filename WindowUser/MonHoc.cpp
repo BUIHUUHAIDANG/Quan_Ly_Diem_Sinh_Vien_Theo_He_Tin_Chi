@@ -9,6 +9,7 @@
 #include <sstream>   
 #include <limits> 
 #include "mylib.h"
+#include <conio.h>
 
 using namespace std;
 

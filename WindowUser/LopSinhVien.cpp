@@ -10,7 +10,8 @@
 #include "LopSinhVien.h"
 #include "CTDL.h"
 #include "menu.h"
-#include "mylib.h"     
+#include "mylib.h"  
+#include <conio.h>   
 using namespace std;
 
 
