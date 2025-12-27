@@ -345,6 +345,7 @@ bool editSinhVien(PTRSV &sv){
     cout<<"email moi: "; cin.getline(email,50); if(strlen(email)>0) strcpy(sv->sv.Email,email);
     return true;
 }
+
 PTRSV GetLop(DS_LOPSV &dslop, char malop[16]) {
     PTRSV FirstSV = nullptr;
     for(int i=0; i<dslop.n; i++) {
@@ -379,12 +380,34 @@ SinhVien getSinhVien(DS_LOPSV dslop, char MASV[16]) {
     SinhVien empty = {};
     return empty;
 }
+
+int getNumOfSinhVien( char MaSV[]){
+    int length=strlen(MaSV);
+    int result=0;
+    for(int i=length-3;i<length;i++){
+        result=result*10+(MaSV[i]-'0');
+    }
+    return result;
+}
+
 PTRSV getSinhVienv2(PTRSV &First, char masv[16]){
-      if(First==nullptr)return nullptr;
-      for(PTRSV p=First;p!=nullptr;p=p->next){
-         if(strcmp(p->sv.MASV,masv)==0)return p;
-      }
-      return nullptr;
+      if (First == nullptr) return nullptr;
+
+    int target = getNumOfSinhVien(masv);
+    PTRSV p = First;
+
+    while (p != nullptr) {
+        int curr = getNumOfSinhVien(p->sv.MASV);
+
+        if (curr == target && strcmp(p->sv.MASV,masv) == 0)
+            return p;
+
+        if (curr > target) 
+            return nullptr;
+
+        p = p->next;
+    }
+    return nullptr;
 }
 bool checkSV(DS_LOPSV &dslop, SinhVien sv) {
     if (dslop.n == 0) return false;
@@ -687,7 +710,7 @@ LopTinChi NhapLTC(){
         if (checkformatdeadline(deadlinestr) && validdealine(stringToTime(deadlinestr))) break;
         cout << "Loi: Deadline phai dung format va lon hon thoi gian hien tai. Nhap lai (YYYY-MM-DD HH:MM): ";
     }
-    ltc.deadline = stringToTime(deadlinestr);
+    ltc.deadline = deadlinestr;
     ltc.huylop = false;
     ltc.dssvdk = nullptr;
     return ltc;
@@ -799,9 +822,11 @@ void saveLopTinChi_Binary(PTRLTC &First, const char *fileLoptinchi, const char *
         cout << "Khong the mo duoc file!" << endl;
         return;
     }
+
     int countLTC = 0;
     for(PTRLTC p = First; p != nullptr; p = p->next) countLTC++;
     fwrite(&countLTC, sizeof(int), 1, fLTC);
+
     for(PTRLTC p = First; p != nullptr; p = p->next){
         fwrite(&p->ltc.MALOPTC, sizeof(int), 1, fLTC);
         fwrite(p->ltc.MAMH, sizeof(p->ltc.MAMH), 1, fLTC);
@@ -811,12 +836,20 @@ void saveLopTinChi_Binary(PTRLTC &First, const char *fileLoptinchi, const char *
         fwrite(&p->ltc.sosvmin, sizeof(int), 1, fLTC);
         fwrite(&p->ltc.sosvmax, sizeof(int), 1, fLTC);
         fwrite(&p->ltc.huylop, sizeof(bool), 1, fLTC);
+        fwrite(&p->ltc.currentsv, sizeof(int), 1, fLTC);     
+        fwrite(&p->ltc.deadline, sizeof(string), 1, fLTC); 
+
         int countDK = 0;
         for(PTRDK q = p->ltc.dssvdk; q != nullptr; q = q->next) countDK++;
-        fwrite(&countDK, sizeof(int), 1, fSVDK);
 
-        for(PTRDK q = p->ltc.dssvdk; q != nullptr; q = q->next){
-            fwrite(&p->ltc.MALOPTC, sizeof(int), 1, fSVDK); 
+        // Ghi mã lớp trước
+        fwrite(&p->ltc.MALOPTC, sizeof(int), 1, fSVDK);
+        
+        // Ghi số lượng sinh viên đăng ký của lớp đó
+        fwrite(&countDK, sizeof(int), 1, fSVDK);
+        
+        // Ghi toàn bộ DK
+        for(PTRDK q = p->ltc.dssvdk; q != nullptr; q = q->next) {
             fwrite(&q->dk, sizeof(DangKy), 1, fSVDK);
         }
     }
@@ -844,6 +877,8 @@ void loadLopTinChi_Binary(PTRLTC &First, const char *fileLoptinchi, const char *
         fread(&ltc.sosvmin, sizeof(int), 1, fLTC);
         fread(&ltc.sosvmax, sizeof(int), 1, fLTC);
         fread(&ltc.huylop, sizeof(bool), 1, fLTC);
+        fread(&ltc.currentsv, sizeof(int), 1, fLTC);     
+        fread(&ltc.deadline, sizeof(string), 1, fLTC);     
 
         ltc.dssvdk = nullptr;
         insertLopTinChi(First, ltc);
@@ -856,15 +891,23 @@ void loadLopTinChi_Binary(PTRLTC &First, const char *fileLoptinchi, const char *
         return;
     }
 
-    while(true){
-        int maloptc;
-        DangKy dk;
-        if(fread(&maloptc, sizeof(int), 1, fSVDK) != 1) break; // EOF
-        if(fread(&dk, sizeof(DangKy), 1, fSVDK) != 1) break;
+    while (true) {
+    int maloptc, countDK;
 
-        PTRLTC p = searchLopTinChi(First, maloptc);
-        if(p) insertSinhVienDangKy(p->ltc.dssvdk, dk);
+    
+    if (fread(&maloptc, sizeof(int), 1, fSVDK) != 1) break;
+
+    
+    fread(&countDK, sizeof(int), 1, fSVDK);
+
+    PTRLTC p = searchLopTinChi(First, maloptc);
+
+    while (countDK--) {
+        DangKy dk;
+        fread(&dk, sizeof(DangKy), 1, fSVDK);
+        if (p) insertSinhVienDangKy(p->ltc.dssvdk, dk);
     }
+}
 
     fclose(fSVDK);
 }
@@ -1298,27 +1341,21 @@ void insertSinhVienDKV2(PTRDK &First,DangKy svdk){
         t->next=p;
      }
 }
-int getNumOfSinhVien( char MaSV[]){
-    int length=strlen(MaSV);
-    int result=0;
-    for(int i=length-3;i<length;i++){
-        result=result*10+(MaSV[i]-'0');
-    }
-    return result;
-}
+
 time_t stringToTime(string s) {
     tm t = {};
     stringstream ss(s);
     ss >> get_time(&t, "%Y-%m-%d %H:%M");
     return mktime(&t);
 }
+
 void AutoCancelExpiredClasses(PTRLTC &l) {
     time_t now = time(nullptr);
 
     PTRLTC cur = l;
 
     while (cur != nullptr) {
-        bool hetHan = (now >= cur->ltc.deadline);
+        bool hetHan = (now >= stringToTime(cur->ltc.deadline));
         bool thieuSV = (cur->ltc.currentsv < cur->ltc.sosvmin);
 
         if (hetHan && thieuSV) {
@@ -1327,6 +1364,3 @@ void AutoCancelExpiredClasses(PTRLTC &l) {
         cur = cur->next;
     }
 }
-
-
-

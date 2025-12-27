@@ -376,8 +376,6 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
     }
 }
 
-
-
 treeMH UndoThemMH (treeMH &t, char MAMH[]) {
     MonHoc mh;
     if (t == nullptr) {
@@ -676,7 +674,7 @@ void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, PTRSV dssv) {
     PTRSV First = nullptr;
     char masv[16];
     cout << "Nhap ma so sinh vien: ";
-    cin.ignore();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.getline(masv, 16);
     
     if ((p = findSinhVien(First, masv, dssv)) != nullptr) {

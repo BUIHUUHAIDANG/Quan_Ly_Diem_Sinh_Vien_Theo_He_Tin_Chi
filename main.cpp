@@ -13,6 +13,7 @@ using namespace std;
 
 int main() {
     // Khoi tao DS LopSV
+    LopTinChi lop;
     DS_LOPSV ds;
     ds.n = 0;
     for (int i = 0; i < MAX_LOPSV; ++i) ds.nodes[i] = nullptr;
@@ -140,15 +141,14 @@ int main() {
                     cout << "Ban da chon: " << features_sinhvien[f] << endl;
                     InDSMH_Bang(dsMonHoc); 
                 }
-                else if (f == 1) {
-                    // Dang ky / Huy
+                else if (f == 1) {// Dang ky / Huy ltc
                     while (true) {
                         int g = menu("SINH VIEN DANG KY/HUY LTC", role, featuresdangkyhuy, n_featuresdangkyhuy);
                         if (g == -1 || g == n_featuresdangkyhuy - 1) break;
                         if (g == 0) {
                             clrscr();
                             // TODO: goi ham dang ky
-                            dangkyLTC(FirstLTC,ds);
+                            //DangKyLTC(FirstLTC,lop, dsMonHoc, ); bảo trì
                             saveLopTinChi_Binary(FirstLTC, "LopTinChi.txt", "DSSVDK.txt");
                             cout << "Thuc hien dang ky...\n";
                             getch();
@@ -215,7 +215,7 @@ int main() {
                     cout << "(Nhan phim bat ky de quay lai...)";
                     getch();
                 }
-                else if (f == 3) {
+                else if (f == 3) { //THEM/XOA/SUA MON HOC
                     clrscr();
                     while (true) {
                         int n = menu("===== THEM/XOA/SUA MON HOC =====", "", features_admin_3, n_features_admin_3);
@@ -266,19 +266,17 @@ int main() {
                             MonHoc mh;
                             cout << "Nhap ma mon hoc can sua: ";
                             cin >> mh.MAMH;
+                            temp = getMH(dsMonHoc, mh, undostackMH);
                             int n = menu("===== SUA MON HOC =====", "", SUA_MH_OPTIONS, n_SUA_MH_OPTIONS);
                             if (n == - 1 || n == n_SUA_MH_OPTIONS - 1) break;
 
                             if (n == 0) {
-                                temp = getMH(dsMonHoc, mh, undostackMH);
                                 SuaTenMH(temp, undostackMH);
                             } 
                             else if (n == 1) {
-                                temp = getMH(dsMonHoc, mh, undostackMH);
                                 SuaSTCLT(temp, undostackMH);
                             }
                             else if (n == 2) {
-                                temp = getMH(dsMonHoc, mh, undostackMH);
                                 SuaSTCTH(temp, undostackMH);
                             }
 

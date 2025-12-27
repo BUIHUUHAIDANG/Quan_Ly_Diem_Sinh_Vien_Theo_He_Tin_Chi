@@ -71,7 +71,7 @@ struct LopTinChi {
     bool huylop;
     PTRDK dssvdk;
     int currentsv;
-    time_t deadline;
+    string deadline;
     LopTinChi();
 };
 
