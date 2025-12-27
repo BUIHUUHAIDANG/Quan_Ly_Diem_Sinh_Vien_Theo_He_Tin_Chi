@@ -609,4 +609,4 @@ int main() {
     cout << "Tam biet!\n";
     return 0;
 }
-//g++ main.cpp MonHoc.cpp LopSinhVien.cpp console.cpp CTDL.cpp menu.cpp -o main
+//g++ main.cpp MonHoc.cpp LopSinhVien.cpp mylib.cpp CTDL.cpp menu.cpp -o main
