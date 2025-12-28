@@ -15,10 +15,12 @@ using namespace std;
 
    
 int main() {
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
     //Khoi tao Tree
     treeMH dsmh=nullptr;
     stack undostackMH;
-    LopTinChi lop;
+    
     // Khoi tao DS LopSV
     DS_LOPSV ds;
     ds.n = 0;
@@ -145,6 +147,7 @@ int main() {
                 }
                 else if (f == 1) {
                     // Dang ky / Huy
+                    LopTinChi lop;
                     while (true) {
                         int g = menu("SINH VIEN DANG KY/HUY LTC", role, featuresdangkyhuy, n_featuresdangkyhuy);
                         if (g == -1 || g == n_featuresdangkyhuy - 1) break;
@@ -153,8 +156,6 @@ int main() {
                             // TODO: goi ham dang ky
                             DangKyLTC(FirstLTC, lop, dsmh, ds);
                             saveLopTinChi_Binary(FirstLTC, "LopTinChi.txt", "DSSVDK.txt");
-                            cout << "Thuc hien dang ky...\n";
-                            getch();
                         } else if (g == 1) {
                             clrscr();
                             // TODO: goi ham huy

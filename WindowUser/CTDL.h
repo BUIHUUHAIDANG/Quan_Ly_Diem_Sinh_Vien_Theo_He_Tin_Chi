@@ -70,7 +70,7 @@ struct LopTinChi {
     bool huylop;
     PTRDK dssvdk;
     int currentsv;
-    string deadline;
+    char deadline[17];
     LopTinChi();
 };
 
