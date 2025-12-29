@@ -6,6 +6,7 @@
 #include "mylib.h"
 #include "menu.h"
 #include "LopSinhVien.h"
+#include "MonHoc.h"
 using namespace std;
 
 

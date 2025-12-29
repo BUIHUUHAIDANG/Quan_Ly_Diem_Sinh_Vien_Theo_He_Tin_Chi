@@ -6,6 +6,8 @@
 #include <algorithm>
 #include "mylib.h"
 #include <limits>
+#include "menu.h"
+#include "LopSinhVien.h"
 
 using namespace std;
 
@@ -93,16 +95,6 @@ void pop(stack &s) {
 
 ActionMH top(stack s) {
     return s.top->data; 
-}
-
-//tim sinh vien trong danh sach sinh vien toan truong
-PTRSV findSinhVien(PTRSV First, char MASV[], PTRSV dssv) {
-    First = dssv;
-    while (First != nullptr) {
-        if (strcmp(First->sv.MASV, MASV) == 0) return First;
-        else First = First->next;
-    }
-    return nullptr;
 }
 
 treeMH Insert(treeMH t, MonHoc mh) {
@@ -232,6 +224,15 @@ bool checkMH(treeMH t, MonHoc mh) {
     return checkMH(t->right, mh);
 }
 
+bool Checkkhoangtrang(char s[]) {
+    for (int i = 0; s[i] != '\0'; i++) {
+        if (s[i] == ' ' || s[i] == '\t')
+            return true;
+    }
+    return false;
+}
+
+
 void NhapMonHoc(treeMH &t, stack &undostackMH) {
     while (true) {
         MonHoc mh;
@@ -264,6 +265,14 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
                 ResetColor();
                 continue;
             }
+
+            if (Checkkhoangtrang(mh.MAMH)) {
+                gotoxy(22, 15);
+                SetColor(4);
+                cout << "Ma mon hoc khong duoc chua khoang trang!";
+                ResetColor();
+                continue;
+            }   
 
             if (checkMH(t, mh)) {
                 gotoxy(22, 15);
@@ -311,12 +320,12 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
             cin >> tempLT;
 
             if (!cin.fail() && tempLT > 0) {
-                cin.ignore(1000, '\n');
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 break;
             }
 
             cin.clear();
-            cin.ignore(1000, '\n');
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             gotoxy(22,15);
             SetColor(4);
             cout << "STCLT phai la so nguyen > 0!";
@@ -337,12 +346,12 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
             cin >> tempTH;
 
             if (!cin.fail() && tempTH > 0) {
-                cin.ignore(1000, '\n');
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 break;
             }
 
             cin.clear();
-            cin.ignore(1000, '\n');
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             gotoxy(22,15);
             SetColor(4);
             cout << "STCTH phai la so nguyen > 0!";
@@ -471,6 +480,8 @@ void SuaMH (treeMH &t, MonHoc mh, stack &undostackMH) {
         SuaMH(t->right, mh, undostackMH);
     } else {
         while (true) {
+            ActionMH act;
+            MonHoc old = t->mh;
             cout << "Ban muon sua thong tin gi:" << endl;
             cout << "1. Ten mon hoc" << endl;
             cout << "2. So tin chi ly thuyet" << endl;
@@ -483,30 +494,31 @@ void SuaMH (treeMH &t, MonHoc mh, stack &undostackMH) {
                 cout << "Lua chon khong hop le" << endl;
                 continue;
             } else if (choice == 1) {
-                ActionMH act;
                 act.type = 3;
                 act.mh = t->mh;
-                cout << "Nhap ten mon hoc moi: ";
-                cin.ignore();
-                cin.getline(t->mh.TENMH, 51);
-                cout << "Sua ten mon hoc thanh cong" << endl;
+                
+                inputOrKeep(t->mh.TENMH, 51, old.TENMH, "Ten mon hoc");
+
+                Deletespaceandtoupper(t->mh.TENMH);
+                UpperFirstCharName(t->mh.TENMH);
+                cout << "Sua ten mon hoc thanh cong!\n";
                 push(undostackMH, act);
                 continue;
             } else if (choice == 2) {
-                ActionMH act;
                 act.type = 3;
                 act.mh = t->mh;
-                cout << "Nhap so tin chi ly thuyet moi: ";
-                cin >> t->mh.STCLT;
+
+                t->mh.STCLT = inputIntOrKeep(old.STCLT, "So tin chi ly thuyet", false);
+
                 cout << "Sua so tin chi ly thuyet thanh cong" << endl;
                 push(undostackMH, act);
                 continue;
             } else if (choice == 3) {
-                ActionMH act;
                 act.type = 3;
                 act.mh = t->mh;
-                cout << "Nhap so tin chi thuc hanh moi: ";
-                cin >> t->mh.STCTH;
+
+                t->mh.STCTH = inputIntOrKeep(old.STCTH, "So tin chi thuc hanh", false);
+
                 cout << "Sua so tin chi thuc hanh thanh cong" << endl;
                 push(undostackMH, act);
                 continue;
@@ -625,10 +637,7 @@ void InDSMH(treeMH t) {
 }
 
 treeMH timMonHoc(treeMH t, char mamh[]) {
-    MonHoc mh;
-    if (t == nullptr) {
-        return nullptr;
-    }
+    if (t == nullptr) return nullptr;
     
     if (strcmp(mamh, t->mh.MAMH) < 0) {
         return timMonHoc(t->left, mamh);
@@ -637,30 +646,113 @@ treeMH timMonHoc(treeMH t, char mamh[]) {
     } else return t;
 }
 
-void InLTC(PTRLTC loptinchi, char nienkhoa[], int hocky, treeMH t) {
-    LopTinChi ltc;
-    MonHoc mh;
-    if (loptinchi == nullptr) {
-        cout << "Danh sach lop tin chi rong" << endl;
-        return;
-    } 
-    
-    PTRLTC p = loptinchi;
-    while (p != nullptr) {
-        if (strcmp(p->ltc.NienKhoa, nienkhoa) == 0 && p->ltc.Hocky == hocky) {
-            treeMH found = timMonHoc(t, p->ltc.MAMH);
-            if (found != nullptr) {
-                cout << "Ma mon hoc: " << p->ltc.MAMH << endl;
-                cout << "Ten mon hoc: " << found->mh.TENMH << endl;
-                cout << "Nhom: " << p->ltc.Nhom << endl;
-                cout << "So sinh vien da dang ky: " << p->ltc.currentsv << endl;
-                cout << "So slot con trong: " << (p->ltc.sosvmax - p->ltc.currentsv) << endl;
-                cout << "------------------------------\n";
+PTRLTC InTrangLTC_UI_Bang(PTRLTC start, char nienkhoa[], int hocky, treeMH t) {
+    PTRLTC p = start;
+    int dem = 0;
+
+    int x = 2, y = 4, w = 100;
+
+    gotoxy(x + 2, y);
+    SetBold(true);
+    SetColor(11);
+    cout << left
+         << setw(10) << "MaLTC"
+         << setw(10) << "MaMH"
+         << setw(25) << "Ten MH"
+         << setw(6)  << "HK"
+         << setw(6)  << "Nhom"
+         << setw(10) << "DangKy"
+         << setw(20) << "Deadline";
+    ResetColor();
+    SetBold(false);
+
+    drawLine(x + 1, y + 1, w - 2);
+
+    int row = y + 2;
+
+    while (p != nullptr && dem < 5) {
+
+        if (!p->ltc.huylop &&
+            strcmp(p->ltc.NienKhoa, nienkhoa) == 0 &&
+            p->ltc.Hocky == hocky) {
+
+            treeMH mh = timMonHoc(t, p->ltc.MAMH);
+            if (mh != nullptr) {
+                gotoxy(x + 2, row++);
+                cout << left
+                     << setw(10) << p->ltc.MALOPTC
+                     << setw(10) << p->ltc.MAMH
+                     << setw(25) << mh->mh.TENMH
+                     << setw(6)  << p->ltc.Hocky
+                     << setw(6)  << p->ltc.Nhom
+                     << setw(10) << (to_string(p->ltc.currentsv) + "/" +
+                                     to_string(p->ltc.sosvmax))
+                     << setw(20) << p->ltc.deadline;
+
+                dem++;
             }
         }
         p = p->next;
     }
+    return p;
 }
+
+void InLTC_UI(PTRLTC FirstLTC, char nienkhoa[], int hocky, treeMH t) {
+    if (FirstLTC == nullptr) {
+        cout << "Danh sach lop tin chi rong!";
+        getch();
+        return;
+    }
+
+    PTRLTC currPage = FirstLTC;
+    PTRLTC nextPage = nullptr;
+
+    while (true) {
+        clrscr();
+
+        int x = 1, y = 1, w = 104, h = 14;
+        DrawBox(x, y, w, h, 7, 0);
+
+        gotoxy(x + 35, y + 1);
+        SetBold(true);
+        SetColor(14);
+        cout << "DANH SACH LOP TIN CHI";
+        ResetColor();
+        SetBold(false);
+
+        gotoxy(x + 3, y + 2);
+        cout << "Nien khoa: " << nienkhoa << " | Hoc ky: " << hocky;
+
+        nextPage = InTrangLTC_UI_Bang(currPage, nienkhoa, hocky, t);
+
+        drawLine(x + 1, y + h - 3, w - 2);
+        gotoxy(x + 3, y + h - 2);
+        SetColor(10);
+        cout << "[A] Truoc   [D] Sau   [ESC] Thoat de nhap ma lop tin chi";
+        ResetColor();
+
+        char key = getch();
+        if (key == 27) break;
+
+        if ((key == 'd' || key == 'D') && nextPage != nullptr) {
+            currPage = nextPage;
+        }
+
+        if (key == 'a' || key == 'A') {
+            PTRLTC p = FirstLTC;
+            PTRLTC prev = FirstLTC;
+
+            while (p != currPage) {
+                prev = p;
+                for (int i = 0; i < 5 && p != currPage; i++)
+                    p = p->next;
+            }
+            currPage = prev;
+        }
+    }
+}
+
+
 
 //luu sinh vien dang ky vao danh sach dang ky cua lop tin chi
 void SVDangKy(PTRDK &dssvdk, PTRSV sv) {
@@ -679,71 +771,83 @@ void SVDangKy(PTRDK &dssvdk, PTRSV sv) {
     }
 }
 
-//kiem tra ma mon hoc co ton tai khong
-PTRLTC checkmamh(PTRLTC loptinchi, char nienkhoa[], int hocky) {
-    LopTinChi ltc;
-    cout << "Nhap ma mon hoc (Nhap 0 de thoat): ";
-    char mamh[11];
-    cin >> mamh;
-    if (strcmp(mamh, "0") == 0) return nullptr;
-    PTRLTC p = loptinchi;
-    while (p != nullptr) {
-        if (strcmp(p->ltc.MAMH, mamh) == 0 && strcmp(p->ltc.NienKhoa, nienkhoa) == 0 && p->ltc.Hocky == hocky) {
-            return p;
-        }
-        p = p->next;
-    }
-    cout << "Khong tim thay ma mon hoc vua nhap, vui long kiem tra lai!" << endl;
-    return checkmamh(loptinchi, nienkhoa, hocky);
-}
 PTRLTC checkmaltc(PTRLTC loptinchi, char nienkhoa[], int hocky) {
-    LopTinChi ltc;
-    cout << "Nhap ma lop tin chi (Nhap 0 de thoat): ";
     int maltc;
-    cin >> maltc;
-    if (maltc == 0) return nullptr;
-    PTRLTC p = loptinchi;
-    while (p != nullptr) {
-        if ((p->ltc.MALOPTC == maltc) && strcmp(p->ltc.NienKhoa, nienkhoa) == 0 && p->ltc.Hocky == hocky && !p->ltc.huylop) {
-            return p;
+
+    while (true) {
+        gotoxy(0, 15);
+        cout << "Nhap ma lop tin chi (Nhap 0 de thoat): ";
+        cin >> maltc;
+
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Gia tri khong hop le! Vui long nhap so.\n";
+            continue;
         }
-        p = p->next;
+
+        if (maltc == 0)
+            return nullptr;
+
+        PTRLTC p = loptinchi;
+        while (p != nullptr) {
+            if (p->ltc.MALOPTC == maltc &&
+                strcmp(p->ltc.NienKhoa, nienkhoa) == 0 &&
+                p->ltc.Hocky == hocky &&
+                !p->ltc.huylop) {
+                return p;
+            }
+            p = p->next;
+        }
+
+        cout << "Khong tim thay ma LTC hoac lop da bi huy. Vui long nhap lai!\n";
     }
-    cout << "Khong tim thay ma lop tin chi vua nhap hoac ma lop tin chi da het han, vui long kiem tra lai!" << endl;
-    return checkmaltc(loptinchi, nienkhoa, hocky);
 }
-void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, PTRSV dssv) {
+
+void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, DS_LOPSV dslop) {
     PTRSV p = nullptr;
-    PTRSV First = nullptr;
     char masv[16];
-    cout << "Nhap ma so sinh vien: ";
-    cin.ignore();
-    cin.getline(masv, 16);
+    char malop[16];
     
-    if ((p = findSinhVien(First, masv, dssv)) != nullptr) {
-        cout << "Ho:" << p->sv.HO << endl <<
-            "Ten: " << p->sv.TEN << endl << 
-            "Phai:" << p->sv.PHAI << endl <<
-            "So dien thoai: " << p->sv.SODT << endl <<
-            "Email: " << p->sv.Email << endl;
-    } else {
-        cout << "Khong tim thay sinh vien" << endl;
-        return;
+    PTRSV First = nullptr;
+    while (true) {
+        cout << "Nhap ma so sinh vien (Nhap 0 de thoat): ";
+        cin.getline(masv, 16);
+        if (strcmp(masv, "0") == 0) return;
+        cout << "Nhap ma lop sinh vien: ";
+        cin.getline(malop, 16);
+        First = GetLop(dslop, malop);
+        if (First == nullptr) {
+            cout << "Ma lop sinh vien khong ton tai, vui long kiem tra lai!" << endl;
+            continue;
+        } else {
+            if ((p = getSinhVienv2(First, masv)) != nullptr) {
+                cout << "Ho:" << p->sv.HO << endl <<
+                "Ten: " << p->sv.TEN << endl << 
+                "Phai:" << p->sv.PHAI << endl <<
+                "So dien thoai: " << p->sv.SODT << endl <<
+                "Email: " << p->sv.Email << endl;
+
+                cout << "Nhap nien khoa: ";
+                cin >> lop.NienKhoa;
+                cout << "Nhap hoc ky: ";
+                cin >> lop.Hocky;
+                InLTC_UI(loptinchi, lop.NienKhoa, lop.Hocky, t);
+                PTRLTC c = nullptr;
+                c = checkmaltc(loptinchi, lop.NienKhoa, lop.Hocky);
+                if (c == nullptr) {
+                    return;
+                }
+                SVDangKy(c->ltc.dssvdk, p); 
+                c->ltc.currentsv++; //tang so luong sinh vien da dang ky len 1
+                cout << "Dang ky thanh cong!" << endl;
+                return;
+            } else {
+                cout << "Ma so sinh vien khong ton tai trong lop, vui long kiem tra lai!" << endl;
+                continue;
+            }
+        }
     }
-    
-    cout << "Nhap nien khoa: ";
-    cin >> lop.NienKhoa;
-    cout << "Nhap hoc ky: ";
-    cin >> lop.Hocky;
-    InLTC(loptinchi, lop.NienKhoa, lop.Hocky, t);
-    PTRLTC c = nullptr;
-    c = checkmaltc(loptinchi, lop.NienKhoa, lop.Hocky);
-    if (c == nullptr) {
-        return;
-    }
-    SVDangKy(c->ltc.dssvdk, p); 
-    c->ltc.currentsv++; //tang so luong sinh vien da dang ky len 1
-    cout << "Dang ky thanh cong!" << endl;
 }
 
 void ClearTree(treeMH &t) {

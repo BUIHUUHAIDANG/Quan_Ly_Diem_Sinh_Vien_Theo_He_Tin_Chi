@@ -212,16 +212,15 @@ int main() {
                 }
                 else if (f == 1) {
                     // Dang ky / Huy
+                    LopTinChi lop;
                     while (true) {
                         int g = menu("SINH VIEN DANG KY/HUY LTC", role, featuresdangkyhuy, n_featuresdangkyhuy);
                         if (g == -1 || g == n_featuresdangkyhuy - 1) break;
                         if (g == 0) {
                             clrscr();
                             // TODO: goi ham dang ky
-                            dangkyLTC(FirstLTC,ds);
+                            DangKyLTC(FirstLTC, lop, dsmh, ds);
                             saveLopTinChi_Binary(FirstLTC, "LopTinChi.txt", "DSSVDK.txt");
-                            cout << "Thuc hien dang ky...\n";
-                            getch();
                         } else if (g == 1) {
                             clrscr();
                             // TODO: goi ham huy

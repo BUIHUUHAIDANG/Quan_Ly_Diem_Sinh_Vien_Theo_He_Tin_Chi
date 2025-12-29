@@ -235,10 +235,10 @@ bool editLopTinChi(PTRLTC &First, int id) {
     inputOrKeep(p->ltc.MAMH, 11, old.MAMH, "Ma Mon Hoc");
     inputOrKeep(p->ltc.NienKhoa, 10, old.NienKhoa, "Nien Khoa");
 
-    p->ltc.Hocky   = inputIntOrKeep(old.Hocky, "Hoc Ky");
-    p->ltc.Nhom    = inputIntOrKeep(old.Nhom, "Nhom");
-    p->ltc.sosvmin = inputIntOrKeep(old.sosvmin, "SV Min");
-    p->ltc.sosvmax = inputIntOrKeep(old.sosvmax, "SV Max");
+    p->ltc.Hocky   = inputIntOrKeep(old.Hocky, "Hoc Ky", true);
+    p->ltc.Nhom    = inputIntOrKeep(old.Nhom, "Nhom", false);
+    p->ltc.sosvmin = inputIntOrKeep(old.sosvmin, "SV Min", false);
+    p->ltc.sosvmax = inputIntOrKeep(old.sosvmax, "SV Max", false);
 
     if (p->ltc.sosvmin > p->ltc.sosvmax) {
         cout << "SV Min khong duoc lon hon SV Max!\n";
@@ -266,7 +266,7 @@ PTRLTC In1TrangLTC_Bang(PTRLTC start) {
 
     int x = 2;
     int y = 4;
-    int w = 90;   
+    int w = 110;   
 
     gotoxy(x + 2, y);
     SetBold(true);
@@ -280,7 +280,8 @@ PTRLTC In1TrangLTC_Bang(PTRLTC start) {
          << setw(8)  << "Min"
          << setw(8)  << "Max"
          << setw(10) << "DangKy"     
-         << setw(20) << "Deadline";  
+         << setw(20) << "Deadline"  
+         << setw(20) << "HuyLop"; 
     ResetColor();
     SetBold(false);
 
@@ -298,10 +299,11 @@ PTRLTC In1TrangLTC_Bang(PTRLTC start) {
              << setw(8)  << p->ltc.sosvmin
              << setw(8)  << p->ltc.sosvmax
              << setw(10) << p->ltc.currentsv
-             << setw(20) << p->ltc.deadline;
+             << setw(20) << p->ltc.deadline
+             << setw(20) << (p->ltc.huylop ? "Da qua han" : "Dang mo");
 
-        p = p->next;
-        dem++;
+        dem++;   
+        p = p->next; 
     }
 
     return p;  
@@ -325,12 +327,12 @@ void InDSLTC(PTRLTC &FirstLTC) {
 
         int x = 1;
         int y = 1;
-        int w = 94;
+        int w = 114;
         int h = 14;
 
         DrawBox(x, y, w, h, 7, 0);
 
-        gotoxy(x + 30, y + 1);
+        gotoxy(x + 45, y + 1);
         SetBold(true);
         SetColor(14);
         cout << "DANH SACH LOP TIN CHI";
@@ -538,7 +540,16 @@ void InDSSVDK(PTRLTC &FirstLTC, int maloptc, DS_LOPSV &dslop) {
         }
     }
 }
+int getNumOfSinhVien(char MaSV[]){
+    int length=strlen(MaSV);
+    if (length < 3) return -1;
 
+    int result=0;
+    for(int i=length-3;i<length;i++){
+        result=result*10+(MaSV[i]-'0');
+    }
+    return result;
+}
 bool isEmptySinhVien(PTRSV &First){ return First == nullptr; }
 void insertSinhVien(PTRSV &First,SinhVien x){
     PTRSV p = new nodeSV; p->sv=x; p->next=nullptr;
@@ -1094,7 +1105,7 @@ LopTinChi NhapLTC(){
     cout << "Nhap Hoc Ky: ";
     cin >> ltc.Hocky;
 
-    if (!cin.fail() && ltc.Hocky > 0 && ltc.Hocky <=2) {
+    if (!cin.fail() && ltc.Hocky > 0 && ltc.Hocky <=3) {
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         break;
     }
@@ -1126,13 +1137,14 @@ LopTinChi NhapLTC(){
     } while (!isValidSoSV(ltc.sosvmin, ltc.sosvmax));
     cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
     cout << "Nhap Deadline (YYYY-MM-DD HH:MM): ";
-    string deadlinestr;
+    char deadlinechar[17];
     while (true) {
-        getline(cin, deadlinestr);
+        cin.getline(deadlinechar, 17);
+        string deadlinestr = deadlinechar;
         if (checkformatdeadline(deadlinestr) && validdealine(stringToTime(deadlinestr))) break;
         cout << "Loi: Deadline khong hop le. Nhap lai (YYYY-MM-DD HH:MM): ";
     }
-    ltc.deadline = stringToTime(deadlinestr);
+    strcpy(ltc.deadline, deadlinechar);
     ltc.huylop = false;
     ltc.dssvdk = nullptr;
     return ltc;
@@ -1167,7 +1179,7 @@ void inputOrKeep(char dest[], int maxLen, const char oldValue[], const char *lab
         cout << "Du lieu qua dai! Nhap lai.\n";
     }
 }
-int inputIntOrKeep(int oldValue, const char *label) {
+int inputIntOrKeep(int oldValue, const char *label, bool smaller3) {
     char buf[50];
     int x;
 
@@ -1181,7 +1193,7 @@ int inputIntOrKeep(int oldValue, const char *label) {
         char *end;
         x = strtol(buf, &end, 10);
 
-        if (*end == '\0' && x > 0)
+        if (*end == '\0' && x > 0 && (!smaller3 || x <= 3))
             return x;
 
         cout << "Nhap sai! Hay nhap so hop le.\n";
@@ -1328,7 +1340,7 @@ void saveLopTinChi_Binary(PTRLTC &First, const char *fileLoptinchi, const char *
         fwrite(&p->ltc.sosvmax, sizeof(int), 1, fLTC);
         fwrite(&p->ltc.huylop, sizeof(bool), 1, fLTC);
         fwrite(&p->ltc.currentsv, sizeof(int), 1, fLTC);     
-        fwrite(&p->ltc.deadline, sizeof(time_t), 1, fLTC); 
+        fwrite(&p->ltc.deadline, sizeof(p->ltc.deadline), 1, fLTC); 
 
         int countDK = 0;
         for(PTRDK q = p->ltc.dssvdk; q != nullptr; q = q->next) countDK++;
@@ -1370,7 +1382,7 @@ void loadLopTinChi_Binary(PTRLTC &First, const char *fileLoptinchi, const char *
         fread(&ltc.sosvmax, sizeof(int), 1, fLTC);
         fread(&ltc.huylop, sizeof(bool), 1, fLTC);
         fread(&ltc.currentsv, sizeof(int), 1, fLTC);     
-        fread(&ltc.deadline, sizeof(time_t), 1, fLTC);     
+        fread(&ltc.deadline, sizeof(ltc.deadline), 1, fLTC);     
 
         ltc.dssvdk = nullptr;
         insertLopTinChi(First, ltc);
@@ -1827,14 +1839,6 @@ void insertSinhVienDKV2(PTRDK &First,DangKy svdk){
         t->next=p;
      }
 }
-int getNumOfSinhVien( char MaSV[]){
-    int length=strlen(MaSV);
-    int result=0;
-    for(int i=length-3;i<length;i++){
-        result=result*10+(MaSV[i]-'0');
-    }
-    return result;
-}
 time_t stringToTime(string s) {
     tm t = {};
     stringstream ss(s);
@@ -1844,18 +1848,17 @@ time_t stringToTime(string s) {
 void AutoCancelExpiredClasses(PTRLTC &l) {
     time_t now = time(nullptr);
 
-    PTRLTC cur = nullptr;
+    PTRLTC cur = l;
 
     while (cur != nullptr) {
-        bool hetHan = (now >= cur->ltc.deadline);
+        string temp = cur->ltc.deadline;
+        bool hetHan = (now >= stringToTime(temp));
         bool thieuSV = (cur->ltc.currentsv < cur->ltc.sosvmin);
 
         if (hetHan && thieuSV) {
             cur->ltc.huylop = true;
         } 
-        else {
             cur = cur->next;
-        }
     }
 }
 
