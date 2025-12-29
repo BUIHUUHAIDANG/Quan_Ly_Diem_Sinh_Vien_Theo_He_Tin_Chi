@@ -9,6 +9,7 @@
 #include "menu.h"
 #include "LopSinhVien.h"
 #include "CTDL.h"
+#include "MonHoc.h"
 using namespace std;
 
 void drawStaticMenu(const char *title, const char *role, int n) {

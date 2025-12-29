@@ -97,7 +97,7 @@ LopTinChi NhapLTC();
 int getNextMaLopTinChi(PTRLTC First);
 
 void inputOrKeep(char dest[], int maxLen, const char oldValue[], const char *label);
-int inputIntOrKeep(int oldValue, const char *label);
+int inputIntOrKeep(int oldValue, const char *label, bool smaller3);
 
 PTRLTC findLTCByParams(PTRLTC FirstLTC);
 

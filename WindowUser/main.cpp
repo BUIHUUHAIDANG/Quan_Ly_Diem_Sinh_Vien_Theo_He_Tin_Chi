@@ -15,9 +15,12 @@ using namespace std;
 
    
 int main() {
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
     //Khoi tao Tree
     treeMH dsmh=nullptr;
     stack undostackMH;
+    
     // Khoi tao DS LopSV
     DS_LOPSV ds;
     ds.n = 0;
@@ -34,8 +37,8 @@ int main() {
     const char *roles[] = { "Sinh vien", "Giang vien", "Admin", "Thoat" };
 
     const char *features_sinhvien[] = {
-        "Xem danh sach mon hoc",
-        "Dang ki/Huy dang ki lop tin chi",//done
+        "Xem danh sach mon hoc",//done
+        "Dang ki/Huy dang ki lop tin chi",
         "Xem danh sach lop tin chi",//done
         "Xem diem trung binh",//->MASV->done
         "Xem diem tong ket",//->MASV->done
@@ -43,9 +46,9 @@ int main() {
     };
 
     const char *features_giangVien[] = {
-        "Xem danh sach mon hoc",
-        "Xem danh sach lop sinh vien",
-        "Xem danh sach lop tin chi",
+        "Xem danh sach mon hoc",//done
+        "Xem danh sach lop sinh vien",//done
+        "Xem danh sach lop tin chi",//done
         "Xem danh sach sinh vien da dang ki lop tin chi",
         "Nhap diem/ Sua diem cua sinh vien",//done
         "Xem bang diem cua mot lop tin chi",//done
@@ -144,16 +147,15 @@ int main() {
                 }
                 else if (f == 1) {
                     // Dang ky / Huy
+                    LopTinChi lop;
                     while (true) {
                         int g = menu("SINH VIEN DANG KY/HUY LTC", role, featuresdangkyhuy, n_featuresdangkyhuy);
                         if (g == -1 || g == n_featuresdangkyhuy - 1) break;
                         if (g == 0) {
                             clrscr();
                             // TODO: goi ham dang ky
-                            dangkyLTC(FirstLTC,ds);
+                            DangKyLTC(FirstLTC, lop, dsmh, ds);
                             saveLopTinChi_Binary(FirstLTC, "LopTinChi.txt", "DSSVDK.txt");
-                            cout << "Thuc hien dang ky...\n";
-                            getch();
                         } else if (g == 1) {
                             clrscr();
                             // TODO: goi ham huy
@@ -609,4 +611,4 @@ int main() {
     cout << "Tam biet!\n";
     return 0;
 }
-//g++ main.cpp MonHoc.cpp LopSinhVien.cpp console.cpp CTDL.cpp menu.cpp -o main
+//g++ main.cpp MonHoc.cpp LopSinhVien.cpp mylib.cpp CTDL.cpp menu.cpp -o main

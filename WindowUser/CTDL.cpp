@@ -15,7 +15,7 @@ nodeDK::nodeDK() { next = nullptr; }
 LopTinChi::LopTinChi() {
     MALOPTC = 0; MAMH[0]=0; NienKhoa[0]=0;
     Hocky = 0; Nhom = 0; sosvmin = 0; sosvmax = 0; currentsv = 0;
-    deadline = 0; huylop = false; dssvdk = nullptr;
+    deadline[0] = '\0'; huylop = false; dssvdk = nullptr;
 }
 nodeLTC::nodeLTC() { next = nullptr; }
 nodeLTC::nodeLTC(LopTinChi data) { this->ltc = data; this->next = nullptr; }
