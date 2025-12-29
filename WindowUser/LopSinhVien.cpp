@@ -238,10 +238,10 @@ bool editLopTinChi(PTRLTC &First, int id) {
     inputOrKeep(p->ltc.MAMH, 11, old.MAMH, "Ma Mon Hoc");
     inputOrKeep(p->ltc.NienKhoa, 10, old.NienKhoa, "Nien Khoa");
 
-    p->ltc.Hocky   = inputIntOrKeep(old.Hocky, "Hoc Ky");
-    p->ltc.Nhom    = inputIntOrKeep(old.Nhom, "Nhom");
-    p->ltc.sosvmin = inputIntOrKeep(old.sosvmin, "SV Min");
-    p->ltc.sosvmax = inputIntOrKeep(old.sosvmax, "SV Max");
+    p->ltc.Hocky   = inputIntOrKeep(old.Hocky, "Hoc Ky", true);
+    p->ltc.Nhom    = inputIntOrKeep(old.Nhom, "Nhom", false);
+    p->ltc.sosvmin = inputIntOrKeep(old.sosvmin, "SV Min", false);
+    p->ltc.sosvmax = inputIntOrKeep(old.sosvmax, "SV Max", false);
 
     if (p->ltc.sosvmin > p->ltc.sosvmax) {
         cout << "SV Min khong duoc lon hon SV Max!\n";
@@ -1111,7 +1111,7 @@ LopTinChi NhapLTC(){
     cout << "Nhap Hoc Ky: ";
     cin >> ltc.Hocky;
 
-    if (!cin.fail() && ltc.Hocky > 0 && ltc.Hocky <=2) {
+    if (!cin.fail() && ltc.Hocky > 0 && ltc.Hocky <=3) {
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         break;
     }
@@ -1185,7 +1185,7 @@ void inputOrKeep(char dest[], int maxLen, const char oldValue[], const char *lab
         cout << "Du lieu qua dai! Nhap lai.\n";
     }
 }
-int inputIntOrKeep(int oldValue, const char *label) {
+int inputIntOrKeep(int oldValue, const char *label, bool smaller3) {
     char buf[50];
     int x;
 
@@ -1199,7 +1199,7 @@ int inputIntOrKeep(int oldValue, const char *label) {
         char *end;
         x = strtol(buf, &end, 10);
 
-        if (*end == '\0' && x > 0)
+        if (*end == '\0' && x > 0 && (!smaller3 || x <= 3))
             return x;
 
         cout << "Nhap sai! Hay nhap so hop le.\n";

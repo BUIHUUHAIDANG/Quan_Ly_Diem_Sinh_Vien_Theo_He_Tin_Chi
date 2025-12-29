@@ -28,6 +28,7 @@ void Deletespaceandtoupper (char s[]);
 void UpperFirstCharName(char s[]);
 // -------------------- HÀM HỖ TRỢ --------------------
 bool checkMH(treeMH t, MonHoc mh);
+bool Checkkhoangtrang(char s[]);
 void NhapMonHoc(treeMH &t, stack &undostackMH);
 treeMH UndoThemMH (treeMH &t, char MAMH[]);
 treeMH XoaMH(treeMH &t, char MAMH[], stack &undostackMH);
