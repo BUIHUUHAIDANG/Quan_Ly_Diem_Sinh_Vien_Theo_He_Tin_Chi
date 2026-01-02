@@ -818,8 +818,10 @@ void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, DS_LOPSV dslop) {
         cout << "Nhap ma so sinh vien (Nhap 0 de thoat): ";
         cin.getline(masv, 16);
         if (strcmp(masv, "0") == 0) return;
+        toUpperCase(masv);
         cout << "Nhap ma lop sinh vien: ";
         cin.getline(malop, 16);
+        toUpperCase(malop);
         First = GetLop(dslop, malop);
         if (First == nullptr) {
             cout << "Ma lop sinh vien khong ton tai, vui long kiem tra lai!" << endl;
@@ -832,10 +834,28 @@ void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, DS_LOPSV dslop) {
                 "So dien thoai: " << p->sv.SODT << endl <<
                 "Email: " << p->sv.Email << endl;
 
-                cout << "Nhap nien khoa: ";
-                cin >> lop.NienKhoa;
-                cout << "Nhap hoc ky: ";
+                do {
+                cout << "Nhap Nien Khoa: ";
+                cin.getline(lop.NienKhoa, 10);
+            
+                if (strlen(lop.NienKhoa) == 0)
+                cout << "Loi: Khong duoc de trong!\n";
+            
+                } while (strlen(lop.NienKhoa) == 0);
+            
+                while (true) {
+                cout << "Nhap Hoc Ky: ";
                 cin >> lop.Hocky;
+            
+                if (!cin.fail() && lop.Hocky > 0 && lop.Hocky <=3) {
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    break;
+                }
+            
+                cout << "Loi! Hay nhap so nguyen > 0\n";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
                 InLTC_UI(loptinchi, lop.NienKhoa, lop.Hocky, t);
                 PTRLTC c = nullptr;
                 c = checkmaltc(loptinchi, lop.NienKhoa, lop.Hocky);
