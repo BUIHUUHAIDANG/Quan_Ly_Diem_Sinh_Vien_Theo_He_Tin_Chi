@@ -1677,14 +1677,20 @@ void NhapDiem(PTRLTC &FirstLTC, DS_LOPSV &dslop) {
     }
     if (ltc == nullptr) {
         cout << "\n\nKhong tim thay lop tin chi tuong ung!\n";
+        cout << "\nNhan phim bat ky de quay lai...";
+        getch();
         return;
     }
     if (ltc->ltc.huylop) {
         cout << "\n\nLop tin chi nay da bi huy, khong the nhap diem!\n";
+        cout << "\nNhan phim bat ky de quay lai...";
+        getch();
         return;
     }
     if (ltc->ltc.dssvdk == nullptr) {
         cout << "\n\nKhong co sinh vien dang ky lop tin chi nay!\n";
+        cout << "\nNhan phim bat ky de quay lai...";
+        getch();
         return;
     }
     PTRDK arr[500];
@@ -1753,14 +1759,20 @@ void InbangDiemLTC(nodeLTC* dsltc, DS_LOPSV &dslop) {
     }
     if (ltc == nullptr) {
         cout << "Khong tim thay lop tin chi tuong ung!\n";
+        cout << "\nNhan phim bat ky de quay lai...";
+        getch();
         return;
     }
     if (ltc->ltc.huylop) {
         cout << "Lop tin chi nay da bi huy, khong the nhap diem!\n";
+        cout << "\nNhan phim bat ky de quay lai...";
+        getch();
         return;
     }
     if (ltc->ltc.dssvdk == nullptr) {
         cout << "Khong co sinh vien dang ky lop tin chi nay!\n";
+        cout << "\nNhan phim bat ky de quay lai...";
+        getch();
         return;
     }
     PTRDK arr[500];
