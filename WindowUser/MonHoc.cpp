@@ -287,6 +287,7 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
             }
             break;
         }
+        toUpperCase(mh.MAMH);
 
         // ===== TEN MON HOC =====
         while (true) {
@@ -386,12 +387,10 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
 }
 
 
-treeMH UndoThemMH (treeMH &t, char MAMH[]) {
+treeMH UndoThemMH (treeMH t, char MAMH[]) {
     MonHoc mh;
-    if (t == nullptr) {
-        cout <<  "Khong tim thay mon hoc de xoa" << endl;
-        return nullptr;
-    }
+    if (t == nullptr) return nullptr;
+    
     if (strcmp(MAMH, t->mh.MAMH) < 0) {
         t->left = UndoThemMH(t->left, MAMH);
     } else if (strcmp(MAMH, t->mh.MAMH) > 0) {
@@ -422,17 +421,18 @@ treeMH UndoThemMH (treeMH &t, char MAMH[]) {
     return CheckandRotation(t);
 }
 
-treeMH XoaMH (treeMH &t, char MAMH[], stack &undostackMH) {
+treeMH XoaMH (treeMH t, char MAMH[], MonHoc &mhDeleted) {
     MonHoc mh;
     if (t == nullptr) {
         cout <<  "Khong tim thay mon hoc de xoa" << endl;
         return nullptr;
     }
     if (strcmp(MAMH, t->mh.MAMH) < 0) {
-        t->left = XoaMH(t->left, MAMH, undostackMH);
+        t->left = XoaMH(t->left, MAMH, mhDeleted);
     } else if (strcmp(MAMH, t->mh.MAMH) > 0) {
-        t->right = XoaMH(t->right, MAMH, undostackMH);
+        t->right = XoaMH(t->right, MAMH, mhDeleted);
     } else {
+        if (mhDeleted.MAMH[0] == '\0') mhDeleted = t->mh; //Chỉ lưu lần đần tiên tìm thấy
         if (t->left == nullptr && t->right == nullptr) {
             delete t;
             return nullptr;
@@ -451,18 +451,16 @@ treeMH XoaMH (treeMH &t, char MAMH[], stack &undostackMH) {
                 minRight = minRight->left;
             }
             t->mh = minRight->mh;
-            t->right = XoaMH(t->right, minRight->mh.MAMH, undostackMH);
+            t->right = XoaMH(t->right, minRight->mh.MAMH, mhDeleted);
         }
     }
     if (t == nullptr) return nullptr; //Nếu cây rồng thì không cần quay
     return CheckandRotation(t);
-    ActionMH act;
-    act.type = 2;
-    act.mh = t->mh;
-    push(undostackMH, act);
 }
 
 void UndoSuaMH (treeMH &t, MonHoc mh) {
+    if (t == nullptr) return;
+
     if (strcmp(mh.MAMH, t->mh.MAMH) < 0) {
         UndoSuaMH(t->left, mh);
     } else if (strcmp(mh.MAMH, t->mh.MAMH) > 0) {

@@ -352,10 +352,15 @@ int main() {
                         }
                         else if (n == 1) { // Xoa MH
                             clrscr();
+                            MonHoc mhDeleted;
                             char mamh[11];
                             cout << "Nhap ma mon hoc can xoa: ";
                             cin >> mamh;
-                            dsmh = XoaMH(dsmh, mamh, undostackMH);
+                            dsmh = XoaMH(dsmh, mamh, mhDeleted);
+                            ActionMH act;
+                            act.type = 2;
+                            act.mh = mhDeleted;
+                            push(undostackMH, act);
                             LuuMonHoc(dsmh, "MonHocdata.txt");
                             cout << "\n>>> Da xoa mon hoc!\n";
                             cout << "Nhan phim bat ky de quay lai...";
