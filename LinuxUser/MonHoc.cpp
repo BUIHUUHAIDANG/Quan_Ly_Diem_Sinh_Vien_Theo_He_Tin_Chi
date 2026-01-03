@@ -283,6 +283,7 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
             }
             break;
         }
+        toUpperCase(mh.MAMH);
 
         // ===== TEN MON HOC =====
         while (true) {
