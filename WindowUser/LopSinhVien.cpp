@@ -1083,51 +1083,57 @@ bool checkformatdeadline (string s) {
     }
     return true;
 }
+
 bool validdealine (time_t deadline) {
     time_t now = time(0);
     if (difftime(deadline, now) <= 0) return false;
     return true;
 }
+
 LopTinChi NhapLTC(treeMH t){
     LopTinChi ltc;
     cout << "\n=== THEM LOP TIN CHI ===\n";
     ltc.MALOPTC = -1; 
 
+    char tempMAMH[11];
     while (true) {
         cout << "Nhap Ma Mon Hoc: ";
-        cin.getline(ltc.MAMH, 11);
+        cin.getline(tempMAMH, 11);
 
-        toUpperCase(ltc.MAMH);
+        toUpperCase(tempMAMH);
 
-        if (strlen(ltc.MAMH) == 0) {
+        if (strlen(tempMAMH) == 0) {
             cout << "Loi: Khong duoc de trong!\n";
             continue;
         }
 
-        if (timMonHoc(t, ltc.MAMH) == nullptr) {
+        if (timMonHoc(t, tempMAMH) == nullptr) {
             cout << "Loi: Ma mon hoc khong ton tai!\n";
             continue;
         }
         break;
     }
+    strcpy(ltc.MAMH, tempMAMH);
 
+    char tempNienKhoa[10];
     while (true) {
         cout << "Nhap Nien Khoa: ";
-        cin.getline(ltc.NienKhoa, 10);
+        cin.getline(tempNienKhoa, 10);
 
-        if (strlen(ltc.NienKhoa) == 0) {
+        if (strlen(tempNienKhoa) == 0) {
             cout << "Loi: Khong duoc de trong!\n";
             continue;
         }
-
         break;
     }
+    strcpy(ltc.NienKhoa, tempNienKhoa);
 
+    int tempHK;
     while (true) {
     cout << "Nhap Hoc Ky: ";
-    cin >> ltc.Hocky;
+    cin >> tempHK;
 
-    if (!cin.fail() && ltc.Hocky > 0 && ltc.Hocky <=3) {
+    if (!cin.fail() && tempHK > 0 && tempHK <=3) {
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         break;
     }
@@ -1136,11 +1142,14 @@ LopTinChi NhapLTC(treeMH t){
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
+    ltc.Hocky = tempHK;
+
+    int tempNhom;
     while (true) {
     cout << "Nhap Nhom: ";
-    cin >> ltc.Nhom;
+    cin >> tempNhom;
 
-    if (!cin.fail() && ltc.Nhom > 0) {
+    if (!cin.fail() && tempNhom > 0) {
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         break;
     }
@@ -1149,23 +1158,40 @@ LopTinChi NhapLTC(treeMH t){
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
-    do {
-        cout << "Nhap SV Min va Max: ";
-        cin >> ltc.sosvmin >> ltc.sosvmax;
+    ltc.Nhom = tempNhom;
 
-        if (!isValidSoSV(ltc.sosvmin, ltc.sosvmax)) {
-            cout << "Loi: SV Min phai <= SV Max va > 0. Nhap lai!\n";
+    int tempSVMIN, tempSVMAX;
+    while (true) {
+        cout << "Nhap SV Min va Max: ";
+        cin >> tempSVMIN >> tempSVMAX;
+
+        if (!cin.fail() && isValidSoSV(tempSVMIN, tempSVMAX)) {
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            break;
         }
-    } while (!isValidSoSV(ltc.sosvmin, ltc.sosvmax));
-    cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Loi: SV Min phai <= SV Max va > 0. Nhap lai!\n";
+    }
+    ltc.sosvmin = tempSVMIN;
+    ltc.sosvmax = tempSVMAX;
+
     cout << "Nhap Deadline (YYYY-MM-DD HH:MM): ";
     char deadlinechar[17];
+
     while (true) {
         cin.getline(deadlinechar, 17);
         string deadlinestr = deadlinechar;
-        if (checkformatdeadline(deadlinestr) && validdealine(stringToTime(deadlinestr))) break;
+
+        if (checkformatdeadline(deadlinestr) &&
+            validdealine(stringToTime(deadlinestr))) {
+            break;
+        }
+
         cout << "Loi: Deadline khong hop le. Nhap lai (YYYY-MM-DD HH:MM): ";
     }
+
     strcpy(ltc.deadline, deadlinechar);
     ltc.huylop = false;
     ltc.dssvdk = nullptr;

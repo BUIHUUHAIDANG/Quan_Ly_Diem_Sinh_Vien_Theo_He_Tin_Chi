@@ -254,6 +254,7 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
         SetBold(false);
 
         // ===== MA MON HOC =====
+        char tempMAMH[11];
         while (true) {
             gotoxy(22, 6);
             cout << "Ma mon hoc (0 de thoat): ";
@@ -261,11 +262,11 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
             cout << "          ";
             gotoxy(48, 6);
 
-            cin.getline(mh.MAMH, 11);
+            cin.getline(tempMAMH, 11);
 
-            if (strcmp(mh.MAMH, "0") == 0) return;
+            if (strcmp(tempMAMH, "0") == 0) return;
 
-            if (strlen(mh.MAMH) == 0) {
+            if (strlen(tempMAMH) == 0) {
                 gotoxy(22, 25);
                 SetColor(4);
                 cout << "Ma mon hoc khong duoc de trong!";
@@ -273,7 +274,7 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
                 continue;
             }
 
-            if (Checkkhoangtrang(mh.MAMH)) {
+            if (Checkkhoangtrang(tempMAMH)) {
                 gotoxy(22, 26);
                 SetColor(4);
                 cout << "Ma mon hoc khong duoc chua khoang trang!";
@@ -281,7 +282,7 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
                 continue;
             }   
 
-            if (timMonHoc(t, mh.MAMH) != nullptr) {
+            if (timMonHoc(t, tempMAMH) != nullptr) {
                 gotoxy(22, 27);
                 SetColor(4);
                 cout << "Ma mon hoc da ton tai!";
@@ -290,9 +291,11 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
             }
             break;
         }
+        strcpy(mh.MAMH, tempMAMH);
         toUpperCase(mh.MAMH);
 
         // ===== TEN MON HOC =====
+        char tempTENMH[51];
         while (true) {
             gotoxy(22, 8);
             cout << "Ten mon hoc: ";
@@ -300,9 +303,9 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
             cout << string(30, ' ');
             gotoxy(48, 8);
 
-            cin.getline(mh.TENMH, 51);
+            cin.getline(tempTENMH, 51);
 
-            if (strlen(mh.TENMH) == 0) {
+            if (strlen(tempTENMH) == 0) {
                 gotoxy(22, 28);
                 SetColor(4);
                 cout << "Ten mon hoc khong duoc de trong!";
@@ -311,6 +314,7 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
             }
             break;
         }
+        strcpy(mh.TENMH, tempTENMH);
 
         Deletespaceandtoupper(mh.TENMH);
         UpperFirstCharName(mh.TENMH);
