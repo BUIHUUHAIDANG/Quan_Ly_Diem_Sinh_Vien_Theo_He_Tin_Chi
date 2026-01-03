@@ -332,7 +332,7 @@ int main() {
                             while (true) {
                                 clrscr();
                             
-                                LopTinChi ltc = NhapLTC();
+                                LopTinChi ltc = NhapLTC(dsmh);
                                 ltc.MALOPTC = getNextMaLopTinChi(FirstLTC);
                             
                                 insertLopTinChi(FirstLTC, ltc);

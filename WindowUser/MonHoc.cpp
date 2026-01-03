@@ -263,7 +263,7 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
             if (strcmp(mh.MAMH, "0") == 0) return;
 
             if (strlen(mh.MAMH) == 0) {
-                gotoxy(22, 15);
+                gotoxy(22, 25);
                 SetColor(4);
                 cout << "Ma mon hoc khong duoc de trong!";
                 ResetColor();
@@ -271,7 +271,7 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
             }
 
             if (Checkkhoangtrang(mh.MAMH)) {
-                gotoxy(22, 15);
+                gotoxy(22, 26);
                 SetColor(4);
                 cout << "Ma mon hoc khong duoc chua khoang trang!";
                 ResetColor();
@@ -279,7 +279,7 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
             }   
 
             if (checkMH(t, mh)) {
-                gotoxy(22, 15);
+                gotoxy(22, 27);
                 SetColor(4);
                 cout << "Ma mon hoc da ton tai!";
                 ResetColor();
@@ -300,7 +300,7 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
             cin.getline(mh.TENMH, 51);
 
             if (strlen(mh.TENMH) == 0) {
-                gotoxy(22, 15);
+                gotoxy(22, 28);
                 SetColor(4);
                 cout << "Ten mon hoc khong duoc de trong!";
                 ResetColor();
@@ -331,7 +331,7 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
 
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            gotoxy(22,15);
+            gotoxy(22,29);
             SetColor(4);
             cout << "STCLT phai la so nguyen > 0!";
             ResetColor();
@@ -357,7 +357,7 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
 
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            gotoxy(22,15);
+            gotoxy(22,30);
             SetColor(4);
             cout << "STCTH phai la so nguyen > 0!";
             ResetColor();
@@ -888,16 +888,6 @@ void ClearStackMH(stack &st) {
         st.top = st.top->next;
         delete temp;
     }
-}
-treeMH getMH(treeMH &t, MonHoc mh, stack &undostackMH) {
-    if (t == nullptr) return nullptr;
-
-    if (strcmp(mh.MAMH, t->mh.MAMH) < 0)
-        getMH(t->left, mh, undostackMH);
-    else if (strcmp(mh.MAMH, t->mh.MAMH) > 0)
-        getMH(t->right, mh, undostackMH);
-    
-    return t;
 }
 
 void SuaTenMH(treeMH t, stack &undostackMH) {

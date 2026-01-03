@@ -10,6 +10,7 @@
 #include "LopSinhVien.h"
 #include "CTDL.h"
 #include "menu.h"
+#include "MonHoc.h"
 #include "mylib.h"  
 #include <conio.h>   
 using namespace std;
@@ -622,6 +623,15 @@ bool editSinhVien(PTRSV &First, char MASV[16]){
 
     return true;
 }
+
+void toUpperCase(char s[]) {
+    for (int i = 0; s[i] != '\0'; i++) {
+        if (s[i] >= 'a' && s[i] <= 'z') {
+            s[i] = s[i] - ('a' - 'A');
+        }
+    }
+}
+
 void NhapSinhVien(DS_LOPSV ds){
     gotoxy(10, 10);
     cout << "=== NHAP SINH VIEN VAO LOP ===\n";
@@ -1063,13 +1073,7 @@ void formatName(char s[]) {
     if (j > 0)j--;
     s[j] = '\0';
 }
-void toUpperCase(char s[]) {
-    for (int i = 0; s[i] != '\0'; i++) {
-        if (s[i] >= 'a' && s[i] <= 'z') {
-            s[i] = s[i] - ('a' - 'A');
-        }
-    }
-}
+
 bool checkformatdeadline (string s) {
     if (s.length() != 16) return false;
     if (s[4] != '-' || s[7] != '-' || s[10] != ' ' || s[13] != ':') return false;
@@ -1084,28 +1088,43 @@ bool validdealine (time_t deadline) {
     if (difftime(deadline, now) <= 0) return false;
     return true;
 }
-LopTinChi NhapLTC(){
+LopTinChi NhapLTC(treeMH t){
     LopTinChi ltc;
     cout << "\n=== THEM LOP TIN CHI ===\n";
     ltc.MALOPTC = -1; 
 
-    do {
-    cout << "Nhap Ma Mon Hoc: ";
-    cin.getline(ltc.MAMH, 11);
+    while (true) {
+        char temp[11];
+        cout << "Nhap Ma Mon Hoc: ";
+        cin.getline(temp, 11);
 
-    if (strlen(ltc.MAMH) == 0)
-    cout << "Loi: Khong duoc de trong!\n";
+        toUpperCase(temp);
 
-    } while (strlen(ltc.MAMH) == 0);
+        if (strlen(temp) == 0) {
+            cout << "Loi: Khong duoc de trong!\n";
+            continue;
+        }
 
-    do {
-    cout << "Nhap Nien Khoa: ";
-    cin.getline(ltc.NienKhoa, 10);
+        if (timMonHoc(t, temp) == nullptr) {
+            cout << "Loi: Ma mon hoc khong ton tai!\n";
+            continue;
+        }
 
-    if (strlen(ltc.NienKhoa) == 0)
-    cout << "Loi: Khong duoc de trong!\n";
+        strcpy(ltc.MAMH, temp);
+        break;
+    }
 
-    } while (strlen(ltc.NienKhoa) == 0);
+    while (true) {
+        cout << "Nhap Nien Khoa: ";
+        cin.getline(ltc.NienKhoa, 10);
+
+        if (strlen(ltc.NienKhoa) == 0) {
+            cout << "Loi: Khong duoc de trong!\n";
+            continue;
+        }
+
+        break;
+    }
 
     while (true) {
     cout << "Nhap Hoc Ky: ";
@@ -1205,11 +1224,7 @@ int inputIntOrKeep(int oldValue, const char *label, bool smaller3) {
         cout << "Nhap sai! Hay nhap so hop le.\n";
     }
 }
-void toUpper(char word[]){
-    for (int i = 0; word[i] != '\0'; i++) {
-        word[i] = toupper(word[i]);
-    }
-}
+
 PTRLTC findLTCByParams(PTRLTC FirstLTC) {
     char nienkhoa[10], MAMH[11];
     int hocky, nhom;
