@@ -217,11 +217,14 @@ void UpperFirstCharName(char s[]) {
 }
 
 // -------------------- HÀM HỖ TRỢ --------------------
-bool checkMH(treeMH t, MonHoc mh) {
-    if (!t) return false;
-    if (strcmp(mh.MAMH, t->mh.MAMH) == 0) return true;
-    if (strcmp(mh.MAMH, t->mh.MAMH) < 0) return checkMH(t->left, mh);
-    return checkMH(t->right, mh);
+treeMH timMonHoc(treeMH t, char mamh[]) {
+    if (t == nullptr) return nullptr;
+    
+    if (strcmp(mamh, t->mh.MAMH) < 0) {
+        return timMonHoc(t->left, mamh);
+    } else if (strcmp(mamh, t->mh.MAMH) > 0) {
+        return timMonHoc(t->right, mamh);
+    } else return t;
 }
 
 bool Checkkhoangtrang(char s[]) {
@@ -247,6 +250,7 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
         SetBold(false);
 
         // ===== MA MON HOC =====
+        char tempMAMH[11];
         while (true) {
             gotoxy(22, 6);
             cout << "Ma mon hoc (0 de thoat): ";
@@ -254,28 +258,28 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
             cout << "          ";
             gotoxy(48, 6);
 
-            cin.getline(mh.MAMH, 11);
+            cin.getline(tempMAMH, 11);
 
-            if (strcmp(mh.MAMH, "0") == 0) return;
+            if (strcmp(tempMAMH, "0") == 0) return;
 
-            if (strlen(mh.MAMH) == 0) {
-                gotoxy(22, 15);
+            if (strlen(tempMAMH) == 0) {
+                gotoxy(22, 25);
                 SetColor(4);
                 cout << "Ma mon hoc khong duoc de trong!";
                 ResetColor();
                 continue;
             }
 
-            if (Checkkhoangtrang(mh.MAMH)) {
-                gotoxy(22, 15);
+            if (Checkkhoangtrang(tempMAMH)) {
+                gotoxy(22, 26);
                 SetColor(4);
                 cout << "Ma mon hoc khong duoc chua khoang trang!";
                 ResetColor();
                 continue;
             }   
 
-            if (checkMH(t, mh)) {
-                gotoxy(22, 15);
+            if (timMonHoc(t, tempMAMH) != nullptr) {
+                gotoxy(22, 27);
                 SetColor(4);
                 cout << "Ma mon hoc da ton tai!";
                 ResetColor();
@@ -283,8 +287,11 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
             }
             break;
         }
+        strcpy(mh.MAMH, tempMAMH);
         toUpperCase(mh.MAMH);
+
         // ===== TEN MON HOC =====
+        char tempTENMH[51];
         while (true) {
             gotoxy(22, 8);
             cout << "Ten mon hoc: ";
@@ -292,10 +299,10 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
             cout << string(30, ' ');
             gotoxy(48, 8);
 
-            cin.getline(mh.TENMH, 51);
+            cin.getline(tempTENMH, 51);
 
-            if (strlen(mh.TENMH) == 0) {
-                gotoxy(22, 15);
+            if (strlen(tempTENMH) == 0) {
+                gotoxy(22, 28);
                 SetColor(4);
                 cout << "Ten mon hoc khong duoc de trong!";
                 ResetColor();
@@ -303,6 +310,7 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
             }
             break;
         }
+        strcpy(mh.TENMH, tempTENMH);
 
         Deletespaceandtoupper(mh.TENMH);
         UpperFirstCharName(mh.TENMH);
@@ -326,7 +334,7 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
 
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            gotoxy(22,15);
+            gotoxy(22,29);
             SetColor(4);
             cout << "STCLT phai la so nguyen > 0!";
             ResetColor();
@@ -352,7 +360,7 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
 
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            gotoxy(22,15);
+            gotoxy(22,30);
             SetColor(4);
             cout << "STCTH phai la so nguyen > 0!";
             ResetColor();
@@ -633,16 +641,6 @@ void InDSMH(treeMH t) {
     }
 }
 
-treeMH timMonHoc(treeMH t, char mamh[]) {
-    if (t == nullptr) return nullptr;
-    
-    if (strcmp(mamh, t->mh.MAMH) < 0) {
-        return timMonHoc(t->left, mamh);
-    } else if (strcmp(mamh, t->mh.MAMH) > 0) {
-        return timMonHoc(t->right, mamh);
-    } else return t;
-}
-
 PTRLTC InTrangLTC_UI_Bang(PTRLTC start, char nienkhoa[], int hocky, treeMH t) {
     PTRLTC p = start;
     int dem = 0;
@@ -883,16 +881,6 @@ void ClearStackMH(stack &st) {
         st.top = st.top->next;
         delete temp;
     }
-}
-treeMH getMH(treeMH &t, MonHoc mh, stack &undostackMH) {
-    if (t == nullptr) return nullptr;
-
-    if (strcmp(mh.MAMH, t->mh.MAMH) < 0)
-        getMH(t->left, mh, undostackMH);
-    else if (strcmp(mh.MAMH, t->mh.MAMH) > 0)
-        getMH(t->right, mh, undostackMH);
-    
-    return t;
 }
 
 void SuaTenMH(treeMH t, stack &undostackMH) {

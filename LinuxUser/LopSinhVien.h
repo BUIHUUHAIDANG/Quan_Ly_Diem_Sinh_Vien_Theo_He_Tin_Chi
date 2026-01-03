@@ -93,7 +93,7 @@ void printDSSV(LopSV *lop);
 bool isValidSoSV(int min, int max);
 bool checkformatdeadline (string s);
 bool validdealine (time_t deadline);
-LopTinChi NhapLTC();
+LopTinChi NhapLTC(treeMH t);
 int getNextMaLopTinChi(PTRLTC First);
 
 void inputOrKeep(char dest[], int maxLen, const char oldValue[], const char *label);
