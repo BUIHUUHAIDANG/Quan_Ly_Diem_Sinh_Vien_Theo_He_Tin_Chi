@@ -1094,23 +1094,20 @@ LopTinChi NhapLTC(treeMH t){
     ltc.MALOPTC = -1; 
 
     while (true) {
-        char temp[11];
         cout << "Nhap Ma Mon Hoc: ";
-        cin.getline(temp, 11);
+        cin.getline(ltc.MAMH, 11);
 
-        toUpperCase(temp);
+        toUpperCase(ltc.MAMH);
 
-        if (strlen(temp) == 0) {
+        if (strlen(ltc.MAMH) == 0) {
             cout << "Loi: Khong duoc de trong!\n";
             continue;
         }
 
-        if (timMonHoc(t, temp) == nullptr) {
+        if (timMonHoc(t, ltc.MAMH) == nullptr) {
             cout << "Loi: Ma mon hoc khong ton tai!\n";
             continue;
         }
-
-        strcpy(ltc.MAMH, temp);
         break;
     }
 

@@ -221,11 +221,14 @@ void UpperFirstCharName(char s[]) {
 }
 
 // -------------------- HÀM HỖ TRỢ --------------------
-bool checkMH(treeMH t, MonHoc mh) {
-    if (!t) return false;
-    if (strcmp(mh.MAMH, t->mh.MAMH) == 0) return true;
-    if (strcmp(mh.MAMH, t->mh.MAMH) < 0) return checkMH(t->left, mh);
-    return checkMH(t->right, mh);
+treeMH timMonHoc(treeMH t, char mamh[]) {
+    if (t == nullptr) return nullptr;
+    
+    if (strcmp(mamh, t->mh.MAMH) < 0) {
+        return timMonHoc(t->left, mamh);
+    } else if (strcmp(mamh, t->mh.MAMH) > 0) {
+        return timMonHoc(t->right, mamh);
+    } else return t;
 }
 
 bool Checkkhoangtrang(char s[]) {
@@ -278,7 +281,7 @@ void NhapMonHoc(treeMH &t, stack &undostackMH) {
                 continue;
             }   
 
-            if (checkMH(t, mh)) {
+            if (timMonHoc(t, mh.MAMH) != nullptr) {
                 gotoxy(22, 27);
                 SetColor(4);
                 cout << "Ma mon hoc da ton tai!";
@@ -636,16 +639,6 @@ void InDSMH(treeMH t) {
         if ((key == 'd' || key == 'D') && page < totalPage) page++;
         if ((key == 'a' || key == 'A') && page > 1) page--;
     }
-}
-
-treeMH timMonHoc(treeMH t, char mamh[]) {
-    if (t == nullptr) return nullptr;
-    
-    if (strcmp(mamh, t->mh.MAMH) < 0) {
-        return timMonHoc(t->left, mamh);
-    } else if (strcmp(mamh, t->mh.MAMH) > 0) {
-        return timMonHoc(t->right, mamh);
-    } else return t;
 }
 
 PTRLTC InTrangLTC_UI_Bang(PTRLTC start, char nienkhoa[], int hocky, treeMH t) {
