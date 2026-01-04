@@ -98,7 +98,6 @@ void drawBangDiem(PTRDK arr[], int count, int highlight, DS_LOPSV &dslop, int in
     SetColor(2);
     cout << left << setw(5) << "STT" << setw(15) << "MASV" << setw(25) << "HO"<<
     setw(15) << "TEN" << setw(10) << "DIEM" << endl;
-    
     cout << "----------------------------------------------------------------------------------\n";
     ResetColor();
     int endindex = min(index + linenum, count);
@@ -160,12 +159,15 @@ void drawBangDiemTK(PTRSV arr[], int count, int index, PTRLTC &dsltc,DS_LOPSV &d
     SetBold(true);
     SetColor(14);
     cout << "               -==== BANG DIEM TONG KET ====- ";
+    ResetColor();
+    SetBold(false);
     cout << "\nLop: ";
     SetColor(10);
     cout << lop->TENLOP << endl;
     ResetColor();
-    SetBold(false);
+    SetColor(2);
     cout << left << setw(5) << "STT" << setw(15) << "MASV" << setw(25) << "HO TEN";
+    ResetColor();
     for (int i = 0; i < soMH; i++) cout << setw(8) << dsMAMH[i];
     cout << endl;
  
@@ -248,10 +250,16 @@ int Popup_ChonHanhDong() { // pop up sua diem
 
 
 void drawBangDiem(PTRDK arr[], int count, int highlight, DS_LOPSV &dslop) {
+    SetColor(14);
+    SetBold(true);
     cout << "\n              -==== BANG DIEM LOP TIN CHI ====- \n";
+    SetBold(false);
+    ResetColor();
+    SetColor(2);
     cout << left << setw(5) << "STT" << setw(15) << "MASV" << setw(25) << "HO"<<
     setw(15) << "TEN" << setw(10) << "DIEM" << endl;
     cout << "--------------------------------------------------------------\n";
+    ResetColor();
     for(int i=0; i<count; i++) {
         if(i == highlight) SetColor(14); else SetColor(7);
         SinhVien *sv = nullptr;

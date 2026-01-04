@@ -1492,10 +1492,9 @@ float Tinhdiemtb(SinhVien &sv, PTRLTC &dsltc, treeMH &dsmh) { // dtb = tong diem
 }
 void IndiemtbLop(PTRLTC &dsltc,DS_LOPSV &dslop,treeMH &dsmh) { // In diem tb cho ca lop
     char malop[16];
-    SetColor(5);
     cout << "\nNhap ma lop: ";
     cin.getline(malop, 16);
-    ResetColor();
+    
 
     LopSV* lop = nullptr;
     for (int i = 0; i < dslop.n; i++) {
@@ -1525,13 +1524,15 @@ void IndiemtbSinhvien(PTRLTC &dsltc,DS_LOPSV &dslop, treeMH &dsmh) { // In diem 
         for (PTRSV sv = lop->FirstSV; sv != nullptr; sv = sv->next) {
             if(strcmp(sv->sv.MASV,MASV) == 0) {
                 SetBold(true);
-                SetColor(4);
+                SetColor(14);
                 cout << "\n             -==== DIEM TRUNG BINH ====- \n";
                 SetBold(false);
                 ResetColor();
                 cout << "Lop: " << lop->TENLOP << endl;
+                SetColor(2);
                 cout << left  << setw(15) << "MASV" << setw(25) << "HO" << setw(15) << "TEN" << setw(10) << "DIEM TB" << endl;
                 cout << "-------------------------------------------------------------\n";
+                ResetColor();
                 float diemTB = Tinhdiemtb(sv->sv, dsltc, dsmh);
                 if (diemTB >= 0) {
                     cout << left  << setw(15) << sv->sv.MASV << setw(25) << sv->sv.HO 
@@ -1584,14 +1585,20 @@ void InbangdiemtongketSinhvien( PTRLTC &dsltc,  DS_LOPSV &dslop,  treeMH &dsmh) 
             if(strcmp(sv->sv.MASV,MASV)==0) {
                 bool MHdaDK[200];
                 getmonhocDK(MHdaDK,soMH,dsMAMH,MASV,dsltc);
-                cout << " -==== DIEM TONG KET ====- ";
+                SetColor(14);
+                SetBold(true);
+                cout << "               -==== DIEM TONG KET ====- ";
+                SetBold(false);
+                ResetColor();
                 cout << "\nLop: " << lop->TENLOP << endl;
+                SetColor(2);
                 cout << left <<setw(15) << "MASV" << setw(25) << "HO TEN";
                 for (int j = 0; j < soMH; j++) {
                     if(MHdaDK[j]) cout << setw(8) << dsMAMH[j];
                 }
                 cout << endl;
                 cout << "------------------------------------------------------------\n";
+                ResetColor();
                 float diemMax[200];
                 for (int j = 0; j < soMH; j++) diemMax[j] = -1;
                 for (PTRLTC cur = dsltc; cur != nullptr; cur = cur->next) {
