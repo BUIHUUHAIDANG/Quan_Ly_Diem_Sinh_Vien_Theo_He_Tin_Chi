@@ -174,7 +174,6 @@ int main() {
 
     const char *featuresdangkyhuy[] = {
         "Dang ky LTC",
-        "Huy LTC",
         "← Quay lai"
     };
 
@@ -221,12 +220,7 @@ int main() {
                             // TODO: goi ham dang ky
                             DangKyLTC(FirstLTC, lop, dsmh, ds);
                             saveLopTinChi_Binary(FirstLTC, "LopTinChi.txt", "DSSVDK.txt");
-                        } else if (g == 1) {
-                            clrscr();
-                            // TODO: goi ham huy
-                            cout << "Thuc hien huy...\n";
-                            getch();
-                        }
+                        } 
                     }
                 } else if(f==2) {
                     clrscr();

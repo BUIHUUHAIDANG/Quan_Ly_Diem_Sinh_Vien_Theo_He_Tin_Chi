@@ -1113,6 +1113,10 @@ LopTinChi NhapLTC(treeMH t){
             cout << "Loi: Khong duoc de trong!\n";
             continue;
         }
+        if(!formatNK(tempNienKhoa)){
+            cout<<"Nien Khoa khong dung dinh dang YYYY-MM-MM HH:HH"<<endl;
+            continue;
+        }
         break;
     }
     strcpy(ltc.NienKhoa, tempNienKhoa);
