@@ -9,114 +9,82 @@
 #include "menu.h"
 #include "LopSinhVien.h"
 #include "CTDL.h"
+#include "MonHoc.h"
 using namespace std;
 
-void drawStaticMenu(const char *title, const char *role, int n)  {
+void drawStaticMenu(const char *title, const char *role, int n) {
+    int baseX = 75;
+    int baseY = 4;
+
     clrscr();
     SetBGColor(0);
     SetColor(7);
-    gotoxy(20, 2);
+
+    gotoxy(baseX + 10, baseY);
     SetBold(true);
     SetColor(4);
     cout << title;
-    drawLine(5, 3, 53);
-    ResetColor();
     SetBold(false);
-    gotoxy(5, 4);
+    ResetColor();
+
+    drawLine(baseX, baseY + 1, 40);
+
+    gotoxy(baseX, baseY + 2);
     cout << "Vai tro: ";
     SetBold(true);
     SetColor(10);
     cout << role;
     ResetColor();
     SetBold(false);
-    gotoxy(5, 6 + n * 2);
-    cout << "(Dung phim ↑ ↓ hoac W/S de di chuyen, Enter de chon)";
+
+    gotoxy(baseX, baseY + 4 + n * 2);
+    cout << "(↑ ↓ hoac W/S de di chuyen, Enter de chon)";
 }
+
 void drawOptions(const char *options[], int n, int highlight) {
+    int baseX = 75;
+    int baseY = 4;
+
     for (int i = 0; i < n; i++) {
-        gotoxy(8, 6 + i * 2);
-        cout << string(200, ' ');
-        gotoxy(8, 6 + i * 2);
+        gotoxy(baseX + 3, baseY + 4 + i * 2);
+        cout << string(80, ' ');
+
+        gotoxy(baseX + 3, baseY + 4 + i * 2);
         if (i == highlight) {
-            SetBGColor(7); SetColor(0);
+            SetBGColor(7);
+            SetColor(0);
             cout << "> " << options[i] << " <";
         } else {
             ResetColor();
-            cout << "  " << options[i] << "  ";
+            cout << "  " << options[i];
         }
         ResetColor();
     }
 }
 
 
-// === menu logic ===
+
 int menu(const char *title, const char *role, const char *options[], int n)  {
     int highlight = 0;
     drawStaticMenu(title, role, n);
     while (true) {
         drawOptions(options, n, highlight);
-        int ch = _getch();
+        int ch = getch();
         // support both arrow keys and WASD
-        if (ch == 224) {
-            int arrow = _getch();
-            if (arrow == 72) highlight = (highlight - 1 + n) % n; // up
-            if (arrow == 80) highlight = (highlight + 1) % n;     // down
-        }
-        else if (ch == 'w' || ch == 'W') highlight = (highlight - 1 + n) % n;
-        else if (ch == 's' || ch == 'S') highlight = (highlight + 1) % n;
-        else if (ch == 13) return highlight; // Enter
-    }
+        if (ch == 27 && getch() == 91) {  
+        int arrow = getch(); // byte cuối xác định hướng
+        if (arrow == 65) highlight = (highlight - 1 + n) % n; // ↑
+        if (arrow == 66) highlight = (highlight + 1) % n;     // ↓
+           }
+       else if (ch == 'w' || ch == 'W')
+           highlight = (highlight - 1 + n) % n;
+       else if (ch == 's' || ch == 'S')
+           highlight = (highlight + 1) % n;
+       else if (ch == 10 || ch == 13) // Enter trên Linux = 10
+           return highlight;
+       }
 }
 
-// == Diem ==
-
-int Popup_ChonHanhDong() { // pop up sua diem
-    const char* options[2] = { "Sua diem", "Quay lai" };
-    int highlight = 0;
-    int x = 85;  
-    int y = 6;
-    DrawBox(83,5,16,5,3);
-    while (true) {
-        //  popup
-        for (int i = 0; i < 2; i++) {
-            gotoxy(x, y + i * 2);
-            if (i == highlight) {
-                SetBGColor(7); SetColor(0);
-                cout << "> " << options[i] << " <";
-            } else {
-                ResetColor();
-                cout << "  " << options[i] << "  ";
-            }
-            ResetColor();
-        }
-        int ch = _getch();
-        if (ch == 224) {
-            int arrow = _getch();
-            if (arrow == 72) highlight = (highlight - 1 + 2) % 2; // up
-            if (arrow == 80) highlight = (highlight + 1) % 2;     // down
-        }
-        else if (ch == 'w' || ch == 'W') highlight = (highlight - 1 + 2) % 2;
-        else if (ch == 's' || ch == 'S') highlight = (highlight + 1) % 2;
-        else if (ch == 13) {
-            // xoa popup
-            //for (int i = 0; i < 2; i++) {
-                //gotoxy(x, y + i * 2);
-                //cout << string(20, ' ');
-            //}
-           ClearBox(83,5,16,5);
-            return highlight;   // 0 = sua diem, 1 = quay lai
-        }
-    }
-    
-}
-//                                              |PAGING SYSTEM|
-// o=================================================================================================================o
-//  - arr[] la mang luu con tro sinh vien, duoc tao tu danh sach lien ket de ho tro 
-//  truy cap theo chi so va phan trang O(1)
-//  - arr[index] la phan tu dau tien cua trang, arr[index + linenum - 1] la phan tu cuoi trang                                                       
-//  - linenum la so phan tu trong mot trang (VD: linenum = 5 thi show 5 sinh vien moi trang)
-//  - Qua trang sau index += linenum, quay ve trang truoc index -= linenum
-// o=================================================================================================================o
 
 const int linenum = 5; // LINE NUMBER
 
@@ -162,7 +130,7 @@ void drawBangDiem(PTRDK arr[], int count, int highlight, DS_LOPSV &dslop, int in
 void drawBangDiemTB(PTRSV arr[], int count, int index, PTRLTC &dsltc,DS_LOPSV &dslop,treeMH &dsmh, LopSV* lop) {
     SetColor(14);
     SetBold(true);
-    cout << "\n                 -==== BANG DIEM TRUNG BINH KHOA HOC ====- \n";
+    cout << "\n               -==== BANG DIEM TRUNG BINH KHOA HOC ====- \n";
     ResetColor();
     cout << "\nLop: ";
     SetColor(10);
@@ -189,7 +157,7 @@ void drawBangDiemTB(PTRSV arr[], int count, int index, PTRLTC &dsltc,DS_LOPSV &d
 }
 
 void drawBangDiemTK(PTRSV arr[], int count, int index, PTRLTC &dsltc,DS_LOPSV &dslop,treeMH &dsmh, LopSV* lop, char dsMAMH[200][11], int soMH) {
-    SetBold(true);          
+    SetBold(true);
     SetColor(14);
     cout << "               -==== BANG DIEM TONG KET ====- ";
     cout << "\nLop: ";
@@ -237,21 +205,76 @@ void drawBangDiemTK(PTRSV arr[], int count, int index, PTRLTC &dsltc,DS_LOPSV &d
         cout << endl;
     }
 }
+int Popup_ChonHanhDong() { // pop up sua diem
+    const char* options[2] = { "Sua diem", "Quay lai" };
+    int highlight = 0;
+    int x = 85;  
+    int y = 6;
+    DrawBox(83,5,16,5,3);
+    while (true) {
+        //  popup
+        for (int i = 0; i < 2; i++) {
+            gotoxy(x, y + i * 2);
+            if (i == highlight) {
+                SetBGColor(7); SetColor(0);
+                cout << "> " << options[i] << " <";
+            } else {
+                ResetColor();
+                cout << "  " << options[i] << "  ";
+            }
+            ResetColor();
+        }
+        int ch = _getch();
+        if (ch == 224) {
+            int arrow = _getch();
+            if (arrow == 72) highlight = (highlight - 1 + 2) % 2; // up
+            if (arrow == 80) highlight = (highlight + 1) % 2;     // down
+        }
+        else if (ch == 'w' || ch == 'W') highlight = (highlight - 1 + 2) % 2;
+        else if (ch == 's' || ch == 'S') highlight = (highlight + 1) % 2;
+        else if (ch == 13) {
+            // xoa popup
+            //for (int i = 0; i < 2; i++) {
+                //gotoxy(x, y + i * 2);
+                //cout << string(20, ' ');
+            //}
+           ClearBox(83,5,16,5);
+            return highlight;   // 0 = sua diem, 1 = quay lai
+        }
+    }
+    
+}
+// == Diem ==
 
-// PAGE INTERACTION
 
-//                                        |BANG DIEM INTERACTION SYSTEM|
-// o=================================================================================================================o
-//                                     [Page system da duoc comment o tren]
-//  - Highlight la dong dang duoc chon (con tro SV) va chi duoc di chuyen trong trang hien tai
-//  - Chuyen highlight ve vi tri tuong doi trong trang r = highlight−index
-//  - Di chuyen len xuong trong khoang [0, pageSize - 1]                                                  
-//  - Truong hop di len nhung dang highlight o phan tu dau: 
-//    highlight = index + (highlight - 1 - index + pageSize) % pageSize; , se xuong cuoi trang
-//  - Truong hop di xuong nhung dang highlight o phan tu cuoi: 
-//    highlight = index + (highlight + 1 - index) % pageSize;, se len dau trang
-// o=================================================================================================================o
-
+void drawBangDiem(PTRDK arr[], int count, int highlight, DS_LOPSV &dslop) {
+    cout << "\n              -==== BANG DIEM LOP TIN CHI ====- \n";
+    cout << left << setw(5) << "STT" << setw(15) << "MASV" << setw(25) << "HO"<<
+    setw(15) << "TEN" << setw(10) << "DIEM" << endl;
+    cout << "--------------------------------------------------------------\n";
+    for(int i=0; i<count; i++) {
+        if(i == highlight) SetColor(14); else SetColor(7);
+        SinhVien *sv = nullptr;
+        for(int j = 0; j<dslop.n && !sv; j++) {
+            PTRSV q = dslop.nodes[j]->FirstSV;
+            while (q!= nullptr) {
+                if(strcmp(q->sv.MASV, arr[i]->dk.MASV) == 0) {
+                    sv =&q->sv;
+                    break;
+                }
+                q = q->next;
+            }
+        }
+        if(sv) {
+            cout << left << setw(5) << (i+1) << setw(15) << sv->MASV<< setw(25) << sv->HO<< setw(15) << sv->TEN
+            << setw(10) << fixed << setprecision(2) << arr[i]->dk.DIEM;cout << "\n";
+        } else {
+            cout << setw(5) << (i+1)<< setw(15) << arr[i]->dk.MASV<< setw(25) << "Khong tim thay"
+            << setw(15) << ""<< setw(10) << "----" << endl;
+        }
+    }
+    ResetColor();
+}
 void BangDiem_Interact(PTRDK arr[], int count, DS_LOPSV &dslop) {
     clrscr();
     int highlight = 0;
@@ -412,11 +435,11 @@ void BangDiemLTC(PTRDK arr[], int count, DS_LOPSV &dslop) {
     SetBold(false);
     ResetColor();
     while (true) { 
-        int ch = _getch();
+        int ch = getch();
         int pageSize  = min(linenum, count - index);
         if (pageSize <= 0) continue;
         if (ch == 224) {
-            int arrow = _getch();
+            int arrow = getch();
             if(arrow == 75) { index = max(0,index-linenum);  clrscr();  goto draw;} // left 
             else if(arrow == 77) {if (index + linenum < count) { index += linenum; ; clrscr(); goto draw;}} // right
         }
@@ -440,11 +463,11 @@ void BangDiemTB(PTRSV arr[], int count, PTRLTC &dsltc,DS_LOPSV &dslop,treeMH &ds
     SetBold(false);
     ResetColor();
     while (true) { 
-        int ch = _getch();
+        int ch = getch();
         int pageSize  = min(linenum, count - index);
         if (pageSize <= 0) continue;
         if (ch == 224) {
-            int arrow = _getch();
+            int arrow = getch();
             if(arrow == 75) { index = max(0,index-linenum);  clrscr();  goto draw;} // left 
             else if(arrow == 77) {if (index + linenum < count) { index += linenum; ; clrscr(); goto draw;}} // right
         }
@@ -478,11 +501,11 @@ void BangDiemTK(PTRSV arr[], int count, PTRLTC &dsltc,DS_LOPSV &dslop,treeMH &ds
     SetBold(false);
     ResetColor();
     while (true) { 
-        int ch = _getch();
+        int ch = getch();
         int pageSize  = min(linenum, count - index);
         if (pageSize <= 0) continue;
         if (ch == 224) {
-            int arrow = _getch();
+            int arrow = getch();
             if(arrow == 75) { index = max(0,index-linenum);  clrscr();  goto draw;} // left 
             else if(arrow == 77) {if (index + linenum < count) { index += linenum; ; clrscr(); goto draw;}} // right
         }
@@ -491,4 +514,23 @@ void BangDiemTK(PTRSV arr[], int count, PTRLTC &dsltc,DS_LOPSV &dslop,treeMH &ds
         else if (ch == 27) return; // esc
     }
 }
+void drawMonHoc (treeMH t, MonHoc mh, int count, int highlight, int index) {
+    SetColor(14);
+    SetBold(true);
+    cout << "\n              -==== DANH SACH MON HOC ====- \n";
+    SetBold(false);
+    SetColor(2);
+    cout << left << setw(5) << "STT" << setw(15) << "MAMH" << setw(30) << "TENMH" << 
+    setw(10) << "STCLT" << setw(10) << "STCTH" << endl;
 
+    cout << "----------------------------------------------------------------------------------\n";
+    ResetColor();
+    int endindex = min(index + linenum, count);
+    for(int i=index; i<endindex; i++) {
+        if(i == highlight) SetColor(14); else SetColor(7);
+        cout << left << setw(5) << (i+1) << setw(15) << t->mh.MAMH << setw(30) << t->mh.TENMH
+        << setw(10) << t->mh.STCLT << setw(10) << t->mh.STCTH;
+        cout << "\n";
+    }
+    ResetColor();
+} 
