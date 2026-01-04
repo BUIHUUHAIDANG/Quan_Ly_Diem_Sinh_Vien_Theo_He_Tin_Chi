@@ -36,11 +36,14 @@ void SuaMH(treeMH &t, MonHoc mh, stack &undostackMH);
 void UndoMH (treeMH &t, stack &undostackMH);
 void LuuMH_Inorder(treeMH t, MonHoc ds[], int &n);
 PTRLTC InTrangLTC_UI_Bang(PTRLTC start, char nienkhoa[], int hocky, treeMH t);
+PTRLTC TimTrangTruoc(PTRLTC first, PTRLTC curr, char nienkhoa[], int hocky, treeMH t);
 void InLTC_UI(PTRLTC FirstLTC, char nienkhoa[], int hocky, treeMH t);
 void InDSMH(treeMH t);
 treeMH timMonHoc(treeMH t, char mamh[]);
 void SVDangKy(PTRDK &dssvdk, PTRSV sv);
+bool SVdaDangKy(PTRDK dssvdk, char masv[16]);
 PTRLTC checkmaltc(PTRLTC loptinchi, char nienkhoa[], int hocky);
+bool formatNK(char nk[]);
 void DangKyLTC(PTRLTC loptinchi, LopTinChi lop, treeMH t, DS_LOPSV dslop);
 // -------------------- HÀM CLEAR ---------------------
 void ClearTree(treeMH &t);
