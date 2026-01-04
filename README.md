@@ -190,20 +190,6 @@ Theo 4 tham số:
 - Chuẩn ngôn ngữ: C++11 trở lên
 
 ---
----
-Project/
-│── main.cpp
-│── MonHoc.h / MonHoc.cpp
-│── SinhVien.h / SinhVien.cpp
-│── LopSinhVien.h / LopSinhVien.cpp
-│── LopTinChi.h / LopTinChi.cpp
-│── DangKy.h / DangKy.cpp
-│── data/
-│   ├── monhoc.dat
-│   ├── sinhvien.dat
-│   ├── lopsv.dat
-│   ├── loptinchi.dat
-│   └── dangky.dat
 ### 2. Biên dịch chương trình
 
 **Sử dụng g++:**
