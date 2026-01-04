@@ -1046,7 +1046,7 @@ void printDSSV(LopSV *lop) {
     delete[] arr;
 }
 bool isValidSoSV(int min, int max) {
-    return min > 0 && max > 0 && min <= max;
+    return min > 0 && max > 0 && min < max;
 }
 void formatName(char s[]) {
     int n = strlen(s);

@@ -12,6 +12,80 @@ using namespace std;
 
 
 
+void drawStaticMenu(const char *title, const char *role, int n) {
+    int baseX = 75;
+    int baseY = 4;
+
+    clrscr();
+    SetBGColor(0);
+    SetColor(7);
+
+    gotoxy(baseX + 10, baseY);
+    SetBold(true);
+    SetColor(4);
+    cout << title;
+    SetBold(false);
+    ResetColor();
+
+    drawLine(baseX, baseY + 1, 40);
+
+    gotoxy(baseX, baseY + 2);
+    cout << "Vai tro: ";
+    SetBold(true);
+    SetColor(10);
+    cout << role;
+    ResetColor();
+    SetBold(false);
+
+    gotoxy(baseX, baseY + 4 + n * 2);
+    cout << "(↑ ↓ hoac W/S de di chuyen, Enter de chon)";
+}
+
+void drawOptions(const char *options[], int n, int highlight) {
+    int baseX = 75;
+    int baseY = 4;
+
+    for (int i = 0; i < n; i++) {
+        gotoxy(baseX + 3, baseY + 4 + i * 2);
+        cout << string(80, ' ');
+
+        gotoxy(baseX + 3, baseY + 4 + i * 2);
+        if (i == highlight) {
+            SetBGColor(7);
+            SetColor(0);
+            cout << "> " << options[i] << " <";
+        } else {
+            ResetColor();
+            cout << "  " << options[i];
+        }
+        ResetColor();
+    }
+}
+
+
+
+int menu(const char *title, const char *role, const char *options[], int n)  {
+    int highlight = 0;
+    drawStaticMenu(title, role, n);
+    while (true) {
+        drawOptions(options, n, highlight);
+        int ch = getch();
+        // support both arrow keys and WASD
+        if (ch == 27 && getch() == 91) {  
+        int arrow = getch(); // byte cuối xác định hướng
+        if (arrow == 65) highlight = (highlight - 1 + n) % n; // ↑
+        if (arrow == 66) highlight = (highlight + 1) % n;     // ↓
+           }
+       else if (ch == 'w' || ch == 'W')
+           highlight = (highlight - 1 + n) % n;
+       else if (ch == 's' || ch == 'S')
+           highlight = (highlight + 1) % n;
+       else if (ch == 10 || ch == 13) // Enter trên Linux = 10
+           return highlight;
+       }
+}
+
+
 const int linenum = 5; // LINE NUMBER
 
 // DRAW
@@ -56,7 +130,7 @@ void drawBangDiem(PTRDK arr[], int count, int highlight, DS_LOPSV &dslop, int in
 void drawBangDiemTB(PTRSV arr[], int count, int index, PTRLTC &dsltc,DS_LOPSV &dslop,treeMH &dsmh, LopSV* lop) {
     SetColor(14);
     SetBold(true);
-    cout << "\n                 -==== BANG DIEM TRUNG BINH KHOA HOC ====- \n";
+    cout << "\n               -==== BANG DIEM TRUNG BINH KHOA HOC ====- \n";
     ResetColor();
     cout << "\nLop: ";
     SetColor(10);
@@ -131,13 +205,12 @@ void drawBangDiemTK(PTRSV arr[], int count, int index, PTRLTC &dsltc,DS_LOPSV &d
         cout << endl;
     }
 }
-
-// == Diem ==
 int Popup_ChonHanhDong() { // pop up sua diem
     const char* options[2] = { "Sua diem", "Quay lai" };
     int highlight = 0;
     int x = 85;  
     int y = 6;
+    DrawBox(83,5,16,5,3);
     while (true) {
         //  popup
         for (int i = 0; i < 2; i++) {
@@ -159,17 +232,20 @@ int Popup_ChonHanhDong() { // pop up sua diem
         }
         else if (ch == 'w' || ch == 'W') highlight = (highlight - 1 + 2) % 2;
         else if (ch == 's' || ch == 'S') highlight = (highlight + 1) % 2;
-        else if (ch == 13||ch == 10) {
+        else if (ch == 13 || ch == 10 ) {
             // xoa popup
-            for (int i = 0; i < 2; i++) {
-                gotoxy(x, y + i * 2);
-                cout << string(20, ' ');
-            }
-            ResetColor();
+            //for (int i = 0; i < 2; i++) {
+                //gotoxy(x, y + i * 2);
+                //cout << string(20, ' ');
+            //}
+           ClearBox(83,5,16,5);
             return highlight;   // 0 = sua diem, 1 = quay lai
         }
     }
+    
 }
+// == Diem ==
+
 
 void drawBangDiem(PTRDK arr[], int count, int highlight, DS_LOPSV &dslop) {
     cout << "\n              -==== BANG DIEM LOP TIN CHI ====- \n";
@@ -236,7 +312,7 @@ void BangDiem_Interact(PTRDK arr[], int count, DS_LOPSV &dslop) {
         else if(ch == 'a' || ch == 'A') {highlight = index; index = max(0,index-linenum);  clrscr();  goto draw;} // left
         else if(ch == 'd' || ch == 'D') {if (index + linenum < count) { index += linenum; highlight = index; clrscr(); goto draw;}} // right
 
-        else if (ch == 13||ch==10) {
+        else if (ch == 13 || ch ==10) {
             int choice = Popup_ChonHanhDong();
             if (choice == 1) {
                 clrscr(); 
@@ -245,17 +321,17 @@ void BangDiem_Interact(PTRDK arr[], int count, DS_LOPSV &dslop) {
 
             float diem;
             
-            DrawBox(0, 17, 50, 3, 5);
+            DrawBox(0, 17, 60, 3, 5);
             gotoxy(2, 18);
             cout << "Nhap diem moi cho SV " << arr[highlight]->dk.MASV << " (-1 de bo qua): ";
             if (!(cin >> diem)) {
                 cin.clear(); cin.ignore(9999, '\n');
-                ClearBox(0, 17, 50, 3);
+                ClearBox(0, 17, 60, 3);
                 continue;
             }
             if (diem >= 0 && diem <= 10)  {
                 arr[highlight]->dk.DIEM = diem;  
-                ClearBox(0, 17, 50, 3); 
+                ClearBox(0, 17, 60, 3); 
             }
             else if (diem == -1) {
                 ClearBox(0, 17, 50, 3); 
@@ -265,7 +341,7 @@ void BangDiem_Interact(PTRDK arr[], int count, DS_LOPSV &dslop) {
                 SetColor(4);
                 cout << "- Diem khong hop le! -";
                 ResetColor();
-                ClearBox(0, 17, 50, 3); 
+                ClearBox(0, 17, 60, 3); 
                 getch(); 
                 gotoxy(7,22); string(35, ' '); 
             }
