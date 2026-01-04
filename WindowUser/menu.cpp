@@ -249,40 +249,7 @@ int Popup_ChonHanhDong() { // pop up sua diem
 // == Diem ==
 
 
-void drawBangDiem(PTRDK arr[], int count, int highlight, DS_LOPSV &dslop) {
-    SetColor(14);
-    SetBold(true);
-    cout << "\n              -==== BANG DIEM LOP TIN CHI ====- \n";
-    SetBold(false);
-    ResetColor();
-    SetColor(2);
-    cout << left << setw(5) << "STT" << setw(15) << "MASV" << setw(25) << "HO"<<
-    setw(15) << "TEN" << setw(10) << "DIEM" << endl;
-    cout << "--------------------------------------------------------------\n";
-    ResetColor();
-    for(int i=0; i<count; i++) {
-        if(i == highlight) SetColor(14); else SetColor(7);
-        SinhVien *sv = nullptr;
-        for(int j = 0; j<dslop.n && !sv; j++) {
-            PTRSV q = dslop.nodes[j]->FirstSV;
-            while (q!= nullptr) {
-                if(strcmp(q->sv.MASV, arr[i]->dk.MASV) == 0) {
-                    sv =&q->sv;
-                    break;
-                }
-                q = q->next;
-            }
-        }
-        if(sv) {
-            cout << left << setw(5) << (i+1) << setw(15) << sv->MASV<< setw(25) << sv->HO<< setw(15) << sv->TEN
-            << setw(10) << fixed << setprecision(2) << arr[i]->dk.DIEM;cout << "\n";
-        } else {
-            cout << setw(5) << (i+1)<< setw(15) << arr[i]->dk.MASV<< setw(25) << "Khong tim thay"
-            << setw(15) << ""<< setw(10) << "----" << endl;
-        }
-    }
-    ResetColor();
-}
+
 void BangDiem_Interact(PTRDK arr[], int count, DS_LOPSV &dslop) {
     clrscr();
     int highlight = 0;
