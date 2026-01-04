@@ -1196,16 +1196,6 @@ int getNextMaLopTinChi(PTRLTC First) {
     }
     return maxID + 1;
 }
-int getNextMaLopTinChi(PTRLTC First) {
-    int maxID = 0;
-    PTRLTC p = First;
-    while (p != nullptr) {
-        if (p->ltc.MALOPTC > maxID)
-            maxID = p->ltc.MALOPTC;
-        p = p->next;
-    }
-    return maxID + 1;
-}
 void inputOrKeep(char dest[], int maxLen, const char oldValue[], const char *label) {
     char buf[100];
 
